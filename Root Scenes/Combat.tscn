@@ -1,0 +1,7 @@
+[gd_scene load_steps=2 format=3 uid="uid://c0qaqubhkbtqx"]
+
+[ext_resource type="PackedScene" uid="uid://dvg7bqsln2ojt" path="res://Root Scenes/Interface Layer.tscn" id="1_siax0"]
+
+[node name="Combat" type="Node2D"]
+
+[node name="InterfaceLayer" parent="." instance=ExtResource("1_siax0")]
