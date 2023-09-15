@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://boogde2byq13f"]
+
+[ext_resource type="Script" path="res://Tactical/CombatManager.cs" id="1_8l2er"]
+
+[node name="CombatManager" type="Node"]
+script = ExtResource("1_8l2er")

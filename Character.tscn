@@ -1,0 +1,12 @@
+[gd_scene load_steps=3 format=3 uid="uid://5l64b84mgbsk"]
+
+[ext_resource type="Texture2D" uid="uid://654pve5epxq3" path="res://icon.svg" id="1_jd07w"]
+[ext_resource type="Script" path="res://IsDamageable.cs" id="2_pyvfd"]
+
+[node name="Character" type="Sprite2D"]
+position = Vector2(340, 343)
+scale = Vector2(0.863281, 1.55078)
+texture = ExtResource("1_jd07w")
+
+[node name="IsDamageable" type="Node" parent="."]
+script = ExtResource("2_pyvfd")
