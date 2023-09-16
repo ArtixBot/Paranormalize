@@ -1,5 +1,6 @@
 using Godot;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 
 public enum CombatState {
@@ -21,15 +22,19 @@ public class CombatInstance {
 	}
 }
 
+// This is a singleton loaded by Project > Project Settings > Autoload.
 public partial class CombatManager : Node {
 	
-	public static CombatInstance combatInstance;
+	public static CombatInstance combatInstance = new CombatInstance();
 	// The event system is more complicated than what signals can provide (especially as signals are intended not to care who is listening to them.)
 	// However, in our case, order absolutely matters (e.g. a "revive on death" should absolutely take higher priority over "remove character on death"), so we have a custom system.
+    public static CombatEventManager eventManager = new CombatEventManager();
+    
 	public override void _Ready(){
 		combatInstance ??= new CombatInstance();
-		ChangeCombatState(CombatState.COMBAT_START);
-	}
+        eventManager ??= new CombatEventManager();
+        ChangeCombatState(CombatState.COMBAT_START);        // TODO: Remove, this is for debugging
+    }
 
 	public void ChangeCombatState(CombatState newState){
         if (combatInstance.combatState != newState){
@@ -72,17 +77,18 @@ public partial class CombatManager : Node {
 	}
 
 	private void OnCombatStart(){
-		GD.Print("OnCombatStart invoked.");
+        eventManager.BroadcastEvent(new CombatEventCombatStart());
 		ChangeCombatState(CombatState.ROUND_START);
 	}
 
 	private void OnCombatEnd(){
-		GD.Print("OnCombatEnd invoked.");
+        eventManager.BroadcastEvent(new CombatEventCombatEnd());
 		combatInstance = null;
+        eventManager = null;
 	}
 
 	private void OnRoundStart(int round){
-		GD.Print($"OnRoundStart invoked, round {round}");
+        eventManager.BroadcastEvent(new CombatEventRoundStart(round));
 	}
 
 	// private static void CombatStart(){

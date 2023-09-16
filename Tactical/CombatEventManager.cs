@@ -3,7 +3,9 @@ using System;
 using System.Collections.Generic;
 
 public interface IEventSubscriber {
-    public void HandleEvent(CombatEventData eventData);
+    public virtual void HandleEvent(CombatEventData eventData){
+        GD.Print($"{this.GetType()} is currently handling {eventData.GetType()}");
+    }
 }
 
 public enum CombatEventType {
@@ -19,12 +21,22 @@ public enum CombatEventType {
 
 // Higher numbers execute first.
 public enum CombatEventPriority {
-    ALWAYS_FIRST = 999,
-    ALWAYS_LAST = 1,
+    HIGHEST_PRIORITY = 99999,       // e.g. "revive on death", "prevent death"
+    PASSIVE_EFFECT = 400,           // When an action is taken, a character's passives (and the target's passives) take priority over buffs.
+    BUFF = 300,                     // Buffs have priority over debuffs.
+    DEBUFF = 250,                   // Debuffs go *after* buffs.
+    LOWEST_PRIORITY = 1,
 }
 
 public partial class CombatEventManager : Node{
-    public Dictionary<CombatEventType, ModdablePriorityQueue<IEventSubscriber>> events = new();
+    public Dictionary<CombatEventType, ModdablePriorityQueue<IEventSubscriber>> events;
+
+    public CombatEventManager() {
+        this.events = new Dictionary<CombatEventType, ModdablePriorityQueue<IEventSubscriber>>();
+        foreach (CombatEventType type in Enum.GetValues(typeof(CombatEventType))){
+            events.Add(type, new ModdablePriorityQueue<IEventSubscriber>());
+        }
+    }
 
     public bool Subscribe(CombatEventType eventType, IEventSubscriber subscriber, CombatEventPriority priority){
         if (!events.ContainsKey(eventType)){
@@ -37,9 +49,22 @@ public partial class CombatEventManager : Node{
         return false;
     }
 
+    // This invocation allows for custom priority values.
+    public bool Subscribe(CombatEventType eventType, IEventSubscriber subscriber, int priority){
+        if (!events.ContainsKey(eventType)){
+            events.Add(eventType, new ModdablePriorityQueue<IEventSubscriber>());
+        }
+        if (!events[eventType].ContainsItem(subscriber)){
+            events[eventType].AddToQueue(subscriber, priority);
+            return true;
+        }
+        return false;
+    }
+
     // Notify all subscribers of a specified event. Subscribers will execute in order.
     public void BroadcastEvent(CombatEventData eventData){
         if (!events.ContainsKey(eventData.eventType)) return;
+        GD.Print($"CombatEventManager broadcasting event {eventData.eventType} to {events[eventData.eventType].GetQueue().Count} subscribers.");
         foreach ((IEventSubscriber subscriber, int _) in events[eventData.eventType].GetQueue()){
             subscriber.HandleEvent(eventData);
         }
@@ -71,4 +96,34 @@ public partial class CombatEventManager : Node{
 
 public abstract class CombatEventData {
     public CombatEventType eventType;
+}
+
+public class CombatEventCombatStart : CombatEventData {
+    public CombatEventCombatStart(){
+        this.eventType = CombatEventType.ON_COMBAT_START;
+    }
+}
+
+public class CombatEventCombatEnd : CombatEventData {
+    public CombatEventCombatEnd(){
+        this.eventType = CombatEventType.ON_COMBAT_END;
+    }
+}
+
+public class CombatEventRoundStart : CombatEventData {
+    public int roundStartNum;
+
+    public CombatEventRoundStart(int roundStartNum){
+        this.eventType = CombatEventType.ON_ROUND_START;
+        this.roundStartNum = roundStartNum;
+    }
+}
+
+public class CombatEventRoundEnd : CombatEventData {
+    public int roundEndNum;
+
+    public CombatEventRoundEnd(int roundEndNum){
+        this.eventType = CombatEventType.ON_ROUND_START;
+        this.roundEndNum = roundEndNum;
+    }
 }
