@@ -3,9 +3,7 @@ using System;
 using System.Collections.Generic;
 
 public interface IEventSubscriber {
-    public virtual void HandleEvent(CombatEventData eventData){
-        GD.Print($"{this.GetType()} is currently handling {eventData.GetType()}");
-    }
+    public abstract void HandleEvent(CombatEventData eventData);
 }
 
 public enum CombatEventType {
@@ -21,14 +19,13 @@ public enum CombatEventType {
 
 // Higher numbers execute first.
 public enum CombatEventPriority {
-    HIGHEST_PRIORITY = 99999,       // e.g. "revive on death", "prevent death"
-    PASSIVE_EFFECT = 400,           // When an action is taken, a character's passives (and the target's passives) take priority over buffs.
-    BUFF = 300,                     // Buffs have priority over debuffs.
-    DEBUFF = 250,                   // Debuffs go *after* buffs.
+    HIGHEST_PRIORITY = 99999,       // e.g. "revive on death", "the first time you take fatal damage, go to 1 HP instead", invulnerability effects
+    BASE_ADDITIVE = 500,            // Additive modifiers to a value. These happen first and therefore have an outsized effect on multipliers.
+    BASE_MULTIPLICATIVE = 400,      // Multiplicative multipliers to a value.
     LOWEST_PRIORITY = 1,
 }
 
-public partial class CombatEventManager : Node{
+public partial class CombatEventManager{
     public Dictionary<CombatEventType, ModdablePriorityQueue<IEventSubscriber>> events;
 
     public CombatEventManager() {
@@ -88,10 +85,6 @@ public partial class CombatEventManager : Node{
             events[eventType].RemoveAllInstancesOfItem(subscriber);
         }
     }
-
-	public override void _Ready(){
-		GD.Print("CombatEventManager node loaded.");
-	}
 }
 
 public abstract class CombatEventData {
@@ -125,5 +118,27 @@ public class CombatEventRoundEnd : CombatEventData {
     public CombatEventRoundEnd(int roundEndNum){
         this.eventType = CombatEventType.ON_ROUND_START;
         this.roundEndNum = roundEndNum;
+    }
+}
+
+public class CombatEventTurnStart : CombatEventData {
+    public CharacterInfo character;
+    public int spd;
+
+    public CombatEventTurnStart(CharacterInfo character, int spd){
+        this.eventType = CombatEventType.ON_TURN_START;
+        this.character = character;
+        this.spd = spd;
+    }
+}
+
+public class CombatEventTurnEnd : CombatEventData {
+    public CharacterInfo character;
+    public int spd;
+
+    public CombatEventTurnEnd(CharacterInfo character, int spd){
+        this.eventType = CombatEventType.ON_TURN_END;
+        this.character = character;
+        this.spd = spd;
     }
 }

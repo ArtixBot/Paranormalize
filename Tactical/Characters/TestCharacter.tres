@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="CharacterInfo" load_steps=2 format=3 uid="uid://quy60y11uqfm"]
+
+[ext_resource type="Script" path="res://Tactical/Characters/CharacterInfo.cs" id="1_n5rvq"]
+
+[resource]
+script = ExtResource("1_n5rvq")
+CHAR_FACTION = 0
+CHAR_NAME = "Test Character"
+actionsPerTurn = 2
+CurHP = 10
+MaxHP = 10
+maxPoise = 20
+curPoise = 20
+minSpd = 2
+maxSpd = 2
+curPos = 1

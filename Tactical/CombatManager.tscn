@@ -1,9 +1,0 @@
-[gd_scene load_steps=3 format=3 uid="uid://boogde2byq13f"]
-
-[ext_resource type="Script" path="res://Tactical/CombatManager.cs" id="1_8l2er"]
-[ext_resource type="PackedScene" uid="uid://dplqnaegpkapp" path="res://Tactical/CombatEventManager.tscn" id="2_3p881"]
-
-[node name="CombatManager" type="Node"]
-script = ExtResource("1_8l2er")
-
-[node name="CombatEventManager" parent="." instance=ExtResource("2_3p881")]

@@ -1,6 +1,0 @@
-[gd_scene load_steps=2 format=3 uid="uid://dplqnaegpkapp"]
-
-[ext_resource type="Script" path="res://Tactical/CombatEventManager.cs" id="1_losdv"]
-
-[node name="CombatEventManager" type="Node"]
-script = ExtResource("1_losdv")

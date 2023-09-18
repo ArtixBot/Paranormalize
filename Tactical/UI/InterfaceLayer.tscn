@@ -1,0 +1,20 @@
+[gd_scene load_steps=2 format=3 uid="uid://ch6trrpnpxy2k"]
+
+[ext_resource type="Script" path="res://Tactical/UI/RoundLabel.cs" id="1_ypkea"]
+
+[node name="InterfaceLayer" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Label" type="Label" parent="."]
+layout_mode = 0
+offset_left = 68.0
+offset_top = 58.0
+offset_right = 133.0
+offset_bottom = 84.0
+text = "Round X"
+script = ExtResource("1_ypkea")

@@ -1,6 +1,0 @@
-[gd_scene load_steps=2 format=3 uid="uid://di8negvuyroto"]
-
-[ext_resource type="Script" path="res://Behaviors/BehaviorDamageable.cs" id="1_511wb"]
-
-[node name="BehaviorDamageable" type="Node"]
-script = ExtResource("1_511wb")

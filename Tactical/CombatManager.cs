@@ -15,6 +15,17 @@ public enum CombatState {
 public class CombatInstance {
 	public CombatState combatState;
 	public int round;
+    public Dictionary<CharacterFaction, List<CharacterInfo>> fighters = new Dictionary<CharacterFaction, List<CharacterInfo>>{
+        {CharacterFaction.PLAYER, new List<CharacterInfo>()},
+        {CharacterFaction.ALLY, new List<CharacterInfo>()},
+        {CharacterFaction.NEUTRAL, new List<CharacterInfo>()},
+        {CharacterFaction.ENEMY, new List<CharacterInfo>()}
+    };
+
+    public ModdablePriorityQueue<CharacterInfo> turnlist = new ModdablePriorityQueue<CharacterInfo>();
+    
+    public CharacterInfo activeChar;
+    public int activeCharSpd;
 
 	public CombatInstance(){
 		this.combatState = CombatState.NULL;
@@ -22,7 +33,7 @@ public class CombatInstance {
 	}
 }
 
-// This is a singleton loaded by Project > Project Settings > Autoload.
+// This is found in TacticalScene.tscn and performs all combat orchestration.
 public partial class CombatManager : Node {
 	
 	public static CombatInstance combatInstance = new CombatInstance();
@@ -31,8 +42,9 @@ public partial class CombatManager : Node {
     public static CombatEventManager eventManager = new CombatEventManager();
     
 	public override void _Ready(){
-		combatInstance ??= new CombatInstance();
-        eventManager ??= new CombatEventManager();
+		combatInstance = new CombatInstance();
+        eventManager = new CombatEventManager();
+
         ChangeCombatState(CombatState.COMBAT_START);        // TODO: Remove, this is for debugging
     }
 
@@ -47,22 +59,22 @@ public partial class CombatManager : Node {
 	public void ResolveCombatState(){
 		switch (combatInstance.combatState){
             case CombatState.COMBAT_START:
-                OnCombatStart();
+                CombatStart();
                 break;
             case CombatState.COMBAT_END:
-                OnCombatEnd();
+                CombatEnd();
                 break;
             case CombatState.ROUND_START:
-                OnRoundStart(combatInstance.round);
+                RoundStart();
                 break;
             case CombatState.ROUND_END:
-                // RoundEnd();
+                RoundEnd();
                 break;
             case CombatState.TURN_START:
-                // TurnStart();
+                TurnStart();
                 break;
             case CombatState.TURN_END:
-                // TurnEnd();
+                TurnEnd();
                 break;
             case CombatState.AWAITING_ABILITY_INPUT:    // This state doesn't do anything by itself, but allows use of InputAbility while at this stage.
                 break;
@@ -76,30 +88,50 @@ public partial class CombatManager : Node {
         }
 	}
 
-	private void OnCombatStart(){
+	private void CombatStart(){
         eventManager.BroadcastEvent(new CombatEventCombatStart());
 		ChangeCombatState(CombatState.ROUND_START);
 	}
 
-	private void OnCombatEnd(){
+	private void CombatEnd(){
         eventManager.BroadcastEvent(new CombatEventCombatEnd());
 		combatInstance = null;
         eventManager = null;
 	}
 
-	private void OnRoundStart(int round){
-        eventManager.BroadcastEvent(new CombatEventRoundStart(round));
+	private void RoundStart(){
+        foreach (CharacterFaction faction in combatInstance.fighters.Keys){
+            foreach (CharacterInfo character in combatInstance.fighters[faction]){
+                for (int i = 0; i < character.ActionsPerTurn; i++){
+                    combatInstance.turnlist.AddToQueue(character, Rng.RandiRange(character.MinSpd, character.MaxSpd));
+                }
+            }
+        }
+        eventManager.BroadcastEvent(new CombatEventRoundStart(combatInstance.round));
+        ChangeCombatState(CombatState.TURN_START);
 	}
 
-	// private static void CombatStart(){
-    //     // EmitSignal(SignalName.CombatStart, combatInstance.round);
-    //     ChangeCombatState(CombatState.ROUND_START);
-    // }
+    private void RoundEnd(){
+        eventManager.BroadcastEvent(new CombatEventRoundEnd(combatInstance.round));
+        combatInstance.round += 1;
+        ChangeCombatState(CombatState.ROUND_START);
+    }
 
-    // private static void CombatEnd(){
-    //     // eventManager.BroadcastEvent(new CombatEventCombatEnd());
-    //     // combatData = null;        // Clean up by discarding both the combat data instance and combat event info instance.
-    //     // eventManager = null;
-    // }
+    private void TurnStart(){
+        (combatInstance.activeChar, combatInstance.activeCharSpd) = combatInstance.turnlist.PopNextItem();
+        GD.Print($"{combatInstance.activeChar?.CHAR_NAME} is taking their turn.");
+        eventManager.BroadcastEvent(new CombatEventTurnStart(combatInstance.activeChar, combatInstance.activeCharSpd));
+        ChangeCombatState(CombatState.AWAITING_ABILITY_INPUT);
+    }
+
+    private void TurnEnd(){
+        eventManager.BroadcastEvent(new CombatEventTurnEnd(combatInstance.activeChar, combatInstance.activeCharSpd));
+        if (combatInstance.turnlist.GetNextItem() == (null, 0)){
+            (combatInstance.activeChar, combatInstance.activeCharSpd) = combatInstance.turnlist.PopNextItem();
+            ChangeCombatState(CombatState.ROUND_END);
+        } else {
+            ChangeCombatState(CombatState.TURN_START);
+        }
+    }
 
 }
