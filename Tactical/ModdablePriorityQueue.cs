@@ -6,6 +6,10 @@ using System.Linq;
 public partial class ModdablePriorityQueue<T>{
     private List<(T element, int priority)> queue = new List<(T element, int priority)>();
 
+    public int Count {
+        get {return queue.Count();}
+    }
+
     public void Clear(){
         this.queue.Clear();
     }

@@ -6,11 +6,11 @@
 script = ExtResource("1_n5rvq")
 CHAR_FACTION = 0
 CHAR_NAME = "Test Character"
-actionsPerTurn = 2
+ActionsPerTurn = 2
 CurHP = 10
 MaxHP = 10
-maxPoise = 20
-curPoise = 20
-minSpd = 2
-maxSpd = 2
-curPos = 1
+CurPoise = 0
+MaxPoise = 0
+MinSpd = 0
+MaxSpd = 0
+Position = 0

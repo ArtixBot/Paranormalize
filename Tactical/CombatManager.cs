@@ -2,6 +2,7 @@ using Godot;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Security.Cryptography.X509Certificates;
 
 public enum CombatState {
 	NULL,       // Default state.
@@ -27,22 +28,34 @@ public class CombatInstance {
     public CharacterInfo activeChar;
     public int activeCharSpd;
 
-	public CombatInstance(){
+	public CombatInstance(ScenarioInfo info){
 		this.combatState = CombatState.NULL;
 		this.round = 1;
+
+        foreach((CharacterInfo character, int startingPosition) in info.fighters){
+            this.fighters[character.CHAR_FACTION].Add(character);
+            character.Position = startingPosition;
+        }
 	}
 }
 
 // This is found in TacticalScene.tscn and performs all combat orchestration.
 public partial class CombatManager : Node {
 	
-	public static CombatInstance combatInstance = new CombatInstance();
+    public static ScenarioInfo scenarioInfo;
+	public static CombatInstance combatInstance;
 	// The event system is more complicated than what signals can provide (especially as signals are intended not to care who is listening to them.)
 	// However, in our case, order absolutely matters (e.g. a "revive on death" should absolutely take higher priority over "remove character on death"), so we have a custom system.
-    public static CombatEventManager eventManager = new CombatEventManager();
+    public static CombatEventManager eventManager;
     
 	public override void _Ready(){
-		combatInstance = new CombatInstance();
+
+        List<(CharacterInfo, int)> testScenarioFighters = new List<(CharacterInfo, int)>{
+            (new CharacterInfo("Player"), 1),
+            (new CharacterInfo("Enemy"), 3)
+        };
+
+		combatInstance = new CombatInstance(new ScenarioInfo(testScenarioFighters));
         eventManager = new CombatEventManager();
 
         ChangeCombatState(CombatState.COMBAT_START);        // TODO: Remove, this is for debugging

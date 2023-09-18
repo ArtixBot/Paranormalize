@@ -1,6 +1,7 @@
-[gd_scene load_steps=2 format=3 uid="uid://ch6trrpnpxy2k"]
+[gd_scene load_steps=3 format=3 uid="uid://ch6trrpnpxy2k"]
 
 [ext_resource type="Script" path="res://Tactical/UI/RoundLabel.cs" id="1_ypkea"]
+[ext_resource type="Script" path="res://Tactical/UI/EndRoundButton.cs" id="2_taqr6"]
 
 [node name="InterfaceLayer" type="Control"]
 layout_mode = 3
@@ -18,3 +19,12 @@ offset_right = 133.0
 offset_bottom = 84.0
 text = "Round X"
 script = ExtResource("1_ypkea")
+
+[node name="Button" type="Button" parent="."]
+layout_mode = 0
+offset_left = 901.0
+offset_top = 537.0
+offset_right = 1081.0
+offset_bottom = 582.0
+text = "End Round"
+script = ExtResource("2_taqr6")

@@ -142,3 +142,27 @@ public class CombatEventTurnEnd : CombatEventData {
         this.spd = spd;
     }
 }
+
+public class CombatEventAbilityActivated : CombatEventData {
+    public AbstractAbility abilityActivated;
+    public List<Die> abilityDice;
+    public CharacterInfo caster;
+    public CharacterInfo target;
+    public List<CharacterInfo> targets = new List<CharacterInfo>();
+
+    public CombatEventAbilityActivated(CharacterInfo caster, AbstractAbility abilityActivated, ref List<Die> abilityDice, CharacterInfo target){
+        this.eventType = CombatEventType.ON_ABILITY_ACTIVATED;
+        this.abilityActivated = abilityActivated;
+        this.abilityDice = abilityDice;
+        this.caster = caster;
+        this.target = target;
+    }
+    
+    public CombatEventAbilityActivated(CharacterInfo caster, AbstractAbility abilityActivated, ref List<Die> abilityDice, List<CharacterInfo> targets){
+        this.eventType = CombatEventType.ON_ABILITY_ACTIVATED;
+        this.abilityActivated = abilityActivated;
+        this.abilityDice = abilityDice;
+        this.caster = caster;
+        this.targets = targets;
+    }
+}
