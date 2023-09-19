@@ -28,6 +28,14 @@ public class CombatInstance {
     public CharacterInfo activeChar;
     public int activeCharSpd;
 
+    public AbstractAbility activeAbility;
+    public List<Die> activeAbilityDice;
+    public List<CharacterInfo> activeAbilityTargets;
+    public List<int> activeAbilityLanes;
+
+    public AbstractAbility reactAbility;
+    public List<Die> reactAbilityDice;
+
 	public CombatInstance(ScenarioInfo info){
 		this.combatState = CombatState.NULL;
 		this.round = 1;
@@ -49,9 +57,11 @@ public partial class CombatManager : Node {
     public static CombatEventManager eventManager;
     
 	public override void _Ready(){
-
+        CharacterInfo playerChar = new CharacterInfo("Player");
+        playerChar.EquipAbility(new TestAttack());
+        playerChar.EquipAbility(new TestReact());
         List<(CharacterInfo, int)> testScenarioFighters = new List<(CharacterInfo, int)>{
-            (new CharacterInfo("Player"), 1),
+            (playerChar, 1),
             (new CharacterInfo("Enemy"), 3)
         };
 
@@ -94,7 +104,7 @@ public partial class CombatManager : Node {
             case CombatState.AWAITING_CLASH_INPUT:      // This state doesn't do anything by itself, but allows use of InputClashReaction while at this stage.
                 break;
             case CombatState.RESOLVE_ABILITIES:         // Triggers after AWAITING_ABILITY_INPUT, or (optionally) AWAITING_CLASH_INPUT.
-                // ResolveAbilities();
+                ResolveAbilities();
                 break;
             default:
                 break;
@@ -120,6 +130,7 @@ public partial class CombatManager : Node {
                 }
             }
         }
+        GD.Print($"Starting round {combatInstance.round} with {combatInstance.turnlist.Count} actions in the queue.");
         eventManager.BroadcastEvent(new CombatEventRoundStart(combatInstance.round));
         ChangeCombatState(CombatState.TURN_START);
 	}
@@ -132,7 +143,7 @@ public partial class CombatManager : Node {
 
     private void TurnStart(){
         (combatInstance.activeChar, combatInstance.activeCharSpd) = combatInstance.turnlist.PopNextItem();
-        GD.Print($"{combatInstance.activeChar?.CHAR_NAME} is taking their turn.");
+        GD.Print($"{combatInstance.activeChar?.CHAR_NAME} ({combatInstance.activeCharSpd}) is taking their turn.");
         eventManager.BroadcastEvent(new CombatEventTurnStart(combatInstance.activeChar, combatInstance.activeCharSpd));
         ChangeCombatState(CombatState.AWAITING_ABILITY_INPUT);
     }
@@ -141,10 +152,100 @@ public partial class CombatManager : Node {
         eventManager.BroadcastEvent(new CombatEventTurnEnd(combatInstance.activeChar, combatInstance.activeCharSpd));
         if (combatInstance.turnlist.GetNextItem() == (null, 0)){
             (combatInstance.activeChar, combatInstance.activeCharSpd) = combatInstance.turnlist.PopNextItem();
+            GD.Print("No remaining actions on the turnlist.");
             ChangeCombatState(CombatState.ROUND_END);
         } else {
             ChangeCombatState(CombatState.TURN_START);
         }
+    }
+
+    // Input unit-targeted abilities.
+    // Note that this is a public function so that the UI can call this.
+    public void InputAbility(AbstractAbility ability, List<CharacterInfo> targets){
+        // Don't do anything if not in AWAITING_ABILITY_INPUT stage, or if no targets were selected.
+        if (combatInstance.combatState != CombatState.AWAITING_ABILITY_INPUT || targets.Count == 0){
+            return;
+        }
+        combatInstance.activeAbility = ability;
+        combatInstance.activeAbilityDice = ability.BASE_DICE;
+        combatInstance.activeAbilityTargets = targets;
+
+        if (ability.TYPE == AbilityType.ATTACK &&
+            !ability.HasTag(AbilityTag.AOE) && !ability.HasTag(AbilityTag.DEVIOUS) &&
+            combatInstance.turnlist.ContainsItem(targets[0]) &&
+            GetEligibleReactions().Count > 0) {
+            // If the ability in question is a single-target non-DEVIOUS attack, the defender has a remaining action, and the defender has eligible reactions, change to AWAITING_CLASH_INPUT.
+            ChangeCombatState(CombatState.AWAITING_CLASH_INPUT);
+        } else {
+            ChangeCombatState(CombatState.RESOLVE_ABILITIES);
+        }
+    }
+
+    /// <summary>
+    /// Input lane-targeted abilties. Note that <b>lane-targeted abilities can have no characters on them</b>; this is specifically for ground-based effects.
+    /// </summary>
+    /// <param name="ability"></param>
+    /// <param name="lanes"></param>
+    public void InputAbility(AbstractAbility ability, List<int> lanes){
+        // Don't do anything if not in AWAITING_ABILITY_INPUT stage.
+        if (combatInstance.combatState != CombatState.AWAITING_ABILITY_INPUT){
+            return;
+        }
+        combatInstance.activeAbility = ability;
+        combatInstance.activeAbilityDice = ability.BASE_DICE;
+        combatInstance.activeAbilityLanes = lanes;
+
+        // Lane-targeted abilities by default are either AoE attack abilities or utility abilities, so no need for clash check.
+        ChangeCombatState(CombatState.RESOLVE_ABILITIES);
+    }
+
+    public void InputReaction(AbstractAbility ability){
+        if (ability != null){
+            combatInstance.reactAbility = ability;
+            combatInstance.reactAbilityDice = ability.BASE_DICE;
+        }
+        ChangeCombatState(CombatState.RESOLVE_ABILITIES);
+    }
+
+    private void ResolveAbilities(){
+        if (combatInstance.reactAbility == null){
+            // No clash occurs.
+            // ResolveUnopposedAbility();
+        }
+        if (combatInstance.reactAbility != null){
+            // Clash occurs!
+            // ResolveClash();
+        }
+        
+        // If the active ability had Cantrip, don't end turn and instead return to AWAITING_ABILITY_INPUT.
+        CombatState nextState = combatInstance.activeAbility.HasTag(AbilityTag.CANTRIP) ? CombatState.AWAITING_ABILITY_INPUT : CombatState.TURN_END;
+        
+        // Cleanup abilities after activation.
+        combatInstance.activeAbility = null;
+        combatInstance.reactAbility = null;
+        ChangeCombatState(nextState);
+    }
+
+    private List<AbstractAbility> GetEligibleReactions(){
+        int atkLane = combatInstance.activeChar.Position;
+        CharacterInfo defender = combatInstance.activeAbilityTargets[0];
+        int defLane = defender.Position;
+        List<AbstractAbility> availableReactionAbilties = new List<AbstractAbility>();
+        foreach (AbstractAbility ability in defender.abilities){ 
+            if (!ability.isAvailable || ability.HasTag(AbilityTag.CANNOT_REACT)){
+                continue;
+            }
+            // Available reactions are always eligible for reactions.
+            if (ability.TYPE == AbilityType.REACTION){
+                availableReactionAbilties.Add(ability);
+            }
+            // Available single-target attacks are eligible *if* the attacker is in range of the defender's attack.
+            if (ability.TYPE == AbilityType.ATTACK && !ability.HasTag(AbilityTag.AOE)){
+                int range = Math.Abs(atkLane - defLane);
+                if (range >= ability.MIN_RANGE && range <= ability.MAX_RANGE) availableReactionAbilties.Add(ability);
+            }
+        }
+        return availableReactionAbilties;
     }
 
 }

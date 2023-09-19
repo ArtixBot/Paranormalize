@@ -116,7 +116,7 @@ public class CombatEventRoundEnd : CombatEventData {
     public int roundEndNum;
 
     public CombatEventRoundEnd(int roundEndNum){
-        this.eventType = CombatEventType.ON_ROUND_START;
+        this.eventType = CombatEventType.ON_ROUND_END;
         this.roundEndNum = roundEndNum;
     }
 }

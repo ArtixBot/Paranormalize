@@ -1,7 +1,6 @@
-[gd_scene load_steps=3 format=3 uid="uid://ch6trrpnpxy2k"]
+[gd_scene load_steps=2 format=3 uid="uid://ch6trrpnpxy2k"]
 
-[ext_resource type="Script" path="res://Tactical/UI/RoundLabel.cs" id="1_ypkea"]
-[ext_resource type="Script" path="res://Tactical/UI/EndRoundButton.cs" id="2_taqr6"]
+[ext_resource type="Script" path="res://Tactical/UI/InterfaceLayer.cs" id="1_qyu5r"]
 
 [node name="InterfaceLayer" type="Control"]
 layout_mode = 3
@@ -10,15 +9,33 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+script = ExtResource("1_qyu5r")
 
-[node name="Label" type="Label" parent="."]
+[node name="RoundCounter" type="Label" parent="."]
 layout_mode = 0
 offset_left = 68.0
-offset_top = 58.0
+offset_top = 52.0
 offset_right = 133.0
-offset_bottom = 84.0
+offset_bottom = 78.0
 text = "Round X"
-script = ExtResource("1_ypkea")
+
+[node name="Turnlist" type="Label" parent="."]
+layout_mode = 0
+offset_left = 218.0
+offset_top = 47.0
+offset_right = 1099.0
+offset_bottom = 116.0
+text = "Character A (Spd), Character B (Spd), etc."
+
+[node name="AbilityList" type="Label" parent="."]
+layout_mode = 0
+offset_left = 248.0
+offset_top = 448.0
+offset_right = 456.0
+offset_bottom = 619.0
+text = "ABILITIES
+========
+"
 
 [node name="Button" type="Button" parent="."]
 layout_mode = 0
@@ -26,5 +43,9 @@ offset_left = 901.0
 offset_top = 537.0
 offset_right = 1081.0
 offset_bottom = 582.0
-text = "End Round"
-script = ExtResource("2_taqr6")
+text = "End Turn"
+
+[connection signal="ready" from="RoundCounter" to="." method="_on_round_counter_ready"]
+[connection signal="ready" from="Turnlist" to="." method="_on_turn_list_ready"]
+[connection signal="ready" from="AbilityList" to="." method="_on_ability_list_ready"]
+[connection signal="ready" from="Button" to="." method="_on_button_ready"]
