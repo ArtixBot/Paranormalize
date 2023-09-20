@@ -1,10 +1,12 @@
-[gd_scene load_steps=2 format=3 uid="uid://5l64b84mgbsk"]
+[gd_scene load_steps=2 format=3 uid="uid://cjjgiqf177w3q"]
 
 [ext_resource type="Texture2D" uid="uid://654pve5epxq3" path="res://icon.svg" id="1_x0p6f"]
 
-[node name="Character" type="Sprite2D"]
-position = Vector2(340, 343)
-scale = Vector2(0.863281, 1.55078)
+[node name="Character" type="Node"]
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+position = Vector2(379, 306)
+scale = Vector2(0.835938, 1.67969)
 texture = ExtResource("1_x0p6f")
 
-[node name="Stats" type="Node" parent="."]
+[node name="Data" type="Node" parent="."]

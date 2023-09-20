@@ -3,7 +3,7 @@ using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
 
-public enum AbilityType {ATTACK, REACTION, UTILITY};
+public enum AbilityType {ATTACK, REACTION, UTILITY, SPECIAL};        // Actions like "Shift" or "Pass" are SPECIAL abilities.
 public enum AbilityTag {AOE, CANNOT_REACT, CANTRIP, DEVIOUS};
 
 public abstract class AbstractAbility : IEventSubscriber {
@@ -11,7 +11,7 @@ public abstract class AbstractAbility : IEventSubscriber {
     public string ID;
     public string NAME;
     public string DESC;
-    public CharacterInfo OWNER;
+    public AbstractCharacter OWNER;
     public AbilityType TYPE;
     public int BASE_CD;
     public bool IS_GENERIC;         // Characters can't equip more than 4 IS_GENERIC abilities.
@@ -33,7 +33,7 @@ public abstract class AbstractAbility : IEventSubscriber {
     public List<AbilityTag> TAGS = new List<AbilityTag>();
 
     public int curCooldown = 0;
-    public bool isAvailable {
+    public bool IsAvailable {
         get { return curCooldown == 0; }
     }
     
@@ -53,15 +53,11 @@ public abstract class AbstractAbility : IEventSubscriber {
 
     public virtual void HandleEvent(CombatEventData eventData){
         CombatEventType eventType = eventData.eventType;
-        switch (eventType){
-            case CombatEventType.ON_ABILITY_ACTIVATED:
-                CombatEventAbilityActivated data = (CombatEventAbilityActivated) eventData;
-                if (data.abilityActivated == this){
-                    this.Activate();
-                }
-                break;
-            default:
-                break;
+        if (eventType == CombatEventType.ON_ABILITY_ACTIVATED) {
+            CombatEventAbilityActivated data = (CombatEventAbilityActivated) eventData;
+            if (data.abilityActivated == this){
+                this.Activate();
+            }
         }
     }
 

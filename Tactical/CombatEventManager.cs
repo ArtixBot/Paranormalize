@@ -11,7 +11,9 @@ public enum CombatEventType {
     ON_ROUND_START, ON_ROUND_END,
     ON_TURN_START, ON_TURN_END,
     ON_ABILITY_ACTIVATED,
-    ON_UNIT_DEATH, ON_UNIT_DAMAGED,
+    // Attacks will always trigger ON_DEAL_DAMAGE, then ON_TAKE_DAMAGE. Status effects like burn/bleed will only trigger ON_TAKE_DAMAGE.
+    ON_DEAL_DAMAGE, ON_TAKE_DAMAGE,
+    ON_CHARACTER_DEATH,
     ON_DIE_ROLLED, ON_PRE_HIT,
     ON_CLASH_ELIGIBLE, ON_CLASH, ON_CLASH_WIN, ON_CLASH_TIE, ON_CLASH_LOSS,
     ON_STATUS_APPLIED, ON_STATUS_EXPIRED,
@@ -19,10 +21,10 @@ public enum CombatEventType {
 
 // Higher numbers execute first.
 public enum CombatEventPriority {
-    HIGHEST_PRIORITY = 99999,       // e.g. "revive on death", "the first time you take fatal damage, go to 1 HP instead", invulnerability effects
+    HIGHEST_PRIORITY = 99999,       // e.g. "revive on death", "the first time you take fatal damage, go to 1 HP instead", invulnerability effects.
     BASE_ADDITIVE = 500,            // Additive modifiers to a value. These happen first and therefore have an outsized effect on multipliers.
     BASE_MULTIPLICATIVE = 400,      // Multiplicative multipliers to a value.
-    LOWEST_PRIORITY = 1,
+    UI = 1,                         // UI updates should only update after all other calculations are complete.
 }
 
 public partial class CombatEventManager{
@@ -122,10 +124,10 @@ public class CombatEventRoundEnd : CombatEventData {
 }
 
 public class CombatEventTurnStart : CombatEventData {
-    public CharacterInfo character;
+    public AbstractCharacter character;
     public int spd;
 
-    public CombatEventTurnStart(CharacterInfo character, int spd){
+    public CombatEventTurnStart(AbstractCharacter character, int spd){
         this.eventType = CombatEventType.ON_TURN_START;
         this.character = character;
         this.spd = spd;
@@ -133,24 +135,33 @@ public class CombatEventTurnStart : CombatEventData {
 }
 
 public class CombatEventTurnEnd : CombatEventData {
-    public CharacterInfo character;
+    public AbstractCharacter character;
     public int spd;
 
-    public CombatEventTurnEnd(CharacterInfo character, int spd){
+    public CombatEventTurnEnd(AbstractCharacter character, int spd){
         this.eventType = CombatEventType.ON_TURN_END;
         this.character = character;
         this.spd = spd;
     }
 }
 
+public class CombatEventCharacterDeath : CombatEventData {
+    public AbstractCharacter deadChar;
+    public CombatEventCharacterDeath(AbstractCharacter deadChar){
+        this.eventType = CombatEventType.ON_CHARACTER_DEATH;
+        this.deadChar = deadChar;
+    }
+}
+
 public class CombatEventAbilityActivated : CombatEventData {
     public AbstractAbility abilityActivated;
     public List<Die> abilityDice;
-    public CharacterInfo caster;
-    public CharacterInfo target;
-    public List<CharacterInfo> targets = new List<CharacterInfo>();
+    public AbstractCharacter caster;
+    public AbstractCharacter target;
+    public List<AbstractCharacter> targets = new List<AbstractCharacter>();
+    public List<int> lanes = new List<int>();
 
-    public CombatEventAbilityActivated(CharacterInfo caster, AbstractAbility abilityActivated, ref List<Die> abilityDice, CharacterInfo target){
+    public CombatEventAbilityActivated(AbstractCharacter caster, AbstractAbility abilityActivated, ref List<Die> abilityDice, AbstractCharacter target){
         this.eventType = CombatEventType.ON_ABILITY_ACTIVATED;
         this.abilityActivated = abilityActivated;
         this.abilityDice = abilityDice;
@@ -158,11 +169,52 @@ public class CombatEventAbilityActivated : CombatEventData {
         this.target = target;
     }
     
-    public CombatEventAbilityActivated(CharacterInfo caster, AbstractAbility abilityActivated, ref List<Die> abilityDice, List<CharacterInfo> targets){
+    public CombatEventAbilityActivated(AbstractCharacter caster, AbstractAbility abilityActivated, ref List<Die> abilityDice, List<AbstractCharacter> targets){
         this.eventType = CombatEventType.ON_ABILITY_ACTIVATED;
         this.abilityActivated = abilityActivated;
         this.abilityDice = abilityDice;
         this.caster = caster;
         this.targets = targets;
+    }
+
+    public CombatEventAbilityActivated(AbstractCharacter caster, AbstractAbility abilityActivated, ref List<Die> abilityDice, List<int> lanes){
+        this.eventType = CombatEventType.ON_ABILITY_ACTIVATED;
+        this.abilityActivated = abilityActivated;
+        this.abilityDice = abilityDice;
+        this.caster = caster;
+        this.lanes = lanes;
+    }
+}
+
+public class CombatEventClashOccurs : CombatEventData {
+    public AbstractCharacter attacker;
+    public AbstractAbility attackerAbility;
+    public List<Die> attackerDice;
+
+    public AbstractCharacter reacter;
+    public AbstractAbility reacterAbility;
+    public List<Die> reacterDice;
+
+    ///<summary>Notify subscribers that a clash is occurring.</summary>
+    public CombatEventClashOccurs(AbstractCharacter attacker, AbstractAbility attackerAbility, ref List<Die> attackerDice, AbstractCharacter reacter, AbstractAbility reacterAbility, ref List<Die> reacterDice){
+        this.eventType = CombatEventType.ON_CLASH;
+        this.attacker = attacker;
+        this.attackerAbility = attackerAbility;
+        this.attackerDice = attackerDice;
+
+        this.reacter = reacter;
+        this.reacterAbility = reacterAbility;
+        this.reacterDice = reacterDice;
+    }
+}
+
+public class CombatEventDieRolled : CombatEventData {
+    public Die die;
+    public int rolledValue;
+
+    public CombatEventDieRolled(Die die, ref int rolledValue){
+        this.eventType = CombatEventType.ON_DIE_ROLLED;
+        this.die = die;
+        this.rolledValue = rolledValue;
     }
 }

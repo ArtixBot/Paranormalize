@@ -11,8 +11,14 @@ public partial class InterfaceLayer : Control, IEventSubscriber {
 
 	// Called when the node enters the scene tree for the first time.
 	public override void _Ready() {
-		CombatManager.eventManager?.Subscribe(CombatEventType.ON_ROUND_START, this, CombatEventPriority.LOWEST_PRIORITY);
-		CombatManager.eventManager?.Subscribe(CombatEventType.ON_TURN_START, this, CombatEventPriority.LOWEST_PRIORITY);
+		CombatManager.combatInstance = new CombatInstance(new TestScenario());
+        CombatManager.ChangeCombatState(CombatState.COMBAT_START);        // TODO: Remove, this is for debugging
+		_on_round_counter_ready();
+		_on_turn_list_ready();
+		_on_ability_list_ready();
+
+		CombatManager.eventManager?.Subscribe(CombatEventType.ON_ROUND_START, this, CombatEventPriority.UI);
+		CombatManager.eventManager?.Subscribe(CombatEventType.ON_TURN_START, this, CombatEventPriority.UI);
 	}
 
 	public void _on_round_counter_ready(){
@@ -31,13 +37,13 @@ public partial class InterfaceLayer : Control, IEventSubscriber {
 	}
 
 	public void _on_ability_list_ready(){
-		abilityList = GetNode<Label>("AbilityList");
+		abilityList = GetNode<Label>("Active Character Display/AbilityList");
 		UpdateAbilityListText();
 	}
 
 	private void UpdateRoundCounter(){
 		CombatInstance combatInstance = CombatManager.combatInstance;
-		if (combatInstance != null) {
+		if (CombatManager.combatInstance != null) {
 			roundCounter.Text = $"Round {combatInstance.round}";
 		}
 	}
@@ -46,7 +52,7 @@ public partial class InterfaceLayer : Control, IEventSubscriber {
 		CombatInstance combatInstance = CombatManager.combatInstance;
 		if (combatInstance == null) return;
 		string turnlistText = $"Remaining turns: {combatInstance.activeChar.CHAR_NAME} ({combatInstance.activeCharSpd}), ";
-		foreach ((CharacterInfo info, int spd) in combatInstance.turnlist.GetQueue()){
+		foreach ((AbstractCharacter info, int spd) in combatInstance.turnlist.GetQueue()){
 			turnlistText += $"{info.CHAR_NAME} ({spd}), ";
 		}
 		turnList.Text = turnlistText;
@@ -64,8 +70,7 @@ public partial class InterfaceLayer : Control, IEventSubscriber {
 
 
 	private void EndRound(){
-		CombatManager cm = GetNode<CombatManager>("/root/TacticalScene/CombatManager");
-		cm?.ChangeCombatState(CombatState.TURN_END);
+		CombatManager.ChangeCombatState(CombatState.TURN_END);
 	}
 	
     public void HandleEvent(CombatEventData data){

@@ -1,6 +1,7 @@
-[gd_scene load_steps=2 format=3 uid="uid://ch6trrpnpxy2k"]
+[gd_scene load_steps=3 format=3 uid="uid://ch6trrpnpxy2k"]
 
 [ext_resource type="Script" path="res://Tactical/UI/InterfaceLayer.cs" id="1_qyu5r"]
+[ext_resource type="Texture2D" uid="uid://654pve5epxq3" path="res://icon.svg" id="2_chyka"]
 
 [node name="InterfaceLayer" type="Control"]
 layout_mode = 3
@@ -27,25 +28,52 @@ offset_right = 1099.0
 offset_bottom = 116.0
 text = "Character A (Spd), Character B (Spd), etc."
 
-[node name="AbilityList" type="Label" parent="."]
+[node name="Button" type="Button" parent="."]
 layout_mode = 0
-offset_left = 248.0
-offset_top = 448.0
-offset_right = 456.0
-offset_bottom = 619.0
+offset_left = 1553.0
+offset_top = 847.0
+offset_right = 1733.0
+offset_bottom = 892.0
+text = "End Turn"
+
+[node name="Active Character Display" type="Node" parent="."]
+
+[node name="Portrait" type="Sprite2D" parent="Active Character Display"]
+position = Vector2(106, 956)
+scale = Vector2(1.58984, 1.91016)
+texture = ExtResource("2_chyka")
+
+[node name="Name" type="Label" parent="Active Character Display"]
+offset_left = 229.0
+offset_top = 929.0
+offset_right = 368.0
+offset_bottom = 994.0
+text = "Character Name"
+
+[node name="AbilityList" type="Label" parent="Active Character Display"]
+offset_left = 419.0
+offset_top = 851.0
+offset_right = 684.0
+offset_bottom = 1078.0
 text = "ABILITIES
 ========
 "
 
-[node name="Button" type="Button" parent="."]
-layout_mode = 0
-offset_left = 901.0
-offset_top = 537.0
-offset_right = 1081.0
-offset_bottom = 582.0
-text = "End Turn"
+[node name="HP" type="Label" parent="Active Character Display"]
+offset_left = 226.0
+offset_top = 960.0
+offset_right = 373.0
+offset_bottom = 1019.0
+text = "HP: 1/1"
+
+[node name="Poise" type="Label" parent="Active Character Display"]
+offset_left = 228.0
+offset_top = 989.0
+offset_right = 375.0
+offset_bottom = 1048.0
+text = "Poise: 1/1"
 
 [connection signal="ready" from="RoundCounter" to="." method="_on_round_counter_ready"]
 [connection signal="ready" from="Turnlist" to="." method="_on_turn_list_ready"]
-[connection signal="ready" from="AbilityList" to="." method="_on_ability_list_ready"]
 [connection signal="ready" from="Button" to="." method="_on_button_ready"]
+[connection signal="ready" from="Active Character Display/AbilityList" to="." method="_on_ability_list_ready"]
