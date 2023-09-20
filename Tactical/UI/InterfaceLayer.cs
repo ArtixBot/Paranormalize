@@ -1,13 +1,15 @@
 using Godot;
 using System;
+using System.Collections.Generic;
 using System.Data;
 
 public partial class InterfaceLayer : Control, IEventSubscriber {
 
 	private Label roundCounter;
 	private Label turnList;
-	private Label abilityList;
-	private Button endRoundButton;		// TODO: Remove this. There should not be an option to end the round as that's automatically calculated.
+
+	private readonly PackedScene abilityButton = GD.Load<PackedScene>("res://Tactical/UI/AbilityButton.tscn");
+	private Control abilityListNode;
 
 	// Called when the node enters the scene tree for the first time.
 	public override void _Ready() {
@@ -17,8 +19,8 @@ public partial class InterfaceLayer : Control, IEventSubscriber {
 		_on_turn_list_ready();
 		_on_ability_list_ready();
 
-		CombatManager.eventManager?.Subscribe(CombatEventType.ON_ROUND_START, this, CombatEventPriority.UI);
-		CombatManager.eventManager?.Subscribe(CombatEventType.ON_TURN_START, this, CombatEventPriority.UI);
+		CombatManager.eventManager.Subscribe(CombatEventType.ON_ROUND_START, this, CombatEventPriority.UI);
+		CombatManager.eventManager.Subscribe(CombatEventType.ON_TURN_START, this, CombatEventPriority.UI);
 	}
 
 	public void _on_round_counter_ready(){
@@ -31,14 +33,9 @@ public partial class InterfaceLayer : Control, IEventSubscriber {
 		UpdateTurnlistText();
 	}
 
-	public void _on_button_ready(){
-		endRoundButton = GetNode<Button>("Button");
-		endRoundButton.Pressed += EndRound;
-	}
-
 	public void _on_ability_list_ready(){
-		abilityList = GetNode<Label>("Active Character Display/AbilityList");
-		UpdateAbilityListText();
+		abilityListNode = GetNode<Control>("Active Character Display/Ability List");
+		UpdateAvailableAbilities();
 	}
 
 	private void UpdateRoundCounter(){
@@ -58,19 +55,29 @@ public partial class InterfaceLayer : Control, IEventSubscriber {
 		turnList.Text = turnlistText;
 	}
 
-	private void UpdateAbilityListText(){
-		CombatInstance combatInstance = CombatManager.combatInstance;
-		if (combatInstance == null) return;
-		string abilityListText = "ABILITIES\n=======\n";
-		foreach (AbstractAbility ability in combatInstance.activeChar.abilities){
-			abilityListText += $"{ability.NAME} (Cooldown: {ability.BASE_CD})\n";
+	private List<Node> abilityButtonInstances = new List<Node>();
+	private void UpdateAvailableAbilities(){
+		// Remove previous instances from code.
+		foreach(Node instance in abilityButtonInstances){
+			abilityListNode.RemoveChild(instance);
 		}
-		abilityList.Text = abilityListText;
-	}
+		abilityButtonInstances.Clear();
 
+		CombatInstance combatInstance = CombatManager.combatInstance;
 
-	private void EndRound(){
-		CombatManager.ChangeCombatState(CombatState.TURN_END);
+		if (combatInstance == null) return;
+		AbstractCharacter activeChar = combatInstance.activeChar;
+		for(int i = 0; i < activeChar.abilities.Count; i++){
+			Button instance = (Button) abilityButton.Instantiate();
+			abilityButtonInstances.Add(instance);
+
+			instance.SetPosition(new Vector2(0, -i * instance.Size.Y));
+			AbstractAbility ability = activeChar.abilities[i];
+			instance.Text = ability.NAME;
+			instance.Pressed += () => CombatManager.InputAbility(ability, new List<AbstractCharacter>{activeChar});
+
+			abilityListNode.AddChild(instance);
+		}
 	}
 	
     public void HandleEvent(CombatEventData data){
@@ -80,7 +87,7 @@ public partial class InterfaceLayer : Control, IEventSubscriber {
 				break;
 			case CombatEventType.ON_TURN_START:
 				UpdateTurnlistText();
-				UpdateAbilityListText();
+				UpdateAvailableAbilities();
 				break;
 		}
 	}

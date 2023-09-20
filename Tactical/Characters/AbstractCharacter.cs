@@ -45,6 +45,9 @@ public partial class AbstractCharacter : IEventSubscriber {
         this.ActionsPerTurn = 2;
         this.CHAR_FACTION = faction;
         this.CHAR_NAME = name;
+
+        EquipAbility(new AbilityPass());
+        EquipAbility(new AbilityMove());
     }
 
     // Add an ability to the character's list of equipped abilities.

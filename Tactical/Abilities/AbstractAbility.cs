@@ -20,7 +20,7 @@ public abstract class AbstractAbility : IEventSubscriber {
     
     // An attack/reaction consists of a list of dice and any events (e.g. on hit, on clash, on clash win, on clash lose, etc.) associated with that die.
     // On attack/reaction activation, copy the list of BASE_DICE to CombatManager's attacker/defender dice queue.
-    private List<Die> _BASE_DICE;
+    private List<Die> _BASE_DICE = new List<Die>();
     public List<Die> BASE_DICE {
         get {
             List<Die> deepCopy = new List<Die>();
@@ -56,13 +56,13 @@ public abstract class AbstractAbility : IEventSubscriber {
         if (eventType == CombatEventType.ON_ABILITY_ACTIVATED) {
             CombatEventAbilityActivated data = (CombatEventAbilityActivated) eventData;
             if (data.abilityActivated == this){
-                this.Activate();
+                this.Activate(data);
             }
         }
     }
 
     // Should be overridden by Utility abilties.
-    public virtual void Activate(){
+    public virtual void Activate(CombatEventAbilityActivated data){
         this.curCooldown = this.BASE_CD;
     }
 }

@@ -23,7 +23,7 @@ public class TestScenario : ScenarioInfo {
     };
 
     public TestScenario() : base(scenarioFighters){
-        characterA.EquipAbility(new TestAttack());
         characterA.EquipAbility(new TestReact());
+        characterA.EquipAbility(new TestAttack());
     }
 }

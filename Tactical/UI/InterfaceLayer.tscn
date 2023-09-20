@@ -28,14 +28,6 @@ offset_right = 1099.0
 offset_bottom = 116.0
 text = "Character A (Spd), Character B (Spd), etc."
 
-[node name="Button" type="Button" parent="."]
-layout_mode = 0
-offset_left = 1553.0
-offset_top = 847.0
-offset_right = 1733.0
-offset_bottom = 892.0
-text = "End Turn"
-
 [node name="Active Character Display" type="Node" parent="."]
 
 [node name="Portrait" type="Sprite2D" parent="Active Character Display"]
@@ -50,14 +42,15 @@ offset_right = 368.0
 offset_bottom = 994.0
 text = "Character Name"
 
-[node name="AbilityList" type="Label" parent="Active Character Display"]
-offset_left = 419.0
-offset_top = 851.0
-offset_right = 684.0
-offset_bottom = 1078.0
-text = "ABILITIES
-========
-"
+[node name="Ability List" type="Control" parent="Active Character Display"]
+layout_mode = 3
+anchor_left = 0.22
+anchor_top = 1.0
+anchor_right = 0.4
+anchor_bottom = 1.0
+offset_left = -0.399994
+offset_top = -68.0
+grow_vertical = 0
 
 [node name="HP" type="Label" parent="Active Character Display"]
 offset_left = 226.0
@@ -75,5 +68,4 @@ text = "Poise: 1/1"
 
 [connection signal="ready" from="RoundCounter" to="." method="_on_round_counter_ready"]
 [connection signal="ready" from="Turnlist" to="." method="_on_turn_list_ready"]
-[connection signal="ready" from="Button" to="." method="_on_button_ready"]
-[connection signal="ready" from="Active Character Display/AbilityList" to="." method="_on_ability_list_ready"]
+[connection signal="ready" from="Active Character Display/Ability List" to="." method="_on_ability_list_ready"]

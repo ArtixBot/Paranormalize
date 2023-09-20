@@ -214,6 +214,7 @@ public static class CombatManager {
     }
 
     private static void ResolveUnopposedAbility(){
+        GD.Print($"Resolving ability {combatInstance.activeAbility.NAME}");
         // Check whether to emit a unit-targeted ABILITY_ACTIVATED event or a lane-targeted ABILITY_ACTIVATED event.
         // Only necessary in ResolveUnopposedAbility since lane-target abilities are unclashable.
         var targeting = (combatInstance.activeAbilityLanes == null) ? combatInstance.activeAbilityTargets : combatInstance.activeAbilityTargets;
