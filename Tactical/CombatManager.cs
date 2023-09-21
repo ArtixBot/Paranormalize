@@ -60,6 +60,7 @@ public static class CombatManager {
         if (combatInstance.combatState != newState){
             GD.Print($"Combat state changing: {combatInstance.combatState} -> {newState}");
             combatInstance.combatState = newState;
+            eventManager?.BroadcastEvent(new CombatEventCombatStateChanged(combatInstance.combatState, newState));
             ResolveCombatState();
         }
     }
@@ -214,7 +215,6 @@ public static class CombatManager {
     }
 
     private static void ResolveUnopposedAbility(){
-        GD.Print($"Resolving ability {combatInstance.activeAbility.NAME}");
         // Check whether to emit a unit-targeted ABILITY_ACTIVATED event or a lane-targeted ABILITY_ACTIVATED event.
         // Only necessary in ResolveUnopposedAbility since lane-target abilities are unclashable.
         var targeting = (combatInstance.activeAbilityLanes == null) ? combatInstance.activeAbilityTargets : combatInstance.activeAbilityTargets;

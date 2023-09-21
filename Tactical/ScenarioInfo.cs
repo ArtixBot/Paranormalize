@@ -15,15 +15,23 @@ public partial class ScenarioInfo {
 
 public class TestScenario : ScenarioInfo {
 
-    private static readonly AbstractCharacter characterA = new AbstractCharacter("Player");
-    private static readonly AbstractCharacter characterB = new AbstractCharacter("Enemy");
+    private static readonly AbstractCharacter characterA = new AbstractCharacter("Player", CharacterFaction.PLAYER);
+    private static readonly AbstractCharacter characterB = new AbstractCharacter("Test Dummy A", CharacterFaction.ENEMY);
+    private static readonly AbstractCharacter characterC = new AbstractCharacter("Test Dummy B", CharacterFaction.ENEMY);
+    private static readonly AbstractCharacter characterD = new AbstractCharacter("Test Dummy C", CharacterFaction.ENEMY);
     private static List<(AbstractCharacter character, int position)> scenarioFighters = new(){
-        (characterA, 1),
-        (characterB, 5)
+        (characterA, 3),
+        (characterB, 4),
+        (characterC, 5),
+        (characterD, 6),
     };
 
     public TestScenario() : base(scenarioFighters){
         characterA.EquipAbility(new TestReact());
         characterA.EquipAbility(new TestAttack());
+
+        characterB.ActionsPerTurn = 0;
+        characterC.ActionsPerTurn = 0;
+        characterD.ActionsPerTurn = 0;
     }
 }

@@ -34,6 +34,7 @@ public partial class AbstractCharacter : IEventSubscriber {
 
     public AbstractCharacter() : this(10, 10, 1, 5, CharacterFaction.NEUTRAL, "Unnamed Fighter") {}
     public AbstractCharacter(string name) : this(10, 10, 1, 5, CharacterFaction.NEUTRAL, name) {}
+    public AbstractCharacter(string name, CharacterFaction faction) : this(10, 10, 1, 5, faction, name) {}
 
     public AbstractCharacter(int maxHP, int maxPoise, int minSpd, int maxSpd, CharacterFaction faction, string name){
         this.MaxHP = maxHP;

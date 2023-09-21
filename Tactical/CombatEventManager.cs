@@ -7,6 +7,7 @@ public interface IEventSubscriber {
 }
 
 public enum CombatEventType {
+    ON_COMBAT_STATE_CHANGE,
     ON_COMBAT_START, ON_COMBAT_END,
     ON_ROUND_START, ON_ROUND_END,
     ON_TURN_START, ON_TURN_END,
@@ -131,6 +132,22 @@ public class CombatEventTurnStart : CombatEventData {
         this.eventType = CombatEventType.ON_TURN_START;
         this.character = character;
         this.spd = spd;
+    }
+}
+
+public class CombatEventCombatStateChanged : CombatEventData {
+    public CombatState prevState;
+    public CombatState newState;
+
+    /// <summary>
+    /// Mostly used for interfaces, specifically when changing from AWAITING_ABILITY_INPUT to AWAITING_CLASH_INPUT (so that we can enable Reaction button clicks)
+    /// </summary>
+    /// <param name="prevState"></param>
+    /// <param name="newState"></param>
+    public CombatEventCombatStateChanged(CombatState prevState, CombatState newState){
+        this.eventType = CombatEventType.ON_COMBAT_STATE_CHANGE;
+        this.prevState = prevState;
+        this.newState = newState;
     }
 }
 

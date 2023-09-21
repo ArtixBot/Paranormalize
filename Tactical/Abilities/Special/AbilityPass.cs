@@ -21,7 +21,8 @@ public class AbilityPass : AbstractAbility {
         AbilityType.SPECIAL,
         cd,
         min_range,
-        max_range
+        max_range,
+        new List<AbilityTargeting>{AbilityTargeting.SELF}
     ){}
 
     public override void Activate(CombatEventAbilityActivated data){
