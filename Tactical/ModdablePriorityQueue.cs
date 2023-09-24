@@ -89,4 +89,9 @@ public partial class ModdablePriorityQueue<T>{
     public List<(T element, int priority)> GetQueue(){
         return this.queue;
     }
+
+    public (T element, int priority) this[int i]{
+        get {return queue[i];}
+    }
+
 }

@@ -49,7 +49,7 @@ public partial class InterfaceLayer : Control, IEventSubscriber {
 	private void UpdateTurnlistText(){
 		CombatInstance combatInstance = CombatManager.combatInstance;
 		if (combatInstance == null) return;
-		string turnlistText = $"Remaining turns: {combatInstance.activeChar.CHAR_NAME} ({combatInstance.activeCharSpd}), ";
+		string turnlistText = $"Remaining turns: ";
 		foreach ((AbstractCharacter info, int spd) in combatInstance.turnlist.GetQueue()){
 			turnlistText += $"{info.CHAR_NAME} ({spd}), ";
 		}

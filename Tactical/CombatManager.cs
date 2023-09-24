@@ -1,9 +1,6 @@
 using Godot;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Runtime.CompilerServices;
-using System.Security.Cryptography.X509Certificates;
 
 public enum CombatState {
 	NULL,       // Default state.
@@ -17,17 +14,15 @@ public enum CombatState {
 public class CombatInstance {
 	public CombatState combatState;
 	public int round;
-    public Dictionary<CharacterFaction, List<AbstractCharacter>> fighters = new Dictionary<CharacterFaction, List<AbstractCharacter>>{
-        {CharacterFaction.PLAYER, new List<AbstractCharacter>()},
-        {CharacterFaction.ALLY, new List<AbstractCharacter>()},
-        {CharacterFaction.NEUTRAL, new List<AbstractCharacter>()},
-        {CharacterFaction.ENEMY, new List<AbstractCharacter>()}
-    };
-
+    public HashSet<AbstractCharacter> fighters = new HashSet<AbstractCharacter>();
     public ModdablePriorityQueue<AbstractCharacter> turnlist = new ModdablePriorityQueue<AbstractCharacter>();
     
-    public AbstractCharacter activeChar;
-    public int activeCharSpd;
+    public AbstractCharacter activeChar {
+        get {return turnlist[0].element; }
+    }
+    public int activeCharSpd {
+        get {return turnlist[0].priority; }
+    }
 
     public AbstractAbility activeAbility;
     public List<Die> activeAbilityDice;
@@ -42,7 +37,7 @@ public class CombatInstance {
 		this.round = 1;
 
         foreach((AbstractCharacter character, int startingPosition) in info.fighters){
-            this.fighters[character.CHAR_FACTION].Add(character);
+            this.fighters.Add(character);
             character.Position = startingPosition;
         }
 	}
@@ -110,11 +105,9 @@ public static class CombatManager {
 	}
 
 	private static void RoundStart(){
-        foreach (CharacterFaction faction in combatInstance.fighters.Keys){
-            foreach (AbstractCharacter character in combatInstance.fighters[faction]){
-                for (int i = 0; i < character.ActionsPerTurn; i++){
-                    combatInstance.turnlist.AddToQueue(character, Rng.RandiRange(character.MinSpd, character.MaxSpd));
-                }
+        foreach (AbstractCharacter character in combatInstance.fighters){
+            for (int i = 0; i < character.ActionsPerTurn; i++){
+                combatInstance.turnlist.AddToQueue(character, Rng.RandiRange(character.MinSpd, character.MaxSpd));
             }
         }
         GD.Print($"Starting round {combatInstance.round} with {combatInstance.turnlist.Count} actions in the queue.");
@@ -129,7 +122,6 @@ public static class CombatManager {
     }
 
     private static void TurnStart(){
-        (combatInstance.activeChar, combatInstance.activeCharSpd) = combatInstance.turnlist.PopNextItem();
         GD.Print($"{combatInstance.activeChar?.CHAR_NAME} ({combatInstance.activeCharSpd}) is taking their turn.");
         eventManager.BroadcastEvent(new CombatEventTurnStart(combatInstance.activeChar, combatInstance.activeCharSpd));
         ChangeCombatState(CombatState.AWAITING_ABILITY_INPUT);
@@ -137,8 +129,8 @@ public static class CombatManager {
 
     private static void TurnEnd(){
         eventManager.BroadcastEvent(new CombatEventTurnEnd(combatInstance.activeChar, combatInstance.activeCharSpd));
+        combatInstance.turnlist.PopNextItem();
         if (combatInstance.turnlist.GetNextItem() == (null, 0)){
-            (combatInstance.activeChar, combatInstance.activeCharSpd) = combatInstance.turnlist.PopNextItem();
             GD.Print("No remaining actions on the turnlist. Ending round.");
             ChangeCombatState(CombatState.ROUND_END);
         } else {
@@ -217,6 +209,7 @@ public static class CombatManager {
     private static void ResolveUnopposedAbility(){
         // Check whether to emit a unit-targeted ABILITY_ACTIVATED event or a lane-targeted ABILITY_ACTIVATED event.
         // Only necessary in ResolveUnopposedAbility since lane-target abilities are unclashable.
+        // TODO: redo targeting
         var targeting = (combatInstance.activeAbilityLanes == null) ? combatInstance.activeAbilityTargets : combatInstance.activeAbilityTargets;
         eventManager.BroadcastEvent(new CombatEventAbilityActivated(combatInstance.activeChar, combatInstance.activeAbility, ref combatInstance.activeAbilityDice, targeting));
 

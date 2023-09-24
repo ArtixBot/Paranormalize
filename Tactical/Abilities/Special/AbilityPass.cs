@@ -22,7 +22,7 @@ public class AbilityPass : AbstractAbility {
         cd,
         min_range,
         max_range,
-        new List<AbilityTargeting>{AbilityTargeting.SELF}
+        new List<TargetingModifiers>{TargetingModifiers.SELF}
     ){}
 
     public override void Activate(CombatEventAbilityActivated data){

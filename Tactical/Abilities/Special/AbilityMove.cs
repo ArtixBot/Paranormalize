@@ -21,8 +21,7 @@ public class AbilityMove : AbstractAbility {
         AbilityType.SPECIAL,
         cd,
         min_range,
-        max_range,
-        new List<AbilityTargeting>{AbilityTargeting.LANE}
+        max_range
     ){}
 
     public override void Activate(CombatEventAbilityActivated data){

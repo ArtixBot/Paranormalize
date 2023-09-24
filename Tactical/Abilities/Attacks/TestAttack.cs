@@ -22,7 +22,7 @@ public class TestAttack : AbstractAbility {
         cd,
         min_range,
         max_range,
-        new List<AbilityTargeting>{AbilityTargeting.ENEMIES_ONLY}
+        new List<TargetingModifiers>{TargetingModifiers.ENEMIES_ONLY}
     ){
         Die atkDieA = new Die(DieType.MELEE, 4, 6);
         Die atkDieB = new Die(DieType.RANGED, 4, 6);

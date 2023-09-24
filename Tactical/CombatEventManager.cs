@@ -23,6 +23,8 @@ public enum CombatEventType {
 // Higher numbers execute first.
 public enum CombatEventPriority {
     HIGHEST_PRIORITY = 99999,       // e.g. "revive on death", "the first time you take fatal damage, go to 1 HP instead", invulnerability effects.
+    DICE_MODIFICATION = 700,        // Adding/removing dice from a dice queue occur first.
+    DICE_CONVERSION = 600,          // After all dice queue modifications finish, perform dice conversions (e.g. converting Evade -> Attack die, or Attack -> Block).
     BASE_ADDITIVE = 500,            // Additive modifiers to a value. These happen first and therefore have an outsized effect on multipliers.
     BASE_MULTIPLICATIVE = 400,      // Multiplicative multipliers to a value.
     UI = 1,                         // UI updates should only update after all other calculations are complete.
