@@ -38,9 +38,8 @@ public abstract class AbstractAbility : IEventSubscriber {
     public int MIN_RANGE;           
     public int MAX_RANGE;
 
-    public bool laneTargeted;       // If true, this ability targets specific lane(s).
-    public bool unitTargeted;       // If true, this ability targets specific unit(s).
-    public List<TargetingModifiers> targetingModifiers;     // If no filters are provided, by default this will return all allies and enemies within range of the ability.
+    public bool requiresUnit;       // If true, there must be at least one eligible unit in the targeted lane(s).
+    public HashSet<TargetingModifiers> targetingModifiers;     // If no filters are provided, by default this will return all allies and enemies within range of the ability.
     
     // An attack/reaction consists of a list of dice and any events (e.g. on hit, on clash, on clash win, on clash lose, etc.) associated with that die.
     // On attack/reaction activation, copy the list of BASE_DICE to CombatManager's attacker/defender dice queue.
@@ -61,7 +60,7 @@ public abstract class AbstractAbility : IEventSubscriber {
         get { return curCooldown == 0; }
     }
     
-    public AbstractAbility(string ID, string NAME, string DESC, AbilityType TYPE, int BASE_CD, int MIN_RANGE, int MAX_RANGE, List<TargetingModifiers> targetingModifiers = null){
+    public AbstractAbility(string ID, string NAME, string DESC, AbilityType TYPE, int BASE_CD, int MIN_RANGE, int MAX_RANGE, HashSet<TargetingModifiers> targetingModifiers = null){
         this.ID = ID;
         this.NAME = NAME;
         this.DESC = DESC;
@@ -69,52 +68,72 @@ public abstract class AbstractAbility : IEventSubscriber {
         this.BASE_CD = BASE_CD;
         this.MIN_RANGE = MIN_RANGE;
         this.MAX_RANGE = MAX_RANGE;
-        this.targetingModifiers = targetingModifiers ?? new List<TargetingModifiers>();
+        this.targetingModifiers = targetingModifiers ?? new HashSet<TargetingModifiers>();
     }
 
     public bool HasTag(AbilityTag tag){
         return this.TAGS.Contains(tag);
     }
 
-    public virtual List<AbstractCharacter> GetEligibleTargets(){
-        List<AbstractCharacter> eligibleTargets = new List<AbstractCharacter>();
+    // When an ability is activated, check the list of (lane, hash set of units in that lane).
+    // This is sorted, since there's only ever 6 lanes (so constant time).
+    public List<(int lane, HashSet<AbstractCharacter> targetsInLane)> GetValidTargets(){
+        CombatInstance combatInstance = CombatManager.combatInstance;
+        if (combatInstance == null){
+            GD.PrintErr("CombatManager does not have a valid combat instance!");
+            throw new Exception("CombatManager does not have a valid combat instance!");
+        }
+        
+        List<(int lane, HashSet<AbstractCharacter> targetsInLane)> results = new();
+        foreach (int lane in this.GetTargetableLanes()){
+            HashSet<AbstractCharacter> validFightersInLane = combatInstance.fighters.Where(fighter => fighter.Position == lane).ToHashSet();
+            foreach (TargetingModifiers modifier in this.targetingModifiers){
+                switch (modifier){
+                    case TargetingModifiers.ALLIES_ONLY:
+                        validFightersInLane.RemoveWhere(fighter => fighter.CHAR_FACTION != this.OWNER.CHAR_FACTION);
+                        break;
+                    case TargetingModifiers.NOT_SELF:
+                        validFightersInLane.RemoveWhere(fighter => fighter == this.OWNER);
+                        break;
+                    case TargetingModifiers.ENEMIES_ONLY:
+                        validFightersInLane.RemoveWhere(fighter => fighter.CHAR_FACTION == this.OWNER.CHAR_FACTION);
+                        break;
+                    case TargetingModifiers.SELF:
+                        validFightersInLane.RemoveWhere(fighter => fighter != this.OWNER);
+                        break;
+                }
+            }
+            results.Add((lane, validFightersInLane));
+        }
+        // Sort from lanes 1->6.
+        results = results.OrderBy(tuple => tuple.lane).ToList();
+
+        // Debug
+        GD.Print();
+        GD.Print($"Available lanes and targets for {this.NAME}");
+        GD.Print("============================================");
+        foreach ((int lane, HashSet<AbstractCharacter> targetsInLane) in results){
+            string str = $"Lane {lane}: ";
+            foreach (AbstractCharacter target in targetsInLane){
+                str += $"{target.CHAR_NAME} | ";
+            }
+            GD.Print(str);
+        }
+        GD.Print();
+
+        return results;
+    }
+
+    private HashSet<int> GetTargetableLanes(){
         int casterPosition = this.OWNER.Position;
+        HashSet<int> targetableLanes = new HashSet<int>();
 
-        // Return early if there's a SELF-modifier.
-        if (this.targetingModifiers.Contains(TargetingModifiers.SELF)) {
-            eligibleTargets.Add(this.OWNER);
-            GD.Print($"Attempting to cast {this.NAME}. There are {eligibleTargets.Count} eligible target(s).");
-            foreach (AbstractCharacter target in eligibleTargets){
-                GD.Print($"Eligible target: {target.CHAR_NAME}");
-            }
-            return eligibleTargets;
+        for (int i = this.MIN_RANGE; i <= this.MAX_RANGE; i++){
+            targetableLanes.Add(casterPosition - i);
+            targetableLanes.Add(casterPosition + i);
         }
-
-        // Get the list of all fighters in range of this ability's activator.
-        foreach (AbstractCharacter fighter in CombatManager.combatInstance.fighters){
-            if (Math.Abs(fighter.Position - casterPosition) >= this.MIN_RANGE && Math.Abs(fighter.Position - casterPosition) <= this.MAX_RANGE){
-                eligibleTargets.Add(fighter);
-            }
-        }
-        foreach (TargetingModifiers modifier in this.targetingModifiers){
-            switch (modifier){
-                case TargetingModifiers.ALLIES_ONLY:
-                    eligibleTargets.RemoveAll(character => character.CHAR_FACTION == CharacterFaction.NEUTRAL || character.CHAR_FACTION == CharacterFaction.ENEMY);
-                    break;
-                case TargetingModifiers.NOT_SELF:
-                    eligibleTargets.Remove(this.OWNER);
-                    break;
-                case TargetingModifiers.ENEMIES_ONLY:
-                    eligibleTargets.RemoveAll(character => character.CHAR_FACTION == CharacterFaction.ALLY || character.CHAR_FACTION == CharacterFaction.PLAYER);
-                    break;
-            }
-        }
-
-        GD.Print($"Attempting to cast {this.NAME}. There are {eligibleTargets.Count} eligible target(s).");
-        foreach (AbstractCharacter target in eligibleTargets){
-            GD.Print($"Eligible target: {target.CHAR_NAME}");
-        }
-        return eligibleTargets;
+        targetableLanes.RemoveWhere(i => i < 1 || i > 6);
+        return targetableLanes;
     }
 
     public virtual void HandleEvent(CombatEventData eventData){

@@ -2,7 +2,7 @@ using Godot;
 using System;
 using System.Collections.Generic;
 
-public enum CharacterFaction {PLAYER, ALLY, NEUTRAL, ENEMY};
+public enum CharacterFaction {PLAYER, NEUTRAL, ENEMY};
 
 public partial class AbstractCharacter : IEventSubscriber {
     public CharacterFaction CHAR_FACTION;

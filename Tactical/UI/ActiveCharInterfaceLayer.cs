@@ -3,10 +3,11 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 
-public partial class InterfaceLayer : Control, IEventSubscriber {
+public partial class ActiveCharInterfaceLayer : Control, IEventSubscriber {
 
 	private Label roundCounter;
 	private Label turnList;
+	private Label charName;
 
 	private Control abilityListNode;
 	private readonly PackedScene abilityButton = GD.Load<PackedScene>("res://Tactical/UI/AbilityButton.tscn");
@@ -18,6 +19,7 @@ public partial class InterfaceLayer : Control, IEventSubscriber {
 		_on_round_counter_ready();
 		_on_turn_list_ready();
 		_on_ability_list_ready();
+		_on_name_ready();
 
 		CombatManager.eventManager.Subscribe(CombatEventType.ON_ROUND_START, this, CombatEventPriority.UI);
 		CombatManager.eventManager.Subscribe(CombatEventType.ON_TURN_START, this, CombatEventPriority.UI);
@@ -37,6 +39,11 @@ public partial class InterfaceLayer : Control, IEventSubscriber {
 	public void _on_ability_list_ready(){
 		abilityListNode = GetNode<Control>("Active Character Display/Ability List");
 		UpdateAvailableAbilities();
+	}
+
+	public void _on_name_ready(){
+		charName = GetNode<Label>("Active Character Display/Name");
+		UpdateCharacterName();
 	}
 
 	private void UpdateRoundCounter(){
@@ -76,11 +83,17 @@ public partial class InterfaceLayer : Control, IEventSubscriber {
 			AbstractAbility ability = activeChar.abilities[i];
 			instance.Disabled = !ability.IsAvailable || (ability.TYPE == AbilityType.REACTION && CombatManager.combatInstance.combatState != CombatState.AWAITING_CLASH_INPUT);
 			instance.Text = ability.NAME;
-			instance.Pressed += () => ability.GetEligibleTargets();
-			instance.Pressed += () => CombatManager.InputAbility(ability, new List<AbstractCharacter>{activeChar});
+			instance.Pressed += () => ability.GetValidTargets();
+			// instance.Pressed += () => CombatManager.InputAbility(ability, new List<AbstractCharacter>{activeChar});
 
 			abilityListNode.AddChild(instance);
 		}
+	}
+
+	private void UpdateCharacterName(){
+		CombatInstance combatInstance = CombatManager.combatInstance;
+		if (combatInstance == null) return;
+		charName.Text = combatInstance.activeChar.CHAR_NAME;
 	}
 	
     public void HandleEvent(CombatEventData data){
@@ -91,6 +104,7 @@ public partial class InterfaceLayer : Control, IEventSubscriber {
 			case CombatEventType.ON_TURN_START:
 				UpdateTurnlistText();
 				UpdateAvailableAbilities();
+				UpdateCharacterName();
 				break;
 			case CombatEventType.ON_COMBAT_STATE_CHANGE:
 				CombatEventCombatStateChanged eventData = (CombatEventCombatStateChanged) data;

@@ -1,12 +1,11 @@
 [gd_scene load_steps=2 format=3 uid="uid://cjjgiqf177w3q"]
 
-[ext_resource type="Texture2D" uid="uid://654pve5epxq3" path="res://icon.svg" id="1_x0p6f"]
+[ext_resource type="Texture2D" uid="uid://hjip720kdtvv" path="res://Sprites/character.png" id="1_pxld4"]
 
 [node name="Character" type="Node"]
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
 position = Vector2(379, 306)
-scale = Vector2(0.835938, 1.67969)
-texture = ExtResource("1_x0p6f")
+texture = ExtResource("1_pxld4")
 
 [node name="Data" type="Node" parent="."]
