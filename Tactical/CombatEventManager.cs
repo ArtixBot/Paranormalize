@@ -237,3 +237,19 @@ public class CombatEventDieRolled : CombatEventData {
         this.rolledValue = rolledValue;
     }
 }
+
+public class CombatEventStatusApplied : CombatEventData {
+    public AbstractStatusEffect statusEffect;
+    public AbstractCharacter effectAppliedToChar;
+    public int effectAppliedToLane;
+
+    public CombatEventStatusApplied(AbstractStatusEffect effect, AbstractCharacter character){
+        this.statusEffect = effect;
+        this.effectAppliedToChar = character;
+    }
+
+    public CombatEventStatusApplied(AbstractStatusEffect effect, int lane){
+        this.statusEffect = effect;
+        this.effectAppliedToLane = lane;
+    }
+}

@@ -5,8 +5,6 @@ using System.Data;
 
 public partial class ActiveCharInterfaceLayer : Control, IEventSubscriber {
 
-	private Label roundCounter;
-	private Label turnList;
 	private Label charName;
 
 	private Control abilityListNode;
@@ -16,51 +14,21 @@ public partial class ActiveCharInterfaceLayer : Control, IEventSubscriber {
 	public override void _Ready() {
 		CombatManager.combatInstance = new CombatInstance(new TestScenario());
         CombatManager.ChangeCombatState(CombatState.COMBAT_START);        // TODO: Remove, this is for debugging
-		_on_round_counter_ready();
-		_on_turn_list_ready();
 		_on_ability_list_ready();
 		_on_name_ready();
 
-		CombatManager.eventManager.Subscribe(CombatEventType.ON_ROUND_START, this, CombatEventPriority.UI);
 		CombatManager.eventManager.Subscribe(CombatEventType.ON_TURN_START, this, CombatEventPriority.UI);
 		CombatManager.eventManager.Subscribe(CombatEventType.ON_COMBAT_STATE_CHANGE, this, CombatEventPriority.UI);
 	}
-
-	public void _on_round_counter_ready(){
-		roundCounter = GetNode<Label>("RoundCounter");
-		UpdateRoundCounter();
-	}
-
-	public void _on_turn_list_ready(){
-		turnList = GetNode<Label>("Turnlist");
-		UpdateTurnlistText();
-	}
-
+	
 	public void _on_ability_list_ready(){
-		abilityListNode = GetNode<Control>("Active Character Display/Ability List");
+		abilityListNode = GetNode<Control>("Ability List");
 		UpdateAvailableAbilities();
 	}
 
 	public void _on_name_ready(){
-		charName = GetNode<Label>("Active Character Display/Name");
+		charName = GetNode<Label>("Name");
 		UpdateCharacterName();
-	}
-
-	private void UpdateRoundCounter(){
-		CombatInstance combatInstance = CombatManager.combatInstance;
-		if (CombatManager.combatInstance != null) {
-			roundCounter.Text = $"Round {combatInstance.round}";
-		}
-	}
-
-	private void UpdateTurnlistText(){
-		CombatInstance combatInstance = CombatManager.combatInstance;
-		if (combatInstance == null) return;
-		string turnlistText = $"Remaining turns: ";
-		foreach ((AbstractCharacter info, int spd) in combatInstance.turnlist.GetQueue()){
-			turnlistText += $"{info.CHAR_NAME} ({spd}), ";
-		}
-		turnList.Text = turnlistText;
 	}
 
 	private List<Node> abilityButtonInstances = new List<Node>();
@@ -98,11 +66,7 @@ public partial class ActiveCharInterfaceLayer : Control, IEventSubscriber {
 	
     public void HandleEvent(CombatEventData data){
 		switch (data.eventType){
-			case CombatEventType.ON_ROUND_START:
-				UpdateRoundCounter();
-				break;
 			case CombatEventType.ON_TURN_START:
-				UpdateTurnlistText();
 				UpdateAvailableAbilities();
 				UpdateCharacterName();
 				break;

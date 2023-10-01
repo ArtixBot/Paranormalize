@@ -8,7 +8,8 @@ public partial class AbstractCharacter : IEventSubscriber {
     public CharacterFaction CHAR_FACTION;
     public string CHAR_NAME;
 
-    public List<AbstractAbility> abilities = new List<AbstractAbility>();       // At the start of combat, deep-copy everything from PERMA_ABILITIES.
+    public List<AbstractAbility> abilities = new();       // At the start of combat, deep-copy everything from PERMA_ABILITIES.
+    public List<AbstractStatusEffect> statusEffects = new();
 
     private int _CurHP, _MaxHP, _CurPoise, _MaxPoise;
 

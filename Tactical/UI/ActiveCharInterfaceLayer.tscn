@@ -15,34 +15,20 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_qyu5r")
 
-[node name="RoundCounter" type="Label" parent="."]
-layout_mode = 0
-offset_left = 68.0
-offset_top = 52.0
-offset_right = 133.0
-offset_bottom = 78.0
-text = "Round X"
-
-[node name="Turnlist" type="Label" parent="."]
-layout_mode = 0
-offset_left = 218.0
-offset_top = 47.0
-offset_right = 1099.0
-offset_bottom = 116.0
-text = "Character A (Spd), Character B (Spd), etc."
-
-[node name="Active Character Display" type="Node" parent="."]
-
-[node name="Portrait" type="TextureRect" parent="Active Character Display"]
+[node name="Portrait" type="TextureRect" parent="."]
+layout_mode = 1
 anchors_preset = 2
 anchor_top = 1.0
 anchor_bottom = 1.0
-offset_top = -225.0
-offset_right = 205.0
+offset_left = 6.0
+offset_top = -223.0
+offset_right = 211.0
+offset_bottom = 2.0
 grow_vertical = 0
 texture = ExtResource("2_lgul8")
 
-[node name="Name" type="Label" parent="Active Character Display"]
+[node name="Name" type="Label" parent="."]
+layout_mode = 0
 offset_left = 226.0
 offset_top = 909.0
 offset_right = 429.0
@@ -51,8 +37,8 @@ text = "Character Name"
 label_settings = SubResource("LabelSettings_g3f1q")
 vertical_alignment = 2
 
-[node name="Ability List" type="Control" parent="Active Character Display"]
-layout_mode = 3
+[node name="Ability List" type="Control" parent="."]
+layout_mode = 1
 anchor_left = 0.22
 anchor_top = 1.0
 anchor_right = 0.4
@@ -61,21 +47,21 @@ offset_left = -0.399994
 offset_top = -68.0
 grow_vertical = 0
 
-[node name="HP" type="Label" parent="Active Character Display"]
+[node name="HP" type="Label" parent="."]
+layout_mode = 0
 offset_left = 226.0
 offset_top = 960.0
 offset_right = 373.0
 offset_bottom = 1019.0
 text = "HP: 1/1"
 
-[node name="Poise" type="Label" parent="Active Character Display"]
+[node name="Poise" type="Label" parent="."]
+layout_mode = 0
 offset_left = 226.0
 offset_top = 989.0
 offset_right = 373.0
 offset_bottom = 1048.0
 text = "Poise: 1/1"
 
-[connection signal="ready" from="RoundCounter" to="." method="_on_round_counter_ready"]
-[connection signal="ready" from="Turnlist" to="." method="_on_turn_list_ready"]
-[connection signal="ready" from="Active Character Display/Name" to="." method="_on_name_ready"]
-[connection signal="ready" from="Active Character Display/Ability List" to="." method="_on_ability_list_ready"]
+[connection signal="ready" from="Name" to="." method="_on_name_ready"]
+[connection signal="ready" from="Ability List" to="." method="_on_ability_list_ready"]
