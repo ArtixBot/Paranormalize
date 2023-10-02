@@ -52,7 +52,7 @@ public partial class SelectTargetPanel : Panel
 			Button instance = (Button) abilityButton.Instantiate();
 			instance.SetPosition(new Vector2(0, 100 + i * instance.Size.Y));
 			instance.Text = $"Lane {Lanes[i]}";
-			List<int> lanes = new List<int>{Lanes[i]};		// For some reason I can't just supply the new list in the InputAbility() fn?
+			List<int> lanes = new List<int>{Lanes[i]};		// For some reason I can't just pipe the new list in the InputAbility() fn?
 			instance.Pressed += () => CombatManager.InputAbility(ability, lanes);
 			instance.Pressed += DeletePanel;
 

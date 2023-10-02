@@ -33,14 +33,17 @@ public class CombatInstance {
     public List<Die> reactAbilityDice;
 
 	public CombatInstance(ScenarioInfo info){
+        CombatManager.eventManager = new CombatEventManager();
 		this.combatState = CombatState.NULL;
 		this.round = 1;
 
         foreach((AbstractCharacter character, int startingPosition) in info.fighters){
             this.fighters.Add(character);
             character.Position = startingPosition;
+            foreach(AbstractAbility ability in character.abilities){
+                CombatManager.eventManager.Subscribe(CombatEventType.ON_ABILITY_ACTIVATED, ability, CombatEventPriority.HIGHEST_PRIORITY);
+            }
         }
-        CombatManager.eventManager = new CombatEventManager();
 	}
 }
 
@@ -210,8 +213,13 @@ public static class CombatManager {
         // Check whether to emit a unit-targeted ABILITY_ACTIVATED event or a lane-targeted ABILITY_ACTIVATED event.
         // Only necessary in ResolveUnopposedAbility since lane-target abilities are unclashable.
         // TODO: redo targeting
-        var targeting = (combatInstance.activeAbilityLanes == null) ? combatInstance.activeAbilityTargets : combatInstance.activeAbilityTargets;
-        eventManager.BroadcastEvent(new CombatEventAbilityActivated(combatInstance.activeChar, combatInstance.activeAbility, ref combatInstance.activeAbilityDice, targeting));
+        List<AbstractCharacter> charTargeting = combatInstance.activeAbilityTargets;
+        List<int> laneTargeting = combatInstance.activeAbilityLanes;
+        if (charTargeting != null){
+            eventManager.BroadcastEvent(new CombatEventAbilityActivated(combatInstance.activeChar, combatInstance.activeAbility, ref combatInstance.activeAbilityDice, charTargeting));
+        } else if (laneTargeting != null){
+            eventManager.BroadcastEvent(new CombatEventAbilityActivated(combatInstance.activeChar, combatInstance.activeAbility, ref combatInstance.activeAbilityDice, laneTargeting));
+        }
 
         // Use a while loop since additional dice can be tossed into the queue during combat processing (e.g. die has "Cycle" effect).
         int i = 0;      // There should never be more than 100 iterations but if somehow there were an infinite Cycle loop, this should break that.
