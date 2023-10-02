@@ -2,12 +2,14 @@ using Godot;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Linq;
 
 public partial class ActiveCharInterfaceLayer : Control, IEventSubscriber {
 
 	private Label charName;
 
 	private Control abilityListNode;
+	private readonly PackedScene targetingDialog = GD.Load<PackedScene>("res://Tactical/UI/Targeting Panel/SelectTargetPanel.tscn");
 	private readonly PackedScene abilityButton = GD.Load<PackedScene>("res://Tactical/UI/AbilityButton.tscn");
 
 	// Called when the node enters the scene tree for the first time.
@@ -32,6 +34,7 @@ public partial class ActiveCharInterfaceLayer : Control, IEventSubscriber {
 	}
 
 	private List<Node> abilityButtonInstances = new List<Node>();
+	private List<(int lane, HashSet<AbstractCharacter> targetsInLane)> abilityTargeting;
 	private void UpdateAvailableAbilities(){
 		// Remove previous instances from code.
 		foreach(Node instance in abilityButtonInstances){
@@ -51,10 +54,52 @@ public partial class ActiveCharInterfaceLayer : Control, IEventSubscriber {
 			AbstractAbility ability = activeChar.abilities[i];
 			instance.Disabled = !ability.IsAvailable || (ability.TYPE == AbilityType.REACTION && CombatManager.combatInstance.combatState != CombatState.AWAITING_CLASH_INPUT);
 			instance.Text = ability.NAME;
-			instance.Pressed += () => ability.GetValidTargets();
-			// instance.Pressed += () => CombatManager.InputAbility(ability, new List<AbstractCharacter>{activeChar});
+			instance.Pressed += () => GetTargeting(ability);
 
 			abilityListNode.AddChild(instance);
+		}
+	}
+
+	private void GetTargeting(AbstractAbility ability){
+		abilityTargeting = ability.GetValidTargets();
+		if (ability.requiresUnit){
+			List<AbstractCharacter> characters = new();
+			foreach ((int _, HashSet<AbstractCharacter> targetsInLane) in abilityTargeting){
+				foreach (AbstractCharacter target in targetsInLane){
+					characters.Add(target);
+				}
+			}
+			if (characters.Count == 0) {
+				GD.Print("No targets were in range!");
+				return;
+			}
+			
+			// open unit-selection dialog
+			// TODO: This should be a part of the regular combat interface instead of a separate dialog, but this is for testing purposes.
+			SelectTargetPanel instance = (SelectTargetPanel) targetingDialog.Instantiate();
+			instance.SetPosition(new Vector2(500, 500));
+			this.AddChild(instance);
+			instance.ability = ability;
+			instance.RequiresUnit = true;
+			instance.Chars = characters;
+		} else {
+			List<int> lanes = new();
+			foreach ((int lane, HashSet<AbstractCharacter> _) in abilityTargeting){
+				lanes.Add(lane);
+			}
+			if (lanes.Count == 0) {
+				GD.Print("No lanes were in range!");
+				return;
+			}
+
+			// open lane-selection dialog
+			// TODO: This should be a part of the regular combat interface instead of a separate dialog, but this is for testing purposes.
+			SelectTargetPanel instance = (SelectTargetPanel) targetingDialog.Instantiate();
+			instance.SetPosition(new Vector2(500, 500));
+			this.AddChild(instance);
+			instance.ability = ability;
+			instance.RequiresUnit = false;
+			instance.Lanes = lanes;
 		}
 	}
 

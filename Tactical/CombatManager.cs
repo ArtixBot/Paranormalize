@@ -40,6 +40,7 @@ public class CombatInstance {
             this.fighters.Add(character);
             character.Position = startingPosition;
         }
+        CombatManager.eventManager = new CombatEventManager();
 	}
 }
 
@@ -93,7 +94,6 @@ public static class CombatManager {
 	}
 
 	private static void CombatStart(){
-        eventManager = new CombatEventManager();
         eventManager.BroadcastEvent(new CombatEventCombatStart());
 		ChangeCombatState(CombatState.ROUND_START);
 	}

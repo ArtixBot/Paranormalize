@@ -7,7 +7,7 @@ using Godot;
 public enum AbilityType {ATTACK, REACTION, UTILITY, SPECIAL};        // Actions like "Shift" or "Pass" are SPECIAL abilities.
 public enum TargetingModifiers {
     /// <summary>
-    /// Only include the ability's owner. Adding this modifier disregards all other modifiers.
+    /// This ability can only target its owner.
     /// </summary>
     SELF,
     /// <summary>
@@ -60,7 +60,7 @@ public abstract class AbstractAbility : IEventSubscriber {
         get { return curCooldown == 0; }
     }
     
-    public AbstractAbility(string ID, string NAME, string DESC, AbilityType TYPE, int BASE_CD, int MIN_RANGE, int MAX_RANGE, HashSet<TargetingModifiers> targetingModifiers = null){
+    public AbstractAbility(string ID, string NAME, string DESC, AbilityType TYPE, int BASE_CD, int MIN_RANGE, int MAX_RANGE, bool requiresUnit, HashSet<TargetingModifiers> targetingModifiers = null){
         this.ID = ID;
         this.NAME = NAME;
         this.DESC = DESC;
@@ -68,6 +68,7 @@ public abstract class AbstractAbility : IEventSubscriber {
         this.BASE_CD = BASE_CD;
         this.MIN_RANGE = MIN_RANGE;
         this.MAX_RANGE = MAX_RANGE;
+        this.requiresUnit = requiresUnit;
         this.targetingModifiers = targetingModifiers ?? new HashSet<TargetingModifiers>();
     }
 
