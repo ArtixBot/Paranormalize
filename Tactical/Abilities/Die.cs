@@ -4,43 +4,43 @@ using System.Collections.Generic;
 public enum DieType {MELEE, RANGED, BLOCK, EVADE, UNIQUE};
 
 /*
-    The Die class forms the basis for the entire combat system.
+    The Die struct forms the basis for the entire combat system.
     Abilities are composed of various amounts of dice. When activated, each die is rolled sequentially.
     Die contains:
         - (optional) dieId
         - DieType
         - ints for the minimum and maximum roll value
 */
-public class Die {
-    public string dieId;
-    public DieType dieType;
-    public int minValue;
-    public int maxValue;
+public readonly struct Die {
+    private readonly string _dieId;
+    private readonly DieType _dieType;
+    private readonly int _minValue;
+    private readonly int _maxValue;
 
     public Die(DieType dieType, int minValue, int maxValue, string dieId = ""){
-        this.dieId = dieId;
-        this.dieType = dieType;
-        this.minValue = minValue;
-        this.maxValue = maxValue;
+        _dieId = dieId;
+        _dieType = dieType;
+        _minValue = minValue;
+        _maxValue = maxValue;
     }
     
-    public int Roll(){
-        return Rng.RandiRange(minValue, maxValue);
+    public readonly int Roll(){
+        return Rng.RandiRange(MinValue, MaxValue);
     }
 
-    public Die GetCopy(){
-        return new Die(this.dieType, this.minValue, this.maxValue, this.dieId);
+    public readonly string DieId{
+        get {return _dieId;}
     }
 
-    public DieType GetDieType(){
-        return this.dieType;
+    public readonly DieType DieType{
+        get {return _dieType;}
     }
 
-    public int GetMinValue(){
-        return this.minValue;
+    public readonly int MinValue{
+        get {return _minValue;}
     }
 
-    public int GetMaxValue(){
-        return this.maxValue;
+    public readonly int MaxValue{
+        get {return _maxValue;}
     }
 }

@@ -34,6 +34,7 @@ public abstract class AbstractAbility : IEventSubscriber {
     public AbstractCharacter OWNER;
     public AbilityType TYPE;
     public int BASE_CD;
+    public int curCooldown = 0;
     public bool IS_GENERIC;         // Characters can't equip more than 4 IS_GENERIC abilities.
     public int MIN_RANGE;           
     public int MAX_RANGE;
@@ -48,14 +49,13 @@ public abstract class AbstractAbility : IEventSubscriber {
         get {
             List<Die> deepCopy = new List<Die>();
             foreach (Die die in _BASE_DICE){
-                deepCopy.Add(die.GetCopy());
+                deepCopy.Add(die);
             }
             return deepCopy;
         } 
         set {_BASE_DICE = value;}}
     public List<AbilityTag> TAGS = new List<AbilityTag>();
 
-    public int curCooldown = 0;
     public bool IsAvailable {
         get { return curCooldown == 0; }
     }

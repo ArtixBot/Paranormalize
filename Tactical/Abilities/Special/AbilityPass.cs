@@ -29,6 +29,5 @@ public class AbilityPass : AbstractAbility {
 
     public override void Activate(CombatEventAbilityActivated data){
         base.Activate(data);
-        this.OWNER.Position = data.lanes[0];
     }
 }
