@@ -144,23 +144,30 @@ public static class CombatManager {
     // Input unit-targeted abilities.
     // Note that this is a public function so that the UI can call this.
     public static void InputAbility(AbstractAbility ability, List<AbstractCharacter> targets){
-        // Don't do anything if not in AWAITING_ABILITY_INPUT stage, or if no targets were selected.
-        if (combatInstance.combatState != CombatState.AWAITING_ABILITY_INPUT || targets.Count == 0){
+        // Don't do anything if not in AWAITING_ABILITY_INPUT/AWAITING_CLASH_INPUT stage, or if no targets were selected.
+        if ((combatInstance.combatState != CombatState.AWAITING_ABILITY_INPUT && combatInstance.combatState != CombatState.AWAITING_CLASH_INPUT) || targets.Count == 0){
             return;
         }
-        combatInstance.activeAbility = ability;
-        combatInstance.activeAbilityDice = ability.BASE_DICE;
-        combatInstance.activeAbilityTargets = targets;
+        if (combatInstance.combatState == CombatState.AWAITING_ABILITY_INPUT){
+            combatInstance.activeAbility = ability;
+            combatInstance.activeAbilityDice = ability.BASE_DICE;
+            combatInstance.activeAbilityTargets = targets;
 
-        if (ability.TYPE == AbilityType.ATTACK &&
-            !ability.HasTag(AbilityTag.AOE) && !ability.HasTag(AbilityTag.DEVIOUS) &&
-            combatInstance.turnlist.ContainsItem(targets[0]) &&
-            GetEligibleReactions().Count > 0) {
-            // If the ability in question is a single-target non-DEVIOUS attack, the defender has a remaining action, and the defender has eligible reactions, change to AWAITING_CLASH_INPUT.
-            ChangeCombatState(CombatState.AWAITING_CLASH_INPUT);
-        } else {
-            ChangeCombatState(CombatState.RESOLVE_ABILITIES);
+            // If the ability in question is a single-target non-DEVIOUS attack, the defender has a remaining action, and the defender has eligible reactions, change to AWAITING_CLASH_INPUT instead of going to resolve abiltiies.
+            if (ability.TYPE == AbilityType.ATTACK &&
+                !ability.HasTag(AbilityTag.AOE) && !ability.HasTag(AbilityTag.DEVIOUS) &&
+                combatInstance.turnlist.ContainsItem(targets[0]) &&
+                GetEligibleReactions().Count > 0) {
+                ChangeCombatState(CombatState.AWAITING_CLASH_INPUT);
+                return;
+            }
+        } else if (combatInstance.combatState == CombatState.AWAITING_CLASH_INPUT){
+            combatInstance.reactAbility = ability;
+            combatInstance.reactAbilityDice = ability?.BASE_DICE;
         }
+        ChangeCombatState(CombatState.RESOLVE_ABILITIES);
+
+        
     }
 
     /// <summary>
@@ -176,14 +183,6 @@ public static class CombatManager {
         combatInstance.activeAbilityLanes = lanes;
 
         // Lane-targeted abilities by default are either AoE attack abilities or utility abilities, so no need for clash check.
-        ChangeCombatState(CombatState.RESOLVE_ABILITIES);
-    }
-
-    public static void InputReaction(AbstractAbility ability){
-        if (ability != null){
-            combatInstance.reactAbility = ability;
-            combatInstance.reactAbilityDice = ability.BASE_DICE;
-        }
         ChangeCombatState(CombatState.RESOLVE_ABILITIES);
     }
 
