@@ -4,6 +4,12 @@ using System.Collections.Generic;
 
 public interface IEventSubscriber {
     public abstract void HandleEvent(CombatEventData eventData);
+
+    /// <summary>
+    /// An IEventSubscriber should override InitSubscriptions to begin subscribing to all relevant events.
+    /// Note that unsubscribing can be done with CombatEventManager.instance.UnsubscribeAll(this).
+    /// </summary>
+    public abstract void InitSubscriptions();
 }
 
 public enum CombatEventType {
@@ -27,10 +33,13 @@ public enum CombatEventPriority {
     DICE_CONVERSION = 600,          // After all dice queue modifications finish, perform dice conversions (e.g. converting Evade -> Attack die, or Attack -> Block).
     BASE_ADDITIVE = 500,            // Additive modifiers to a value. These happen first and therefore have an outsized effect on multipliers.
     BASE_MULTIPLICATIVE = 400,      // Multiplicative multipliers to a value.
+    STANDARD = 200,
     UI = 1,                         // UI updates should only update after all other calculations are complete.
 }
 
 public partial class CombatEventManager{
+    // When loading a new combat scenario, a new CombatEventManager instance is created during CombatInstance's constructor, and the instance is assigned to this.
+    public static CombatEventManager instance;
     public Dictionary<CombatEventType, ModdablePriorityQueue<IEventSubscriber>> events;
 
     public CombatEventManager() {

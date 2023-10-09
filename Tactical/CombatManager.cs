@@ -1,6 +1,7 @@
 using Godot;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 public enum CombatState {
 	NULL,       // Default state.
@@ -34,6 +35,8 @@ public class CombatInstance {
 
 	public CombatInstance(ScenarioInfo info){
         CombatManager.eventManager = new CombatEventManager();
+        CombatEventManager.instance = CombatManager.eventManager;
+        
 		this.combatState = CombatState.NULL;
 		this.round = 1;
 
@@ -85,6 +88,10 @@ public static class CombatManager {
                 TurnEnd();
                 break;
             case CombatState.AWAITING_ABILITY_INPUT:    // This state doesn't do anything by itself, but allows use of InputAbility while at this stage.
+                if (combatInstance.activeChar.CHAR_FACTION != CharacterFaction.PLAYER){
+                    // TODO: do AI control here, else just wait for player input
+                    InputAbility(combatInstance.activeChar.abilities.Where(ability => ability.ID == "PASS").First(), new List<int>());
+                }
                 break;
             case CombatState.AWAITING_CLASH_INPUT:      // This state doesn't do anything by itself, but allows use of InputClashReaction while at this stage.
                 break;

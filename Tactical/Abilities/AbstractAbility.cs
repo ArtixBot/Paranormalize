@@ -137,6 +137,9 @@ public abstract class AbstractAbility : IEventSubscriber {
         return targetableLanes;
     }
 
+    public virtual void InitSubscriptions(){
+    }
+
     public virtual void HandleEvent(CombatEventData eventData){
         CombatEventType eventType = eventData.eventType;
         if (eventType == CombatEventType.ON_ABILITY_ACTIVATED) {

@@ -19,8 +19,7 @@ public partial class ActiveCharInterfaceLayer : Control, IEventSubscriber {
 		_on_ability_list_ready();
 		_on_name_ready();
 
-		CombatManager.eventManager.Subscribe(CombatEventType.ON_TURN_START, this, CombatEventPriority.UI);
-		CombatManager.eventManager.Subscribe(CombatEventType.ON_COMBAT_STATE_CHANGE, this, CombatEventPriority.UI);
+		this.InitSubscriptions();
 	}
 	
 	public void _on_ability_list_ready(){
@@ -109,6 +108,11 @@ public partial class ActiveCharInterfaceLayer : Control, IEventSubscriber {
 		charName.Text = combatInstance.activeChar.CHAR_NAME;
 	}
 	
+	public virtual void InitSubscriptions(){
+		CombatManager.eventManager.Subscribe(CombatEventType.ON_TURN_START, this, CombatEventPriority.UI);
+		CombatManager.eventManager.Subscribe(CombatEventType.ON_COMBAT_STATE_CHANGE, this, CombatEventPriority.UI);
+    }
+
     public void HandleEvent(CombatEventData data){
 		switch (data.eventType){
 			case CombatEventType.ON_TURN_START:

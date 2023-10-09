@@ -87,6 +87,10 @@ public partial class AbstractCharacter : IEventSubscriber {
         return cnt;
     }
 
+    public virtual void InitSubscriptions(){
+        CombatEventManager.instance.Subscribe(CombatEventType.ON_CHARACTER_DEATH, this, CombatEventPriority.STANDARD);
+    }
+
     public virtual void HandleEvent(CombatEventData data){
         switch (data.eventType) {
             case CombatEventType.ON_CHARACTER_DEATH:

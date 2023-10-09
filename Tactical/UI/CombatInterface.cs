@@ -12,9 +12,7 @@ public partial class CombatInterface : Control, IEventSubscriber {
 		_on_turn_list_ready();
 		UpdateCharPositions();
 
-		CombatManager.eventManager.Subscribe(CombatEventType.ON_ROUND_START, this, CombatEventPriority.UI);
-		CombatManager.eventManager.Subscribe(CombatEventType.ON_TURN_START, this, CombatEventPriority.UI);
-		CombatManager.eventManager.Subscribe(CombatEventType.ON_COMBAT_STATE_CHANGE, this, CombatEventPriority.UI);
+		InitSubscriptions();
 	}
 
 	public void _on_round_ready(){
@@ -67,6 +65,12 @@ public partial class CombatInterface : Control, IEventSubscriber {
 			this.AddChild(sprite);
 		}
 	}
+
+	public virtual void InitSubscriptions(){
+		CombatManager.eventManager.Subscribe(CombatEventType.ON_ROUND_START, this, CombatEventPriority.UI);
+		CombatManager.eventManager.Subscribe(CombatEventType.ON_TURN_START, this, CombatEventPriority.UI);
+		CombatManager.eventManager.Subscribe(CombatEventType.ON_COMBAT_STATE_CHANGE, this, CombatEventPriority.UI);
+    }
 
     public void HandleEvent(CombatEventData data){
 		switch (data.eventType){
