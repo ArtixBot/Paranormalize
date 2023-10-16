@@ -89,14 +89,21 @@ public partial class AbstractCharacter : IEventSubscriber {
 
     public virtual void InitSubscriptions(){
         CombatEventManager.instance.Subscribe(CombatEventType.ON_CHARACTER_DEATH, this, CombatEventPriority.STANDARD);
+        foreach (AbstractAbility ability in this.abilities){
+            ability.InitSubscriptions();
+        }
     }
 
     public virtual void HandleEvent(CombatEventData data){
         switch (data.eventType) {
             case CombatEventType.ON_CHARACTER_DEATH:
                 CombatEventCharacterDeath deathData = (CombatEventCharacterDeath) data;
-                if (deathData.deadChar != this) break;
-                break;
+                if (deathData.deadChar != this) return;
+                // Handle death stuff.
+                foreach (AbstractAbility ability in this.abilities){
+                    CombatManager.eventManager?.UnsubscribeAll(ability);
+                }
+                return;
         }
     }
 }

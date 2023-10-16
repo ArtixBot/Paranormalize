@@ -43,9 +43,7 @@ public class CombatInstance {
         foreach((AbstractCharacter character, int startingPosition) in info.fighters){
             this.fighters.Add(character);
             character.Position = startingPosition;
-            foreach(AbstractAbility ability in character.abilities){
-                CombatManager.eventManager.Subscribe(CombatEventType.ON_ABILITY_ACTIVATED, ability, CombatEventPriority.HIGHEST_PRIORITY);
-            }
+            character.InitSubscriptions();
         }
 	}
 }
@@ -272,7 +270,19 @@ public static class CombatManager {
         return availableReactionAbilties;
     }
 
-    private static void ResolveCombatantDeath(){
-
+    private static void ResolveCombatantDeath(AbstractCharacter character){
+        // In a resolve ability state, immediately clear the remaining dice queue if no targets are remaining (an AoE attack continues unless ALL units are dead).
+        // Do nothing for all other states other than standard unsubscribes.
+        if (combatInstance?.combatState == CombatState.RESOLVE_ABILITIES){
+            combatInstance.activeAbilityTargets.Remove(character);      // Remove dead char from targets list.
+            // If targets list is empty, or if the dead character was the attacker, immediately clear dice queue (which goes to POST_RESOLVE)
+            if (combatInstance.activeAbilityTargets.Count == 0 || character == combatInstance.activeChar){
+                combatInstance.activeAbilityDice.Clear();
+                combatInstance.reactAbilityDice.Clear();
+            }
+        }
+        eventManager.BroadcastEvent(new CombatEventCharacterDeath(character));
+        // TODO: Unsubscribe all of character's abilities and passives as well.
+        eventManager.UnsubscribeAll(character);
     }
 }

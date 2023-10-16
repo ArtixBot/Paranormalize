@@ -138,6 +138,8 @@ public abstract class AbstractAbility : IEventSubscriber {
     }
 
     public virtual void InitSubscriptions(){
+        CombatEventManager.instance?.Subscribe(CombatEventType.ON_ABILITY_ACTIVATED, this, CombatEventPriority.HIGHEST_PRIORITY);
+        CombatEventManager.instance?.Subscribe(CombatEventType.ON_ROUND_END, this, CombatEventPriority.HIGHEST_PRIORITY);
     }
 
     public virtual void HandleEvent(CombatEventData eventData){
@@ -145,13 +147,14 @@ public abstract class AbstractAbility : IEventSubscriber {
         if (eventType == CombatEventType.ON_ABILITY_ACTIVATED) {
             CombatEventAbilityActivated data = (CombatEventAbilityActivated) eventData;
             if (data.abilityActivated == this){
+                this.curCooldown = this.BASE_CD;
                 this.Activate(data);
             }
+        } else if (eventType == CombatEventType.ON_ROUND_END) {
+            this.curCooldown = Math.Max(this.curCooldown - 1, 0);
         }
     }
 
     // Should be overridden by Utility abilties.
-    public virtual void Activate(CombatEventAbilityActivated data){
-        this.curCooldown = this.BASE_CD;
-    }
+    public virtual void Activate(CombatEventAbilityActivated data){}
 }
