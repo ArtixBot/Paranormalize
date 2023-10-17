@@ -107,7 +107,17 @@ public static class CombatManager {
 	}
 
 	private static void CombatEnd(){
-        eventManager.BroadcastEvent(new CombatEventCombatEnd());
+        bool enemiesRemaining = combatInstance.fighters.Where(fighter => fighter.CHAR_FACTION == CharacterFaction.ENEMY).ToHashSet().Count > 0;
+
+        bool playerVictory;
+        // If all players and enemies are dead at once, you still win!
+        if (!enemiesRemaining) {
+            playerVictory = true;
+        } else {
+            playerVictory = false;
+        }
+
+        eventManager.BroadcastEvent(new CombatEventCombatEnd(playerVictory));
 		combatInstance = null;
         eventManager = null;
 	}
@@ -270,7 +280,8 @@ public static class CombatManager {
         return availableReactionAbilties;
     }
 
-    private static void ResolveCombatantDeath(AbstractCharacter character){
+    // TODO: Make this private?
+    public static void ResolveCombatantDeath(AbstractCharacter character){
         // In a resolve ability state, immediately clear the remaining dice queue if no targets are remaining (an AoE attack continues unless ALL units are dead).
         // Do nothing for all other states other than standard unsubscribes.
         if (combatInstance?.combatState == CombatState.RESOLVE_ABILITIES){
@@ -284,5 +295,14 @@ public static class CombatManager {
         eventManager.BroadcastEvent(new CombatEventCharacterDeath(character));
         // TODO: Unsubscribe all of character's abilities and passives as well.
         eventManager.UnsubscribeAll(character);
+
+        // Remove the fighter from the fighter list, then check if no player/enemy combatants remain.
+        combatInstance?.fighters.Remove(character);
+        bool playersRemaining = combatInstance.fighters.Where(fighter => fighter.CHAR_FACTION == CharacterFaction.PLAYER).ToHashSet().Count > 0;
+        bool enemiesRemaining = combatInstance.fighters.Where(fighter => fighter.CHAR_FACTION == CharacterFaction.ENEMY).ToHashSet().Count > 0;
+
+        if (!enemiesRemaining || !playersRemaining){
+            ChangeCombatState(CombatState.COMBAT_END);
+        }
     }
 }

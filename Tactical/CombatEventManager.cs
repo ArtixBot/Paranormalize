@@ -112,8 +112,11 @@ public class CombatEventCombatStart : CombatEventData {
 }
 
 public class CombatEventCombatEnd : CombatEventData {
-    public CombatEventCombatEnd(){
+    public bool playerWon;
+
+    public CombatEventCombatEnd(bool playerWon){
         this.eventType = CombatEventType.ON_COMBAT_END;
+        this.playerWon = playerWon;
     }
 }
 
