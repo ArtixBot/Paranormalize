@@ -14,7 +14,8 @@ public class AbilityMove : AbstractAbility {
     private static int cd = 0;
     private static int min_range = 1;
     private static int max_range = 1;
-    private static bool targetsUnit = false;
+    private static bool targetsLane = true;
+    private static bool needsUnit = false;
 
     public AbilityMove(): base(
         id,
@@ -24,7 +25,8 @@ public class AbilityMove : AbstractAbility {
         cd,
         min_range,
         max_range,
-        targetsUnit
+        targetsLane,
+        needsUnit
     ){}
 
     public override void Activate(CombatEventAbilityActivated data){

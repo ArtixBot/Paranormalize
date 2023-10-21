@@ -4,10 +4,10 @@ using System.Collections.Generic;
 
 public partial class SelectTargetPanel : Panel
 {
-	private bool _requiresUnit;
-	public bool RequiresUnit {
-		get {return _requiresUnit;}
-		set {_requiresUnit = value; ChangeLabelText();}
+	private bool _requiresText;
+	public bool RequiresText {
+		get {return _requiresText;}
+		set {_requiresText = value; ChangeLabelText();}
 	}
 	private List<AbstractCharacter> _chars = new();
 	public List<AbstractCharacter> Chars {
@@ -39,7 +39,8 @@ public partial class SelectTargetPanel : Panel
 	}
 
 	private void ChangeLabelText(){
-		if (RequiresUnit && selectName != null){
+		if (selectName == null) return;
+		if (RequiresText){
 			selectName.Text = "Select a unit";
 		} else {
 			selectName.Text = "Select a lane";

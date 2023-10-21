@@ -61,8 +61,12 @@ public partial class ActiveCharInterfaceLayer : Control, IEventSubscriber {
 
 	private void GetTargeting(AbstractAbility ability){
 		abilityTargeting = ability.GetValidTargets();
-		if (ability.requiresUnit){
-			List<AbstractCharacter> characters = new();
+
+
+		List<AbstractCharacter> characters = new();
+		List<int> lanes = new();
+		if (!ability.useLaneTargeting){
+			characters = new();
 			foreach ((int _, HashSet<AbstractCharacter> targetsInLane) in abilityTargeting){
 				foreach (AbstractCharacter target in targetsInLane){
 					characters.Add(target);
@@ -73,16 +77,8 @@ public partial class ActiveCharInterfaceLayer : Control, IEventSubscriber {
 				return;
 			}
 			
-			// open unit-selection dialog
-			// TODO: This should be a part of the regular combat interface instead of a separate dialog, but this is for testing purposes.
-			SelectTargetPanel instance = (SelectTargetPanel) targetingDialog.Instantiate();
-			instance.SetPosition(new Vector2(500, 500));
-			this.AddChild(instance);
-			instance.ability = ability;
-			instance.RequiresUnit = true;
-			instance.Chars = characters;
 		} else {
-			List<int> lanes = new();
+			lanes = new();
 			foreach ((int lane, HashSet<AbstractCharacter> _) in abilityTargeting){
 				lanes.Add(lane);
 			}
@@ -90,14 +86,18 @@ public partial class ActiveCharInterfaceLayer : Control, IEventSubscriber {
 				GD.Print("No lanes were in range!");
 				return;
 			}
+		}
 
-			// open lane-selection dialog
-			// TODO: This should be a part of the regular combat interface instead of a separate dialog, but this is for testing purposes.
-			SelectTargetPanel instance = (SelectTargetPanel) targetingDialog.Instantiate();
-			instance.SetPosition(new Vector2(500, 500));
-			this.AddChild(instance);
-			instance.ability = ability;
-			instance.RequiresUnit = false;
+		// open unit-selection dialog
+		// TODO: This should be a part of the regular combat interface instead of a separate dialog, but this is for testing purposes.
+		SelectTargetPanel instance = (SelectTargetPanel) targetingDialog.Instantiate();
+		instance.SetPosition(new Vector2(500, 500));
+		this.AddChild(instance);
+		instance.ability = ability;
+		instance.RequiresText = !ability.useLaneTargeting;
+		if (characters.Count > 0){
+			instance.Chars = characters;
+		} else {
 			instance.Lanes = lanes;
 		}
 	}

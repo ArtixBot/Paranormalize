@@ -3,6 +3,7 @@ using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
 using Godot;
+using System.Reflection.Metadata;
 
 public enum AbilityType {ATTACK, REACTION, UTILITY, SPECIAL};        // Actions like "Shift" or "Pass" are SPECIAL abilities.
 public enum TargetingModifiers {
@@ -39,7 +40,8 @@ public abstract class AbstractAbility : IEventSubscriber {
     public int MIN_RANGE;           
     public int MAX_RANGE;
 
-    public bool requiresUnit;       // If true, there must be at least one eligible unit in the targeted lane(s).
+    public bool useLaneTargeting;   // If true, the UI should supply lanes to target rather than a list of units.
+    public bool requiresUnit;       // This ability requires an actual unit. If useLaneTargeting is true and this is true, only lanes with applicable units will be included.
     public HashSet<TargetingModifiers> targetingModifiers;     // If no filters are provided, by default this will return all allies and enemies within range of the ability.
     
     // An attack/reaction consists of a list of dice and any events (e.g. on hit, on clash, on clash win, on clash lose, etc.) associated with that die.
@@ -60,7 +62,7 @@ public abstract class AbstractAbility : IEventSubscriber {
         get { return curCooldown == 0; }
     }
     
-    public AbstractAbility(string ID, string NAME, string DESC, AbilityType TYPE, int BASE_CD, int MIN_RANGE, int MAX_RANGE, bool requiresUnit, HashSet<TargetingModifiers> targetingModifiers = null){
+    public AbstractAbility(string ID, string NAME, string DESC, AbilityType TYPE, int BASE_CD, int MIN_RANGE, int MAX_RANGE, bool useLaneTargeting, bool requiresUnit, HashSet<TargetingModifiers> targetingModifiers = null){
         this.ID = ID;
         this.NAME = NAME;
         this.DESC = DESC;
@@ -68,6 +70,7 @@ public abstract class AbstractAbility : IEventSubscriber {
         this.BASE_CD = BASE_CD;
         this.MIN_RANGE = MIN_RANGE;
         this.MAX_RANGE = MAX_RANGE;
+        this.useLaneTargeting = useLaneTargeting;
         this.requiresUnit = requiresUnit;
         this.targetingModifiers = targetingModifiers ?? new HashSet<TargetingModifiers>();
     }
@@ -104,23 +107,24 @@ public abstract class AbstractAbility : IEventSubscriber {
                         break;
                 }
             }
+            if (requiresUnit && validFightersInLane.Count == 0) continue;
             results.Add((lane, validFightersInLane));
         }
         // Sort from lanes 1->6.
         results = results.OrderBy(tuple => tuple.lane).ToList();
 
         // Debug
-        GD.Print();
-        GD.Print($"Available lanes and targets for {this.NAME}");
-        GD.Print("============================================");
-        foreach ((int lane, HashSet<AbstractCharacter> targetsInLane) in results){
-            string str = $"Lane {lane}: ";
-            foreach (AbstractCharacter target in targetsInLane){
-                str += $"{target.CHAR_NAME} | ";
-            }
-            GD.Print(str);
-        }
-        GD.Print();
+        // GD.Print();
+        // GD.Print($"Available lanes and targets for {this.NAME}");
+        // GD.Print("============================================");
+        // foreach ((int lane, HashSet<AbstractCharacter> targetsInLane) in results){
+        //     string str = $"Lane {lane}: ";
+        //     foreach (AbstractCharacter target in targetsInLane){
+        //         str += $"{target.CHAR_NAME} | ";
+        //     }
+        //     GD.Print(str);
+        // }
+        // GD.Print();
 
         return results;
     }

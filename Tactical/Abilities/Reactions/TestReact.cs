@@ -13,7 +13,8 @@ public class TestReact : AbstractAbility {
     private static int cd = 1;
     private static int min_range = 0;
     private static int max_range = 0;
-    private static bool targetsUnit = true;
+    private static bool targetsLane = false;
+    private static bool needsUnit = true;
 
     public TestReact(): base(
         id,
@@ -23,7 +24,8 @@ public class TestReact : AbstractAbility {
         cd,
         min_range,
         max_range,
-        targetsUnit
+        targetsLane,
+        needsUnit
     ){
         Die atkDieA = new Die(DieType.MELEE, 4, 6);
         Die atkDieB = new Die(DieType.RANGED, 4, 6);

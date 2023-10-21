@@ -13,7 +13,8 @@ public class AbilityPass : AbstractAbility {
     private static int cd = 0;
     private static int min_range = 0;
     private static int max_range = 0;
-    private static bool targetsUnit = true;
+    private static bool targetsLane = false;
+    private static bool needsUnit = true;
 
     public AbilityPass(): base(
         id,
@@ -23,7 +24,8 @@ public class AbilityPass : AbstractAbility {
         cd,
         min_range,
         max_range,
-        targetsUnit,
+        targetsLane,
+        needsUnit,
         new HashSet<TargetingModifiers>{TargetingModifiers.SELF}
     ){}
 
