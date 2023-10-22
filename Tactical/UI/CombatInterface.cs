@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 
 public partial class CombatInterface : Control, IEventSubscriber {
+	private readonly PackedScene character = GD.Load<PackedScene>("res://Tactical/UI/Characters/Character.tscn");
 	private Label roundCounter;
 	private Label turnList;
 
@@ -54,15 +55,12 @@ public partial class CombatInterface : Control, IEventSubscriber {
 		if (combatInstance == null) return;
 
 		foreach (AbstractCharacter fighter in combatInstance.fighters){
-			TextureRect sprite = new TextureRect();
-			if (fighter.CHAR_FACTION == CharacterFaction.PLAYER){
-				sprite.Texture = ResourceLoader.Load<Texture2D>("res://Sprites/character.png");
-			} else if (fighter.CHAR_FACTION == CharacterFaction.ENEMY){
-				sprite.Texture = ResourceLoader.Load<Texture2D>("res://Sprites/target dummy.png");
-			}
-			charInstances.Add(sprite);
-			sprite.SetPosition(new Vector2((fighter.Position - 1) * 300, 500));
-			this.AddChild(sprite);
+			CharacterUI x = (CharacterUI) character.Instantiate();
+			x.Character = fighter;
+
+			charInstances.Add(x);
+			x.SetPosition(new Vector2((fighter.Position - 1) * 300, 500));
+			this.AddChild(x);
 		}
 	}
 
