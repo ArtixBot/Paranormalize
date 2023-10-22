@@ -200,7 +200,7 @@ public class CombatEventAbilityActivated : CombatEventData {
         this.target = target;
     }
     
-    public CombatEventAbilityActivated(AbstractCharacter caster, AbstractAbility abilityActivated, ref List<Die> abilityDice, List<AbstractCharacter> targets){
+    public CombatEventAbilityActivated(AbstractCharacter caster, AbstractAbility abilityActivated, ref List<Die> abilityDice, ref List<AbstractCharacter> targets){
         this.eventType = CombatEventType.ON_ABILITY_ACTIVATED;
         this.abilityActivated = abilityActivated;
         this.abilityDice = abilityDice;

@@ -1,6 +1,7 @@
 using Godot;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 
 public enum CombatState {
@@ -87,11 +88,19 @@ public static class CombatManager {
                 break;
             case CombatState.AWAITING_ABILITY_INPUT:    // This state doesn't do anything by itself, but allows use of InputAbility while at this stage.
                 if (combatInstance.activeChar.CHAR_FACTION != CharacterFaction.PLAYER){
-                    // TODO: do AI control here, else just wait for player input
-                    InputAbility(combatInstance.activeChar.abilities.Where(ability => ability.ID == "PASS").First(), new List<int>());
+                    // TODO: do AI control here, instead of just passing.
+                    InputAbility(combatInstance.activeChar.abilities.Where(ability => ability.ID == "PASS").First(), new List<AbstractCharacter>{combatInstance.activeChar});
                 }
                 break;
             case CombatState.AWAITING_CLASH_INPUT:      // This state doesn't do anything by itself, but allows use of InputClashReaction while at this stage.
+                if (combatInstance.activeChar.CHAR_FACTION == CharacterFaction.PLAYER){
+                    // AI chooses an ability (since activeChar was the player).
+                    // TODO: Do AI control here instead of just passing.
+                    AbstractCharacter ai = combatInstance.activeAbilityTargets[0];
+                    InputAbility(ai?.abilities.Where(ability => ability.ID == "PASS").First(), new List<AbstractCharacter>{combatInstance.activeChar});
+                } else {
+                    // Player chooses an ability (since activeChar was AI).
+                }
                 break;
             case CombatState.RESOLVE_ABILITIES:         // Triggers after AWAITING_ABILITY_INPUT, or (optionally) AWAITING_CLASH_INPUT.
                 ResolveAbilities();
@@ -172,7 +181,7 @@ public static class CombatManager {
             if (ability.TYPE == AbilityType.ATTACK &&
                 !ability.HasTag(AbilityTag.AOE) && !ability.HasTag(AbilityTag.DEVIOUS) &&
                 combatInstance.turnlist.ContainsItem(targets[0]) &&
-                GetEligibleReactions().Count > 0) {
+                GetEligibleReactions(targets[0]).Count > 0) {
                 ChangeCombatState(CombatState.AWAITING_CLASH_INPUT);
                 return;
             }
@@ -190,7 +199,7 @@ public static class CombatManager {
     /// </summary>
     public static void InputAbility(AbstractAbility ability, List<int> lanes){
         // Don't do anything if not in AWAITING_ABILITY_INPUT stage.
-        if (combatInstance.combatState != CombatState.AWAITING_ABILITY_INPUT){
+        if (ability == null || combatInstance.combatState != CombatState.AWAITING_ABILITY_INPUT){
             return;
         }
         combatInstance.activeAbility = ability;
@@ -230,7 +239,7 @@ public static class CombatManager {
         List<AbstractCharacter> charTargeting = combatInstance.activeAbilityTargets;
         List<int> laneTargeting = combatInstance.activeAbilityLanes;
         if (charTargeting != null){
-            eventManager.BroadcastEvent(new CombatEventAbilityActivated(combatInstance.activeChar, combatInstance.activeAbility, ref combatInstance.activeAbilityDice, charTargeting));
+            eventManager.BroadcastEvent(new CombatEventAbilityActivated(combatInstance.activeChar, combatInstance.activeAbility, ref combatInstance.activeAbilityDice, ref charTargeting));
         } else if (laneTargeting != null){
             eventManager.BroadcastEvent(new CombatEventAbilityActivated(combatInstance.activeChar, combatInstance.activeAbility, ref combatInstance.activeAbilityDice, laneTargeting));
         }
@@ -248,7 +257,7 @@ public static class CombatManager {
     }
 
     private static void ResolveClash(){
-        eventManager.BroadcastEvent(new CombatEventAbilityActivated(combatInstance.activeChar, combatInstance.activeAbility, ref combatInstance.activeAbilityDice, combatInstance.activeAbilityTargets));
+        eventManager.BroadcastEvent(new CombatEventAbilityActivated(combatInstance.activeChar, combatInstance.activeAbility, ref combatInstance.activeAbilityDice, ref combatInstance.activeAbilityTargets));
         eventManager.BroadcastEvent(new CombatEventAbilityActivated(combatInstance.activeAbilityTargets[0], combatInstance.reactAbility, ref combatInstance.reactAbilityDice, combatInstance.activeChar));
         eventManager.BroadcastEvent(new CombatEventClashOccurs(combatInstance.activeChar, 
                                                                combatInstance.activeAbility, 
@@ -258,9 +267,8 @@ public static class CombatManager {
                                                                ref combatInstance.reactAbilityDice));
     }
 
-    private static List<AbstractAbility> GetEligibleReactions(){
+    private static List<AbstractAbility> GetEligibleReactions(AbstractCharacter defender){
         int atkLane = combatInstance.activeChar.Position;
-        AbstractCharacter defender = combatInstance.activeAbilityTargets[0];
         int defLane = defender.Position;
         List<AbstractAbility> availableReactionAbilties = new List<AbstractAbility>();
         foreach (AbstractAbility ability in defender.abilities){ 
@@ -304,5 +312,9 @@ public static class CombatManager {
         if (!enemiesRemaining || !playersRemaining){
             ChangeCombatState(CombatState.COMBAT_END);
         }
+    }
+
+    public static void ExecuteAction(AbstractAction action){
+        action.Execute();
     }
 }
