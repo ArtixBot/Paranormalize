@@ -12,8 +12,6 @@ public partial class AbstractCharacter : IEventSubscriber {
     public List<AbstractStatusEffect> statusEffects = new();
 
     private int _CurHP, _MaxHP, _CurPoise, _MaxPoise;
-
-    public int ActionsPerTurn;
     public int CurHP {
         get {return _CurHP;}
         set { _CurHP = Math.Min(value, MaxHP);}        // Whenever current HP is set, if it's greater than max HP, instead cap it at max HP.
@@ -30,6 +28,9 @@ public partial class AbstractCharacter : IEventSubscriber {
         get {return _MaxPoise;}
         set { _MaxPoise = value; CurPoise = CurPoise;}
     }   
+
+    public float DamageTakenMod = 1.0f;
+    public int ActionsPerTurn;
     public int MinSpd, MaxSpd;      // Speed modifiers like Haste or Slow are done in event handling.
     public int Position;
 

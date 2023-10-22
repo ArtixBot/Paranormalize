@@ -27,6 +27,7 @@ public class ApplyStatusAction : AbstractAction {
         }
 
         this.target.statusEffects.Add(effect);
+        effect.OWNER = this.target;
         effect.InitSubscriptions();
         // TODO: CombatManager.eventManager.BroadcastEvent(new CombatEventEffectApplied).
         return;

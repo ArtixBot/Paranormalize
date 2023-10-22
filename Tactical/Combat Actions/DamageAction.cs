@@ -15,8 +15,6 @@ public class DamageAction : AbstractAction {
     public override void Execute(){
         if (this.defender == null) return;
 
-        int damageDealt = this.damage;
-
         if (this.isPoiseDamage) {
             this.defender.CurPoise -= this.damage;
             // CombatManager.eventManager.BroadcastEvent(new CombatEventPoiseDamageDealt());
@@ -30,6 +28,7 @@ public class DamageAction : AbstractAction {
             // CombatManager.eventManager.BroadcastEvent(new CombatEventStaggered());
         }
         if (this.defender.CurHP <= 0){
+            // TODO: Swap with CombatManager.ExecuteAction(new RemoveCombatantAction(combatant));
             CombatManager.ResolveCombatantDeath(this.defender);
         }
     }
