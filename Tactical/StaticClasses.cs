@@ -11,3 +11,9 @@ public static class Rng {
         return rng.RandiRange(minValue, maxValue);
     }
 }
+
+public static class GameVariables {
+    public const int MIN_LANES = 1;
+    public const int MAX_LANES = 6;
+
+}

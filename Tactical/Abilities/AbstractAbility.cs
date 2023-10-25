@@ -136,7 +136,7 @@ public abstract class AbstractAbility : IEventSubscriber {
             targetableLanes.Add(casterPosition - i);
             targetableLanes.Add(casterPosition + i);
         }
-        targetableLanes.RemoveWhere(i => i < 1 || i > 6);
+        targetableLanes.RemoveWhere(i => i < GameVariables.MIN_LANES || i > GameVariables.MAX_LANES);
         return targetableLanes;
     }
 

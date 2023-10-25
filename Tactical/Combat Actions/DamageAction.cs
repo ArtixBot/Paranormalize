@@ -5,7 +5,7 @@ public class DamageAction : AbstractAction {
     private int damage;
     private bool isPoiseDamage;
 
-    public DamageAction(AbstractCharacter attacker, AbstractCharacter defender, int damage, bool isPoiseDamage){
+    public DamageAction(AbstractCharacter attacker, AbstractCharacter defender, int damage, bool isPoiseDamage = false){
         this.attacker = attacker;
         this.defender = defender;
         this.damage = damage;
@@ -29,7 +29,7 @@ public class DamageAction : AbstractAction {
         }
         if (this.defender.CurHP <= 0){
             // TODO: Swap with CombatManager.ExecuteAction(new RemoveCombatantAction(combatant));
-            CombatManager.ResolveCombatantDeath(this.defender);
+            // CombatManager.ResolveCombatantDeath(this.defender);
         }
     }
 }

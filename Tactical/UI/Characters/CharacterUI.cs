@@ -1,5 +1,6 @@
 using Godot;
 using System;
+using System.Linq;
 
 public partial class CharacterUI : Control, IEventSubscriber
 {
@@ -28,7 +29,11 @@ public partial class CharacterUI : Control, IEventSubscriber
 
 	private void UpdateStatsText(){
 		if (Character == null || Stats == null) {return;}
-		Stats.Text = $"HP: {Character.CurHP} / {Character.MaxHP}\nPoise: {Character.CurPoise} / {Character.MaxPoise}";
+		string poise = $"Poise: {Character.CurPoise} / {Character.MaxPoise}";
+		if (Character.statusEffects.Where(status => status.ID == "STAGGERED").Count() > 0){
+			poise = "Staggered!";
+		}
+		Stats.Text = $"HP: {Character.CurHP} / {Character.MaxHP}\n{poise}";
 	}
 
 	private void UpdateSprite(){
@@ -42,7 +47,8 @@ public partial class CharacterUI : Control, IEventSubscriber
 	}
 
 	public virtual void InitSubscriptions(){
-		CombatManager.eventManager?.Subscribe(CombatEventType.ON_TAKE_DAMAGE, this, CombatEventPriority.UI);
+		// TODO: Change this to something like ON_TAKE_DAMAGE or ON_HP_CHANGED instead.
+		CombatManager.eventManager?.Subscribe(CombatEventType.ON_ABILITY_ACTIVATED, this, CombatEventPriority.UI);
     }
 
     public void HandleEvent(CombatEventData eventData){

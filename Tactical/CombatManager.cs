@@ -172,6 +172,9 @@ public static class CombatManager {
         if ((combatInstance.combatState != CombatState.AWAITING_ABILITY_INPUT && combatInstance.combatState != CombatState.AWAITING_CLASH_INPUT) || targets.Count == 0){
             return;
         }
+        // This shouldn't ever happen. Note that a null ability *can* be passed, but only when a target chooses *not* to react to a incoming clash-eligible attack.
+        if (combatInstance.combatState == CombatState.AWAITING_ABILITY_INPUT && ability == null) return;
+
         if (combatInstance.combatState == CombatState.AWAITING_ABILITY_INPUT){
             combatInstance.activeAbility = ability;
             combatInstance.activeAbilityDice = ability.BASE_DICE;
@@ -179,8 +182,10 @@ public static class CombatManager {
 
             // If the ability in question is a single-target non-DEVIOUS attack, the defender has a remaining action, and the defender has eligible reactions, change to AWAITING_CLASH_INPUT instead of going to resolve abiltiies.
             if (ability.TYPE == AbilityType.ATTACK &&
-                !ability.HasTag(AbilityTag.AOE) && !ability.HasTag(AbilityTag.DEVIOUS) &&
+                !ability.HasTag(AbilityTag.AOE) &&
+                !ability.HasTag(AbilityTag.DEVIOUS) &&
                 combatInstance.turnlist.ContainsItem(targets[0]) &&
+                targets.Count == 1 &&           // Note: this should be redundant with !ability.HasTag(AbilityTag.AOE).
                 GetEligibleReactions(targets[0]).Count > 0) {
                 ChangeCombatState(CombatState.AWAITING_CLASH_INPUT);
                 return;
@@ -195,7 +200,7 @@ public static class CombatManager {
     }
 
     /// <summary>
-    /// Input lane-targeted abilties. Note that <b>lane-targeted abilities can have no characters on them</b>; this is specifically for ground-based effects.
+    /// Input lane-targeted abilties. Lane-targeted abilties, by definition, are AoE, and cannot clash or be clashed against.
     /// </summary>
     public static void InputAbility(AbstractAbility ability, List<int> lanes){
         // Don't do anything if not in AWAITING_ABILITY_INPUT stage.
@@ -212,6 +217,17 @@ public static class CombatManager {
 
     private static void ResolveAbilities(){
         if (combatInstance.reactAbility == null){
+            // Check whether to emit a unit-targeted ABILITY_ACTIVATED event or a lane-targeted ABILITY_ACTIVATED event.
+            // Only necessary in ResolveUnopposedAbility since lane-target abilities are unclashable.
+            // TODO: redo targeting
+            List<AbstractCharacter> charTargeting = combatInstance.activeAbilityTargets;
+            List<int> laneTargeting = combatInstance.activeAbilityLanes;
+            if (charTargeting != null){
+                eventManager.BroadcastEvent(new CombatEventAbilityActivated(combatInstance.activeChar, combatInstance.activeAbility, ref combatInstance.activeAbilityDice, ref charTargeting));
+            } else if (laneTargeting != null){
+                eventManager.BroadcastEvent(new CombatEventAbilityActivated(combatInstance.activeChar, combatInstance.activeAbility, ref combatInstance.activeAbilityDice, laneTargeting));
+            }
+
             // No clash occurs.
             ResolveUnopposedAbility();
         }
@@ -233,23 +249,28 @@ public static class CombatManager {
     }
 
     private static void ResolveUnopposedAbility(){
-        // Check whether to emit a unit-targeted ABILITY_ACTIVATED event or a lane-targeted ABILITY_ACTIVATED event.
-        // Only necessary in ResolveUnopposedAbility since lane-target abilities are unclashable.
-        // TODO: redo targeting
         List<AbstractCharacter> charTargeting = combatInstance.activeAbilityTargets;
-        List<int> laneTargeting = combatInstance.activeAbilityLanes;
-        if (charTargeting != null){
-            eventManager.BroadcastEvent(new CombatEventAbilityActivated(combatInstance.activeChar, combatInstance.activeAbility, ref combatInstance.activeAbilityDice, ref charTargeting));
-        } else if (laneTargeting != null){
-            eventManager.BroadcastEvent(new CombatEventAbilityActivated(combatInstance.activeChar, combatInstance.activeAbility, ref combatInstance.activeAbilityDice, laneTargeting));
-        }
-
         // Use a while loop since additional dice can be tossed into the queue during combat processing (e.g. die has "Cycle" effect).
         int i = 0;      // There should never be more than 100 iterations but if somehow there were an infinite Cycle loop, this should break that.
         while (combatInstance.activeAbilityDice.Count > 0 && i < 100){
             Die die = combatInstance.activeAbilityDice[0];
             int dieRoll = die.Roll();
             eventManager.BroadcastEvent(new CombatEventDieRolled(die, ref dieRoll));
+
+            switch (die.DieType){
+                case DieType.MELEE:
+                case DieType.RANGED:
+                    foreach (AbstractCharacter target in charTargeting){
+                        CombatManager.ExecuteAction(new DamageAction(combatInstance.activeChar, target, dieRoll));
+                        CombatManager.ExecuteAction(new DamageAction(combatInstance.activeChar, target, dieRoll, isPoiseDamage: true));
+                    }
+                    break;
+                case DieType.BLOCK:
+                case DieType.EVADE:
+                case DieType.UNIQUE:
+                default:
+                    break;
+            }
 
             combatInstance.activeAbilityDice.RemoveAt(0);
             i += 1;
@@ -265,6 +286,27 @@ public static class CombatManager {
                                                                combatInstance.activeAbilityTargets[0], 
                                                                combatInstance.reactAbility, 
                                                                ref combatInstance.reactAbilityDice));
+
+        int i = 0;      // There should never be more than 100 iterations but if somehow there were an infinite Cycle loop, this should break that.
+        while (combatInstance.activeAbilityDice.Count > 0 && combatInstance.reactAbilityDice.Count > 0 && i < 100){
+            Die atkDie = combatInstance.activeAbilityDice[0], reactDie = combatInstance.reactAbilityDice[0];
+            int atkRoll = atkDie.Roll(), reactRoll = reactDie.Roll();
+
+            eventManager.BroadcastEvent(new CombatEventDieRolled(atkDie, ref atkRoll));
+            eventManager.BroadcastEvent(new CombatEventDieRolled(reactDie, ref reactRoll));
+
+            if (atkRoll > reactRoll){
+                // Atkroll wins
+            } else if (reactRoll > atkRoll) {
+                // Reactroll wins
+            } else {
+                // Tie
+            }
+
+            combatInstance.activeAbilityDice.RemoveAt(0);
+            combatInstance.reactAbilityDice.RemoveAt(0);
+            i += 1;
+        }
     }
 
     private static List<AbstractAbility> GetEligibleReactions(AbstractCharacter defender){
@@ -272,7 +314,7 @@ public static class CombatManager {
         int defLane = defender.Position;
         List<AbstractAbility> availableReactionAbilties = new List<AbstractAbility>();
         foreach (AbstractAbility ability in defender.abilities){ 
-            if (!ability.IsAvailable || ability.HasTag(AbilityTag.CANNOT_REACT)){
+            if (!ability.IsAvailable || ability.HasTag(AbilityTag.AOE) || ability.HasTag(AbilityTag.CANNOT_REACT)){
                 continue;
             }
             // Available reactions are always eligible for reactions.
@@ -280,7 +322,7 @@ public static class CombatManager {
                 availableReactionAbilties.Add(ability);
             }
             // Available single-target attacks are eligible *if* the attacker is in range of the defender's attack.
-            if (ability.TYPE == AbilityType.ATTACK && !ability.HasTag(AbilityTag.AOE)){
+            if (ability.TYPE == AbilityType.ATTACK){
                 int range = Math.Abs(atkLane - defLane);
                 if (range >= ability.MIN_RANGE && range <= ability.MAX_RANGE) availableReactionAbilties.Add(ability);
             }
