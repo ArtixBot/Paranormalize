@@ -28,6 +28,9 @@ public class ApplyStatusAction : AbstractAction {
 
         this.target.statusEffects.Add(effect);
         effect.OWNER = this.target;
+        if (this.stacksToApply != 0){
+            effect.STACKS = this.stacksToApply;
+        }
         effect.InitSubscriptions();
         // TODO: CombatManager.eventManager.BroadcastEvent(new CombatEventEffectApplied).
         return;

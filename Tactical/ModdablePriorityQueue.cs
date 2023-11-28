@@ -32,7 +32,7 @@ public partial class ModdablePriorityQueue<T>{
     /// <summary>Returns the next item in the priority queue in the tuple (T element, int priority).<br/>
     /// If no one remains in the queue, return (null, 0) instead.</summary>
     public (T element, int priority) GetNextItem(){
-        if (this.queue == null || this.queue.Count <= 0) return (default(T), 0);
+        if (this.queue == null || this.queue.Count == 0) return (default(T), 0);
         (T element, int priority) nextItem = this.queue[0];
         return nextItem;
     }
@@ -45,6 +45,18 @@ public partial class ModdablePriorityQueue<T>{
         (T element, int priority) nextItem = GetNextItem();
         this.queue.RemoveAt(0);
         return nextItem;
+    }
+
+    /// <summary>Find and return all items in the priority queue in the tuple (T element, int priority).<br/>
+    /// If that item does not have any remaining actions in the queue, returns an empty list.</summary>
+    public List<(T element, int priority)> GetAllInstancesOfItem(T elementToFind){
+        List<(T element, int priority)> instances = new();
+        foreach((T element, int priority) pair in this.queue){
+            if (pair.element.Equals(elementToFind)){
+                instances.Add(pair);
+            }
+        }
+        return instances;
     }
 
     /// <summary>Find and return the next item in the priority queue in the tuple (T element, int priority).<br/>

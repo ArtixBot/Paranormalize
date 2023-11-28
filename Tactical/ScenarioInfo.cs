@@ -31,7 +31,6 @@ public class TestScenario : ScenarioInfo {
         characterA.EquipAbility(new TestAttack());
 
         characterB.ActionsPerTurn = 1;
-        characterB.EquipAbility(new TestAttack());
         characterC.ActionsPerTurn = 0;
         characterD.ActionsPerTurn = 0;
     }

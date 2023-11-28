@@ -91,7 +91,7 @@ public static class CombatManager {
                     InputAbility(combatInstance.activeChar.abilities.Where(ability => ability.ID == "PASS").First(), new List<AbstractCharacter>{combatInstance.activeChar});
                 }
                 break;
-            case CombatState.AWAITING_CLASH_INPUT:      // This state doesn't do anything by itself, but allows use of InputClashReaction while at this stage.
+            case CombatState.AWAITING_CLASH_INPUT:      // This state doesn't do anything by itself, but allows use of InputAbility while at this stage.
                 if (combatInstance.activeChar.CHAR_FACTION == CharacterFaction.PLAYER){
                     // AI chooses an ability (since activeChar was the player).
                     // TODO: Do AI control here instead of just passing.
@@ -148,7 +148,7 @@ public static class CombatManager {
     }
 
     private static void TurnStart(){
-        GD.Print($"{combatInstance.activeChar?.CHAR_NAME} ({combatInstance.activeCharSpd}) is taking their turn.");
+        GD.Print($"{combatInstance.activeChar?.CHAR_NAME} ({combatInstance.activeCharSpd}) is taking their turn. They have {combatInstance.activeChar.CountAvailableAbilities()} available abilities.");
         eventManager.BroadcastEvent(new CombatEventTurnStart(combatInstance.activeChar, combatInstance.activeCharSpd));
         ChangeCombatState(CombatState.AWAITING_ABILITY_INPUT);
     }
@@ -194,8 +194,6 @@ public static class CombatManager {
             combatInstance.reactAbilityDice = ability?.BASE_DICE;
         }
         ChangeCombatState(CombatState.RESOLVE_ABILITIES);
-
-        
     }
 
     /// <summary>
@@ -263,23 +261,9 @@ public static class CombatManager {
             int dieRoll = die.Roll();
             eventManager.BroadcastEvent(new CombatEventDieRolled(die, ref dieRoll));
 
-            switch (die.DieType){
-                case DieType.SLASH:
-                case DieType.PIERCE:
-                case DieType.BLUNT:
-                case DieType.MAGIC:
-                    foreach (AbstractCharacter target in charTargeting){
-                        CombatManager.ExecuteAction(new DamageAction(combatInstance.activeChar, target, dieRoll, isPoiseDamage: false));
-                        CombatManager.ExecuteAction(new DamageAction(combatInstance.activeChar, target, dieRoll, isPoiseDamage: true));
-                    }
-                    break;
-                case DieType.BLOCK:
-                case DieType.EVADE:
-                case DieType.UNIQUE:
-                default:
-                    break;
+            foreach (AbstractCharacter target in charTargeting){
+                ResolveDieRoll(combatInstance.activeAbility.OWNER, target, die, dieRoll, rolledDuringClash: false);
             }
-
             combatInstance.activeAbilityDice.RemoveAt(0);
             i += 1;
         }

@@ -75,7 +75,7 @@ public partial class AbstractCharacter : IEventSubscriber {
     public int CountAvailableAbilities(){
         int cnt = 0;
         foreach (AbstractAbility ability in abilities){
-            if (ability.IsAvailable) cnt++;
+            if (ability.IsAvailable && ability.TYPE != AbilityType.SPECIAL) cnt++;
         }
         return cnt;
     }
@@ -83,7 +83,7 @@ public partial class AbstractCharacter : IEventSubscriber {
     public int CountUnavailableAbilities(){
         int cnt = 0;
         foreach (AbstractAbility ability in abilities){
-            if (!ability.IsAvailable) cnt++;
+            if (!ability.IsAvailable && ability.TYPE != AbilityType.SPECIAL) cnt++;
         }
         return cnt;
     }
