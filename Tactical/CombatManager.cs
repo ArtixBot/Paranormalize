@@ -256,26 +256,31 @@ public static class CombatManager {
 
     private static void ResolveUnopposedAbility(){
         List<AbstractCharacter> charTargeting = combatInstance.activeAbilityTargets;
-
-        // If there are active ability dice, the attacker still has remaining dice.
-        // If there are react ability dice, the reacter still has remaining dice.
-        // Only one of these should ever be true.
-        List<Die> resolverDice = combatInstance.activeAbilityDice?.Count > 0 ? combatInstance.activeAbilityDice : combatInstance.reactAbilityDice;
-        AbstractCharacter resolver = combatInstance.activeAbilityDice?.Count > 0 ? combatInstance.activeChar : combatInstance.reactAbility.OWNER;
-        List<AbstractCharacter> targets = combatInstance.activeAbilityDice?.Count > 0 ? combatInstance.activeAbilityTargets : new List<AbstractCharacter>{combatInstance.activeChar};
-
         // Use a while loop since additional dice can be tossed into the queue during combat processing (e.g. die has "Cycle" effect).
         int i = 0;      // There should never be more than 100 iterations but if somehow there were an infinite Cycle loop, this should break that.
-        while (resolverDice?.Count > 0 && i < 100){
-            Die die = resolverDice[0];
+        while (combatInstance.activeAbilityDice.Count > 0 && i < 100){
+            Die die = combatInstance.activeAbilityDice[0];
             int dieRoll = die.Roll();
             eventManager.BroadcastEvent(new CombatEventDieRolled(die, ref dieRoll));
 
-            foreach (AbstractCharacter target in targets){
-                ResolveDieRoll(resolver, target, die, dieRoll, rolledDuringClash: false);
+            switch (die.DieType){
+                case DieType.SLASH:
+                case DieType.PIERCE:
+                case DieType.BLUNT:
+                case DieType.MAGIC:
+                    foreach (AbstractCharacter target in charTargeting){
+                        CombatManager.ExecuteAction(new DamageAction(combatInstance.activeChar, target, dieRoll, isPoiseDamage: false));
+                        CombatManager.ExecuteAction(new DamageAction(combatInstance.activeChar, target, dieRoll, isPoiseDamage: true));
+                    }
+                    break;
+                case DieType.BLOCK:
+                case DieType.EVADE:
+                case DieType.UNIQUE:
+                default:
+                    break;
             }
 
-            resolverDice.RemoveAt(0);
+            combatInstance.activeAbilityDice.RemoveAt(0);
             i += 1;
         }
     }
