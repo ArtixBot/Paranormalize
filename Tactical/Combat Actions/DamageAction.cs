@@ -5,7 +5,7 @@ public class DamageAction : AbstractAction {
     private int damage;
     private bool isPoiseDamage;
 
-    public DamageAction(AbstractCharacter attacker, AbstractCharacter defender, int damage, bool isPoiseDamage = false){
+    public DamageAction(AbstractCharacter attacker, AbstractCharacter defender, int damage, bool isPoiseDamage){
         this.attacker = attacker;
         this.defender = defender;
         this.damage = damage;

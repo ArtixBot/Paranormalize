@@ -1,7 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 
-public enum DieType {MELEE, RANGED, BLOCK, EVADE, UNIQUE};
+public enum DieType {SLASH, PIERCE, BLUNT, MAGIC, BLOCK, EVADE, UNIQUE};
 
 /*
     The Die struct forms the basis for the entire combat system.
@@ -16,14 +16,17 @@ public readonly struct Die {
     private readonly DieType _dieType;
     private readonly int _minValue;
     private readonly int _maxValue;
+    public readonly bool IsAttackDie;
+    public readonly bool IsDefenseDie;
 
     public Die(DieType dieType, int minValue, int maxValue, string dieId = ""){
         _dieId = dieId;
         _dieType = dieType;
         _minValue = minValue;
         _maxValue = maxValue;
-    }
-    
+        IsAttackDie = this._dieType == DieType.SLASH || this._dieType == DieType.PIERCE || this._dieType == DieType.BLUNT || this._dieType == DieType.MAGIC;
+        IsDefenseDie = this._dieType == DieType.BLOCK || this._dieType == DieType.EVADE;
+    }    
     public readonly int Roll(){
         return Rng.RandiRange(MinValue, MaxValue);
     }

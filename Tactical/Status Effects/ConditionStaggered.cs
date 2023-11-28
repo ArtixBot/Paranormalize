@@ -27,7 +27,7 @@ public class ConditionStaggered : AbstractStatusEffect{
         if (this.STACKS == 0){
             this.OWNER.DamageTakenMod -= 1.0f;
             this.OWNER.ActionsPerTurn = this.oldActionsPerTurn;
-            this.OWNER.CurPoise = this.OWNER.MaxPoise;
+            CombatManager.ExecuteAction(new RecoverPoiseAction(this.OWNER, this.OWNER.MaxPoise));
             CombatManager.ExecuteAction(new RemoveStatusAction(this.OWNER, this));
         }
     }

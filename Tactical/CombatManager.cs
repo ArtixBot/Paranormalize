@@ -1,7 +1,6 @@
 using Godot;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
 
 public enum CombatState {
@@ -216,23 +215,30 @@ public static class CombatManager {
     }
 
     private static void ResolveAbilities(){
+        // No clash occurs.
         if (combatInstance.reactAbility == null){
-            // Check whether to emit a unit-targeted ABILITY_ACTIVATED event or a lane-targeted ABILITY_ACTIVATED event.
-            // Only necessary in ResolveUnopposedAbility since lane-target abilities are unclashable.
-            // TODO: redo targeting
+            // TODO: redo targeting?
             List<AbstractCharacter> charTargeting = combatInstance.activeAbilityTargets;
             List<int> laneTargeting = combatInstance.activeAbilityLanes;
+            // Check whether to emit a unit-targeted ABILITY_ACTIVATED event or a lane-targeted ABILITY_ACTIVATED event.
             if (charTargeting != null){
                 eventManager.BroadcastEvent(new CombatEventAbilityActivated(combatInstance.activeChar, combatInstance.activeAbility, ref combatInstance.activeAbilityDice, ref charTargeting));
             } else if (laneTargeting != null){
                 eventManager.BroadcastEvent(new CombatEventAbilityActivated(combatInstance.activeChar, combatInstance.activeAbility, ref combatInstance.activeAbilityDice, laneTargeting));
             }
 
-            // No clash occurs.
             ResolveUnopposedAbility();
         }
+        // Clash occurs!
         if (combatInstance.reactAbility != null){
-            // Clash occurs!
+            eventManager.BroadcastEvent(new CombatEventAbilityActivated(combatInstance.activeChar, combatInstance.activeAbility, ref combatInstance.activeAbilityDice, ref combatInstance.activeAbilityTargets));
+            eventManager.BroadcastEvent(new CombatEventAbilityActivated(combatInstance.activeAbilityTargets[0], combatInstance.reactAbility, ref combatInstance.reactAbilityDice, combatInstance.activeChar));
+            eventManager.BroadcastEvent(new CombatEventClashOccurs(combatInstance.activeChar, 
+                                                                combatInstance.activeAbility, 
+                                                                ref combatInstance.activeAbilityDice, 
+                                                                combatInstance.activeAbilityTargets[0], 
+                                                                combatInstance.reactAbility, 
+                                                                ref combatInstance.reactAbilityDice));
             ResolveClash();
         }
         // If the active ability had Cantrip, don't end turn and instead return to AWAITING_ABILITY_INPUT.
@@ -250,43 +256,54 @@ public static class CombatManager {
 
     private static void ResolveUnopposedAbility(){
         List<AbstractCharacter> charTargeting = combatInstance.activeAbilityTargets;
+
+        // If there are active ability dice, the attacker still has remaining dice.
+        // If there are react ability dice, the reacter still has remaining dice.
+        // Only one of these should ever be true.
+        List<Die> resolverDice = combatInstance.activeAbilityDice?.Count > 0 ? combatInstance.activeAbilityDice : combatInstance.reactAbilityDice;
+        AbstractCharacter resolver = combatInstance.activeAbilityDice?.Count > 0 ? combatInstance.activeChar : combatInstance.reactAbility.OWNER;
+        List<AbstractCharacter> targets = combatInstance.activeAbilityDice?.Count > 0 ? combatInstance.activeAbilityTargets : new List<AbstractCharacter>{combatInstance.activeChar};
+
         // Use a while loop since additional dice can be tossed into the queue during combat processing (e.g. die has "Cycle" effect).
         int i = 0;      // There should never be more than 100 iterations but if somehow there were an infinite Cycle loop, this should break that.
-        while (combatInstance.activeAbilityDice.Count > 0 && i < 100){
-            Die die = combatInstance.activeAbilityDice[0];
+        while (resolverDice?.Count > 0 && i < 100){
+            Die die = resolverDice[0];
             int dieRoll = die.Roll();
             eventManager.BroadcastEvent(new CombatEventDieRolled(die, ref dieRoll));
 
-            switch (die.DieType){
-                case DieType.MELEE:
-                case DieType.RANGED:
-                    foreach (AbstractCharacter target in charTargeting){
-                        CombatManager.ExecuteAction(new DamageAction(combatInstance.activeChar, target, dieRoll));
-                        CombatManager.ExecuteAction(new DamageAction(combatInstance.activeChar, target, dieRoll, isPoiseDamage: true));
-                    }
-                    break;
-                case DieType.BLOCK:
-                case DieType.EVADE:
-                case DieType.UNIQUE:
-                default:
-                    break;
+            foreach (AbstractCharacter target in targets){
+                ResolveDieRoll(resolver, target, die, dieRoll, rolledDuringClash: false);
             }
 
-            combatInstance.activeAbilityDice.RemoveAt(0);
+            resolverDice.RemoveAt(0);
             i += 1;
         }
     }
 
-    private static void ResolveClash(){
-        eventManager.BroadcastEvent(new CombatEventAbilityActivated(combatInstance.activeChar, combatInstance.activeAbility, ref combatInstance.activeAbilityDice, ref combatInstance.activeAbilityTargets));
-        eventManager.BroadcastEvent(new CombatEventAbilityActivated(combatInstance.activeAbilityTargets[0], combatInstance.reactAbility, ref combatInstance.reactAbilityDice, combatInstance.activeChar));
-        eventManager.BroadcastEvent(new CombatEventClashOccurs(combatInstance.activeChar, 
-                                                               combatInstance.activeAbility, 
-                                                               ref combatInstance.activeAbilityDice, 
-                                                               combatInstance.activeAbilityTargets[0], 
-                                                               combatInstance.reactAbility, 
-                                                               ref combatInstance.reactAbilityDice));
+    private static void ResolveDieRoll(AbstractCharacter roller, AbstractCharacter target, Die die, int roll, bool rolledDuringClash){
+        switch (die.DieType){
+            case DieType.SLASH:
+            case DieType.PIERCE:
+            case DieType.BLUNT:
+            case DieType.MAGIC:
+                CombatManager.ExecuteAction(new DamageAction(roller, target, roll, isPoiseDamage: false));
+                CombatManager.ExecuteAction(new DamageAction(roller, target, roll, isPoiseDamage: true));
+                break;
+            case DieType.BLOCK:
+                if (!rolledDuringClash) break;
+                CombatManager.ExecuteAction(new DamageAction(roller, target, roll, isPoiseDamage: true));
+                break;
+            case DieType.EVADE:
+                if (!rolledDuringClash) break;
+                CombatManager.ExecuteAction(new RecoverPoiseAction(roller, roll));
+                break;
+            case DieType.UNIQUE:
+            default:
+                break;
+        }
+    }
 
+    private static void ResolveClash(){
         int i = 0;      // There should never be more than 100 iterations but if somehow there were an infinite Cycle loop, this should break that.
         while (combatInstance.activeAbilityDice.Count > 0 && combatInstance.reactAbilityDice.Count > 0 && i < 100){
             Die atkDie = combatInstance.activeAbilityDice[0], reactDie = combatInstance.reactAbilityDice[0];
@@ -295,18 +312,38 @@ public static class CombatManager {
             eventManager.BroadcastEvent(new CombatEventDieRolled(atkDie, ref atkRoll));
             eventManager.BroadcastEvent(new CombatEventDieRolled(reactDie, ref reactRoll));
 
-            if (atkRoll > reactRoll){
-                // Atkroll wins
-            } else if (reactRoll > atkRoll) {
-                // Reactroll wins
-            } else {
-                // Tie
-            }
-
             combatInstance.activeAbilityDice.RemoveAt(0);
             combatInstance.reactAbilityDice.RemoveAt(0);
+
             i += 1;
+
+            // On a tie, remove both dice.
+            if (atkRoll == reactRoll){
+                // eventManager.BroadcastEvent(new CombatEventClashTie);
+                continue;
+            }
+            Die winningDie = (atkRoll > reactRoll) ? atkDie : reactDie;
+            Die losingDie = (atkRoll > reactRoll) ? reactDie : atkDie;
+
+            int winningRoll = (atkRoll > reactRoll) ? atkRoll : reactRoll;
+            int losingRoll = (atkRoll > reactRoll) ? reactRoll : atkRoll;
+
+            AbstractCharacter winningChar = (atkRoll > reactRoll) ? combatInstance.activeChar : combatInstance.activeAbilityTargets[0];
+            AbstractCharacter losingChar = (atkRoll > reactRoll) ? combatInstance.activeAbilityTargets[0] : combatInstance.activeChar;
+
+            // If the losing die was a block die, and the winning die was an attack die, reduce the winning roll by the losing roll.
+            // TODO: Should this be done here instead of during event management?
+            if (winningDie.IsAttackDie && losingDie.DieType == DieType.BLOCK) {
+                winningRoll -= losingRoll;
+            }
+
+            // TODO: losing die should reduce winning die roll if winning die is an attack and losing die is a block
+            // eventManager.BroadcastEvent(new CombatEventClashWin);
+            // eventManager.BroadcastEvent(new CombatEventClashLose);
+
+            ResolveDieRoll(winningChar, losingChar, winningDie, winningRoll, rolledDuringClash: true);
         }
+        ResolveUnopposedAbility();      // After one of the two clashing die queues is empty, just invoke ResolveUnopposedAbility.
     }
 
     private static List<AbstractAbility> GetEligibleReactions(AbstractCharacter defender){

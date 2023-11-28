@@ -48,7 +48,7 @@ public partial class CharacterUI : Control, IEventSubscriber
 
 	public virtual void InitSubscriptions(){
 		// TODO: Change this to something like ON_TAKE_DAMAGE or ON_HP_CHANGED instead.
-		CombatManager.eventManager?.Subscribe(CombatEventType.ON_ABILITY_ACTIVATED, this, CombatEventPriority.UI);
+		CombatManager.eventManager?.Subscribe(CombatEventType.ON_TURN_END, this, CombatEventPriority.UI);
     }
 
     public void HandleEvent(CombatEventData eventData){

@@ -14,7 +14,7 @@ public partial class AbstractCharacter : IEventSubscriber {
     private int _CurHP, _MaxHP, _CurPoise, _MaxPoise;
     public int CurHP {
         get {return _CurHP;}
-        set { _CurHP = Math.Min(value, MaxHP);}        // Whenever current HP is set, if it's greater than max HP, instead cap it at max HP.
+        set { _CurHP = Math.Min(value, MaxHP);}                         // Current HP cannot exceed the range of [-inf, MaxHP].
     }
     public int MaxHP {
         get {return _MaxHP;}
@@ -22,7 +22,7 @@ public partial class AbstractCharacter : IEventSubscriber {
     }
     public int CurPoise {
         get {return _CurPoise;}
-        set { _CurPoise = Math.Min(value, _MaxPoise);}
+        set { _CurPoise = Math.Max(0, Math.Min(value, _MaxPoise));}     // Current poise cannot exceed the range of [0, MaxPoise].
     }
     public int MaxPoise {
         get {return _MaxPoise;}

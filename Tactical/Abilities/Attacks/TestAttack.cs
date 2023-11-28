@@ -28,7 +28,7 @@ public class TestAttack : AbstractAbility {
         needsUnit,
         new HashSet<TargetingModifiers>{TargetingModifiers.ENEMIES_ONLY}
     ){
-        Die atkDieA = new Die(DieType.MELEE, 3, 5);
+        Die atkDieA = new Die(DieType.BLUNT, 3, 5);
         this.BASE_DICE = new List<Die>{atkDieA};
     }
 }
