@@ -24,7 +24,28 @@ public enum TargetingModifiers {
     ENEMIES_ONLY
 }
 
-public enum AbilityTag {AOE, CANNOT_REACT, CANTRIP, DEVIOUS};
+public enum AbilityTag {
+    /// <summary>
+    /// This ability targets multiple units/lanes (or both!). It cannot be clashed against and cannot be used to react to a clash. Practically speaking, a combination of CANNOT_REACT and DEVIOUS.
+    /// </summary>
+    AOE,
+    /// <summary>
+    /// This ability cannot be used to clash against an incoming attack.
+    /// </summary>
+    CANNOT_REACT,
+    /// <summary>
+    /// Activating this ability does not consume an action.
+    /// </summary>
+    CANTRIP,
+    /// <summary>
+    /// If used to initiate an attack, this ability cannot be clashed against.
+    /// </summary>
+    DEVIOUS,
+    /// <summary>
+    /// This ability can only be activated once per combat. Exhausted abilities are considered Unavailable.
+    /// </summary>
+    EXHAUST
+};
 
 public abstract class AbstractAbility : IEventSubscriber {
 

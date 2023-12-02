@@ -1,3 +1,6 @@
+using System.Diagnostics;
+using Godot;
+
 public class DamageAction : AbstractAction {
 
     private AbstractCharacter attacker;
@@ -24,6 +27,20 @@ public class DamageAction : AbstractAction {
         }
 
         if (this.defender.CurPoise <= 0){
+            // If the defender was in a combat/clash phase, remove all dice from their queue. This will either immediately resolve combat or force a one-sided attack.
+            if (CombatManager.combatInstance.activeAbility?.OWNER == this.defender && CombatManager.combatInstance.activeAbilityDice != null){
+                CombatManager.combatInstance.activeAbilityDice.Clear();
+            }
+            if (CombatManager.combatInstance.reactAbility?.OWNER == this.defender && CombatManager.combatInstance.reactAbilityDice != null){
+                CombatManager.combatInstance.reactAbilityDice.Clear();
+            }
+            // On stagger, remove all remaining actions from the user this turn as well.
+            GD.Print(CombatManager.combatInstance.turnlist.Count);
+            foreach ((AbstractCharacter character, int spd) in CombatManager.combatInstance.turnlist.GetQueue()){
+
+            }
+            CombatManager.combatInstance.turnlist.RemoveAllInstancesOfItem(this.defender);
+            GD.Print(CombatManager.combatInstance.turnlist.Count);
             CombatManager.ExecuteAction(new ApplyStatusAction(this.defender, new ConditionStaggered()));
             // CombatManager.eventManager.BroadcastEvent(new CombatEventStaggered());
         }

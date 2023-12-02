@@ -94,9 +94,9 @@ public static class CombatManager {
             case CombatState.AWAITING_CLASH_INPUT:      // This state doesn't do anything by itself, but allows use of InputAbility while at this stage.
                 if (combatInstance.activeChar.CHAR_FACTION == CharacterFaction.PLAYER){
                     // AI chooses an ability (since activeChar was the player).
-                    // TODO: Do AI control here instead of just passing.
                     AbstractCharacter ai = combatInstance.activeAbilityTargets[0];
-                    InputAbility(ai?.abilities.Where(ability => ability.ID == "PASS").First(), new List<AbstractCharacter>{combatInstance.activeChar});
+                    // TODO: Do AI control here instead of just returning null.
+                    InputAbility(null, new List<AbstractCharacter>{combatInstance.activeChar});
                 } else {
                     // Player chooses an ability (since activeChar was AI).
                 }
@@ -167,11 +167,9 @@ public static class CombatManager {
     // Input unit-targeted abilities.
     // Note that this is a public function so that the UI can call this.
     public static void InputAbility(AbstractAbility ability, List<AbstractCharacter> targets){
-        // Don't do anything if not in AWAITING_ABILITY_INPUT/AWAITING_CLASH_INPUT stage, or if no targets were selected.
-        if ((combatInstance.combatState != CombatState.AWAITING_ABILITY_INPUT && combatInstance.combatState != CombatState.AWAITING_CLASH_INPUT) || targets.Count == 0){
-            return;
-        }
-        // This shouldn't ever happen. Note that a null ability *can* be passed, but only when a target chooses *not* to react to a incoming clash-eligible attack.
+        if (combatInstance.combatState != CombatState.AWAITING_ABILITY_INPUT && combatInstance.combatState != CombatState.AWAITING_CLASH_INPUT) return;
+        if (targets == null || targets.Count == 0) return;
+        // A null ability *can* be passed, but *only* should happen during AWAITING_CLASH_INPUT.
         if (combatInstance.combatState == CombatState.AWAITING_ABILITY_INPUT && ability == null) return;
 
         if (combatInstance.combatState == CombatState.AWAITING_ABILITY_INPUT){
@@ -179,12 +177,12 @@ public static class CombatManager {
             combatInstance.activeAbilityDice = ability.BASE_DICE;
             combatInstance.activeAbilityTargets = targets;
 
-            // If the ability in question is a single-target non-DEVIOUS attack, the defender has a remaining action, and the defender has eligible reactions, change to AWAITING_CLASH_INPUT instead of going to resolve abiltiies.
+            // Check for clash.
             if (ability.TYPE == AbilityType.ATTACK &&
                 !ability.HasTag(AbilityTag.AOE) &&
                 !ability.HasTag(AbilityTag.DEVIOUS) &&
-                combatInstance.turnlist.ContainsItem(targets[0]) &&
                 targets.Count == 1 &&           // Note: this should be redundant with !ability.HasTag(AbilityTag.AOE).
+                combatInstance.turnlist.ContainsItem(targets[0]) &&
                 GetEligibleReactions(targets[0]).Count > 0) {
                 ChangeCombatState(CombatState.AWAITING_CLASH_INPUT);
                 return;
@@ -197,7 +195,7 @@ public static class CombatManager {
     }
 
     /// <summary>
-    /// Input lane-targeted abilties. Lane-targeted abilties, by definition, are AoE, and cannot clash or be clashed against.
+    /// Input lane-targeted abilties. Lane-targeted abilties are intrinsically area-of-effect and therefore cannot clash or be clashed against.
     /// </summary>
     public static void InputAbility(AbstractAbility ability, List<int> lanes){
         // Don't do anything if not in AWAITING_ABILITY_INPUT stage.
@@ -253,16 +251,30 @@ public static class CombatManager {
     }
 
     private static void ResolveUnopposedAbility(){
-        List<AbstractCharacter> charTargeting = combatInstance.activeAbilityTargets;
+        // Check whether to resolve the attacker's ability, or whether to resolve the reacter's ability (if their ability has more dice than the attacker's).
+        List<Die> resolverDice = null;
+        bool reactTargeting = false;
+        if (combatInstance.activeAbilityDice.Count > 0){
+            resolverDice = combatInstance.activeAbilityDice;
+        } else if (combatInstance.reactAbility != null && combatInstance.reactAbilityDice.Count > 0){
+            resolverDice = combatInstance.reactAbilityDice;
+            reactTargeting = true;
+        }
+        if (resolverDice == null) return;
+        
         // Use a while loop since additional dice can be tossed into the queue during combat processing (e.g. die has "Cycle" effect).
         int i = 0;      // There should never be more than 100 iterations but if somehow there were an infinite Cycle loop, this should break that.
-        while (combatInstance.activeAbilityDice.Count > 0 && i < 100){
-            Die die = combatInstance.activeAbilityDice[0];
+        while (resolverDice.Count > 0 && i < 100){
+            Die die = resolverDice[0];
             int dieRoll = die.Roll();
             eventManager.BroadcastEvent(new CombatEventDieRolled(die, ref dieRoll));
 
-            foreach (AbstractCharacter target in charTargeting){
-                ResolveDieRoll(combatInstance.activeAbility.OWNER, target, die, dieRoll, rolledDuringClash: false);
+            if (reactTargeting){
+                ResolveDieRoll(combatInstance.reactAbility.OWNER, combatInstance.activeChar, die, dieRoll, rolledDuringClash: false);
+            } else {
+                foreach (AbstractCharacter target in combatInstance.activeAbilityTargets){
+                    ResolveDieRoll(combatInstance.activeAbility.OWNER, target, die, dieRoll, rolledDuringClash: false);
+                }
             }
             combatInstance.activeAbilityDice.RemoveAt(0);
             i += 1;
@@ -340,7 +352,7 @@ public static class CombatManager {
         int defLane = defender.Position;
         List<AbstractAbility> availableReactionAbilties = new List<AbstractAbility>();
         foreach (AbstractAbility ability in defender.abilities){ 
-            if (!ability.IsAvailable || ability.HasTag(AbilityTag.AOE) || ability.HasTag(AbilityTag.CANNOT_REACT)){
+            if (!ability.IsAvailable || ability.HasTag(AbilityTag.AOE) || ability.HasTag(AbilityTag.CANNOT_REACT) || (ability.TYPE != AbilityType.ATTACK && ability.TYPE != AbilityType.REACTION)){
                 continue;
             }
             // Available reactions are always eligible for reactions.

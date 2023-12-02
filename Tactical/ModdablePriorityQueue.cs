@@ -95,7 +95,7 @@ public partial class ModdablePriorityQueue<T>{
 
     /// <summary>Removes all of a character's actions from the queue (use when a character is staggered, killed, stunned, etc.).</summary>
     public void RemoveAllInstancesOfItem(T elementToRemove){
-        this.queue.RemoveAll(item => item.Equals(elementToRemove));
+        this.queue.RemoveAll(item => item.element.Equals(elementToRemove));
     }
 
     public List<(T element, int priority)> GetQueue(){

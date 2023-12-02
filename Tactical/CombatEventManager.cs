@@ -76,8 +76,11 @@ public partial class CombatEventManager{
     public void BroadcastEvent(CombatEventData eventData){
         if (!events.ContainsKey(eventData.eventType)) return;
         GD.Print($"CombatEventManager broadcasting event {eventData.eventType} to {events[eventData.eventType].GetQueue().Count} subscribers.");
-        foreach ((IEventSubscriber subscriber, int _) in events[eventData.eventType].GetQueue()){
-            subscriber.HandleEvent(eventData);
+        int i = 0;
+        List<(IEventSubscriber subscriber, int priority)> eventSubscribers = events[eventData.eventType].GetQueue();
+        while (i < eventSubscribers.Count){
+            eventSubscribers[i].subscriber.HandleEvent(eventData);
+            i += 1;
         }
     }
 

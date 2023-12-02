@@ -27,6 +27,10 @@ public partial class CharacterUI : Control, IEventSubscriber
 		UpdateSprite();
 	}
 
+	public void _on_label_tree_exited(){
+		CombatManager.eventManager?.UnsubscribeAll(this);
+	}
+
 	private void UpdateStatsText(){
 		if (Character == null || Stats == null) {return;}
 		string poise = $"Poise: {Character.CurPoise} / {Character.MaxPoise}";
