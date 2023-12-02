@@ -35,12 +35,7 @@ public class DamageAction : AbstractAction {
                 CombatManager.combatInstance.reactAbilityDice.Clear();
             }
             // On stagger, remove all remaining actions from the user this turn as well.
-            GD.Print(CombatManager.combatInstance.turnlist.Count);
-            foreach ((AbstractCharacter character, int spd) in CombatManager.combatInstance.turnlist.GetQueue()){
-
-            }
             CombatManager.combatInstance.turnlist.RemoveAllInstancesOfItem(this.defender);
-            GD.Print(CombatManager.combatInstance.turnlist.Count);
             CombatManager.ExecuteAction(new ApplyStatusAction(this.defender, new ConditionStaggered()));
             // CombatManager.eventManager.BroadcastEvent(new CombatEventStaggered());
         }
