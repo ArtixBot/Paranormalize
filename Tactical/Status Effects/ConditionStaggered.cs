@@ -9,6 +9,7 @@ public class ConditionStaggered : AbstractStatusEffect{
         this.ID = "STAGGERED";
         this.TYPE = StatusEffectType.CONDITION;
         this.STACKS = 2;
+        this.CAN_GAIN_STACKS = false;
     }
 
     public override void InitSubscriptions(){
@@ -17,6 +18,17 @@ public class ConditionStaggered : AbstractStatusEffect{
 
         this.OWNER.DamageTakenMod += 1.0f;
         this.OWNER.ActionsPerTurn = 0;
+
+        // If the staggered character is in a combat/clash phase, remove all dice from their queue.
+        // This will either immediately resolve combat or force a one-sided attack.
+        if (CombatManager.combatInstance.activeAbility?.OWNER == this.OWNER && CombatManager.combatInstance.activeAbilityDice != null){
+            CombatManager.combatInstance.activeAbilityDice.Clear();
+        }
+        if (CombatManager.combatInstance.reactAbility?.OWNER == this.OWNER && CombatManager.combatInstance.reactAbilityDice != null){
+            CombatManager.combatInstance.reactAbilityDice.Clear();
+        }
+        // On stagger, remove all remaining actions from the user this turn as well.
+        CombatManager.combatInstance.turnlist.RemoveAllInstancesOfItem(this.OWNER);
     }
 
     public override void HandleEvent(CombatEventData data){

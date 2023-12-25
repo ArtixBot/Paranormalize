@@ -73,7 +73,7 @@ public partial class ActiveCharInterfaceLayer : Control, IEventSubscriber {
 				}
 			}
 			if (characters.Count == 0) {
-				GD.Print("No targets were in range!");
+				Logging.Log("No targets were in range!", Logging.LogLevel.ESSENTIAL);
 				return;
 			}
 			
@@ -83,7 +83,7 @@ public partial class ActiveCharInterfaceLayer : Control, IEventSubscriber {
 				lanes.Add(lane);
 			}
 			if (lanes.Count == 0) {
-				GD.Print("No lanes were in range!");
+				Logging.Log("No lanes were in range!", Logging.LogLevel.ESSENTIAL);
 				return;
 			}
 		}

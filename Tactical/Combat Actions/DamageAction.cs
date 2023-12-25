@@ -27,17 +27,8 @@ public class DamageAction : AbstractAction {
         }
 
         if (this.defender.CurPoise <= 0){
-            // If the defender was in a combat/clash phase, remove all dice from their queue. This will either immediately resolve combat or force a one-sided attack.
-            if (CombatManager.combatInstance.activeAbility?.OWNER == this.defender && CombatManager.combatInstance.activeAbilityDice != null){
-                CombatManager.combatInstance.activeAbilityDice.Clear();
-            }
-            if (CombatManager.combatInstance.reactAbility?.OWNER == this.defender && CombatManager.combatInstance.reactAbilityDice != null){
-                CombatManager.combatInstance.reactAbilityDice.Clear();
-            }
-            // On stagger, remove all remaining actions from the user this turn as well.
-            CombatManager.combatInstance.turnlist.RemoveAllInstancesOfItem(this.defender);
+            // Note that passives which prevent stagger for the first time in combat should listen to CombatEventPoiseDamageDealt instead.
             CombatManager.ExecuteAction(new ApplyStatusAction(this.defender, new ConditionStaggered()));
-            // CombatManager.eventManager.BroadcastEvent(new CombatEventStaggered());
         }
         if (this.defender.CurHP <= 0){
             // TODO: Swap with CombatManager.ExecuteAction(new RemoveCombatantAction(combatant));

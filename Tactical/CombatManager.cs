@@ -58,7 +58,7 @@ public static class CombatManager {
 
 	public static void ChangeCombatState(CombatState newState){
         if (combatInstance.combatState != newState){
-            GD.Print($"Combat state changing: {combatInstance.combatState} -> {newState}");
+            Logging.Log($"Combat state changing: {combatInstance.combatState} -> {newState}", Logging.LogLevel.INFO);
             combatInstance.combatState = newState;
             eventManager?.BroadcastEvent(new CombatEventCombatStateChanged(combatInstance.combatState, newState));
             ResolveCombatState();
@@ -95,8 +95,10 @@ public static class CombatManager {
                 if (combatInstance.activeChar.CHAR_FACTION == CharacterFaction.PLAYER){
                     // AI chooses an ability (since activeChar was the player).
                     AbstractCharacter ai = combatInstance.activeAbilityTargets[0];
+                    List<AbstractAbility> reactableAbilities = CombatManager.GetEligibleReactions(ai);
+                    AbstractAbility reactAbility = reactableAbilities.DefaultIfEmpty(null).First();
                     // TODO: Do AI control here instead of just returning null.
-                    InputAbility(null, new List<AbstractCharacter>{combatInstance.activeChar});
+                    InputAbility(reactAbility, new List<AbstractCharacter>{combatInstance.activeChar});
                 } else {
                     // Player chooses an ability (since activeChar was AI).
                 }
@@ -136,7 +138,7 @@ public static class CombatManager {
                 combatInstance.turnlist.AddToQueue(character, Rng.RandiRange(character.MinSpd, character.MaxSpd));
             }
         }
-        GD.Print($"Starting round {combatInstance.round} with {combatInstance.turnlist.Count} actions in the queue.");
+        Logging.Log($"Starting round {combatInstance.round} with {combatInstance.turnlist.Count} actions in the queue.", Logging.LogLevel.INFO);
         eventManager.BroadcastEvent(new CombatEventRoundStart(combatInstance.round));
         ChangeCombatState(CombatState.TURN_START);
 	}
@@ -148,7 +150,7 @@ public static class CombatManager {
     }
 
     private static void TurnStart(){
-        GD.Print($"{combatInstance.activeChar?.CHAR_NAME} ({combatInstance.activeCharSpd}) is taking their turn. They have {combatInstance.activeChar.CountAvailableAbilities()} available abilities.");
+        Logging.Log($"{combatInstance.activeChar?.CHAR_NAME} ({combatInstance.activeCharSpd}) is taking their turn. They have {combatInstance.activeChar.CountAvailableAbilities()} available abilities.", Logging.LogLevel.INFO);
         eventManager.BroadcastEvent(new CombatEventTurnStart(combatInstance.activeChar, combatInstance.activeCharSpd));
         ChangeCombatState(CombatState.AWAITING_ABILITY_INPUT);
     }
@@ -157,7 +159,7 @@ public static class CombatManager {
         eventManager.BroadcastEvent(new CombatEventTurnEnd(combatInstance.activeChar, combatInstance.activeCharSpd));
         combatInstance.turnlist.PopNextItem();
         if (combatInstance.turnlist.GetNextItem() == (null, 0)){
-            GD.Print("No remaining actions on the turnlist. Ending round.");
+            Logging.Log("No remaining actions on the turnlist. Ending round.", Logging.LogLevel.INFO);
             ChangeCombatState(CombatState.ROUND_END);
         } else {
             ChangeCombatState(CombatState.TURN_START);
@@ -254,9 +256,9 @@ public static class CombatManager {
         // Check whether to resolve the attacker's ability, or whether to resolve the reacter's ability (if their ability has more dice than the attacker's).
         List<Die> resolverDice = null;
         bool reactTargeting = false;
-        if (combatInstance.activeAbilityDice.Count > 0){
+        if (combatInstance.activeAbilityDice?.Count > 0){
             resolverDice = combatInstance.activeAbilityDice;
-        } else if (combatInstance.reactAbility != null && combatInstance.reactAbilityDice.Count > 0){
+        } else if (combatInstance.reactAbility != null && combatInstance.reactAbilityDice?.Count > 0){
             resolverDice = combatInstance.reactAbilityDice;
             reactTargeting = true;
         }
@@ -267,6 +269,7 @@ public static class CombatManager {
         while (resolverDice.Count > 0 && i < 100){
             Die die = resolverDice[0];
             int dieRoll = die.Roll();
+            Logging.Log($"{combatInstance.activeAbility.OWNER.CHAR_NAME} rolls a(n) {die.DieType} die (range: {die.MinValue} - {die.MaxValue}, natural roll: {dieRoll}).", Logging.LogLevel.ESSENTIAL);
             eventManager.BroadcastEvent(new CombatEventDieRolled(die, ref dieRoll));
 
             if (reactTargeting){
@@ -309,6 +312,10 @@ public static class CombatManager {
         while (combatInstance.activeAbilityDice.Count > 0 && combatInstance.reactAbilityDice.Count > 0 && i < 100){
             Die atkDie = combatInstance.activeAbilityDice[0], reactDie = combatInstance.reactAbilityDice[0];
             int atkRoll = atkDie.Roll(), reactRoll = reactDie.Roll();
+
+            Logging.Log($"Clash {i+1}:" +
+            $"\n\t{combatInstance.activeAbility.OWNER.CHAR_NAME}: {atkDie.DieType} die (range {atkDie.MinValue} - {atkDie.MaxValue}, roll: {atkRoll})" +
+            $"\n\t{combatInstance.reactAbility.OWNER.CHAR_NAME}: {reactDie.DieType} die (range {reactDie.MinValue} - {reactDie.MaxValue}, roll: {reactRoll}))", Logging.LogLevel.ESSENTIAL);
 
             eventManager.BroadcastEvent(new CombatEventDieRolled(atkDie, ref atkRoll));
             eventManager.BroadcastEvent(new CombatEventDieRolled(reactDie, ref reactRoll));

@@ -20,7 +20,7 @@ public class ApplyStatusAction : AbstractAction {
 
         // If the effect already exists, add stacks to it if applicable.
         if (existingEffect != null){
-            if (this.stacksToApply > 0 && existingEffect.STACKS > 0){
+            if (this.stacksToApply > 0 && existingEffect.STACKS > 0 && existingEffect.CAN_GAIN_STACKS){
                 existingEffect.STACKS += this.stacksToApply;
             }
             return;
@@ -32,7 +32,7 @@ public class ApplyStatusAction : AbstractAction {
             effect.STACKS = this.stacksToApply;
         }
         effect.InitSubscriptions();
-        // TODO: CombatManager.eventManager.BroadcastEvent(new CombatEventEffectApplied).
+        CombatManager.eventManager.BroadcastEvent(new CombatEventStatusApplied(this.effect, this.target));
         return;
     }
 }

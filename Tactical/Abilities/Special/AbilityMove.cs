@@ -31,7 +31,6 @@ public class AbilityMove : AbstractAbility {
 
     public override void Activate(CombatEventAbilityActivated data){
         base.Activate(data);
-        GD.Print($"MOVE TO LANE {data.lanes[0]}");
         if (data.lanes != null && data.lanes.Count == 1){
             this.OWNER.Position = data.lanes[0];
         }

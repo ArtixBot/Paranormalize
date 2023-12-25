@@ -75,7 +75,7 @@ public partial class CombatEventManager{
     // Notify all subscribers of a specified event. Subscribers will execute in order.
     public void BroadcastEvent(CombatEventData eventData){
         if (!events.ContainsKey(eventData.eventType)) return;
-        GD.Print($"CombatEventManager broadcasting event {eventData.eventType} to {events[eventData.eventType].GetQueue().Count} subscribers.");
+        Logging.Log($"CombatEventManager broadcasting event {eventData.eventType} to {events[eventData.eventType].GetQueue().Count} subscribers.", Logging.LogLevel.DEBUG);
         int i = 0;
         List<(IEventSubscriber subscriber, int priority)> eventSubscribers = events[eventData.eventType].GetQueue();
         while (i < eventSubscribers.Count){
@@ -259,11 +259,13 @@ public class CombatEventStatusApplied : CombatEventData {
     public int effectAppliedToLane;
 
     public CombatEventStatusApplied(AbstractStatusEffect effect, AbstractCharacter character){
+        this.eventType = CombatEventType.ON_STATUS_APPLIED;
         this.statusEffect = effect;
         this.effectAppliedToChar = character;
     }
 
     public CombatEventStatusApplied(AbstractStatusEffect effect, int lane){
+        this.eventType = CombatEventType.ON_STATUS_APPLIED;
         this.statusEffect = effect;
         this.effectAppliedToLane = lane;
     }

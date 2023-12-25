@@ -8,6 +8,7 @@ public abstract class AbstractStatusEffect : IEventSubscriber{
     public AbstractCharacter OWNER;
     public StatusEffectType TYPE;
     public int STACKS;
+    public bool CAN_GAIN_STACKS = true;       // If false, once applied, this cannot gain additional stacks until the status is removed. Defaults to true.
 
     public virtual void InitSubscriptions(){}
 
