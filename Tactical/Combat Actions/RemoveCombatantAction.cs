@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Godot;
 
 public class RemoveCombatantAction : AbstractAction {
 
@@ -33,12 +34,8 @@ public class RemoveCombatantAction : AbstractAction {
         bool playersRemaining = data.fighters.Where(fighter => fighter.CHAR_FACTION == CharacterFaction.PLAYER).ToHashSet().Count > 0;
         bool enemiesRemaining = data.fighters.Where(fighter => fighter.CHAR_FACTION == CharacterFaction.ENEMY).ToHashSet().Count > 0;
 
-        if (!enemiesRemaining) {
-            // Win.
-            Logging.Log("Players win!", Logging.LogLevel.ESSENTIAL);
-        } else if (!playersRemaining) {
-            // Lose.
-            Logging.Log("Enemies win!", Logging.LogLevel.ESSENTIAL);
+        if (!enemiesRemaining || !playersRemaining) {
+            CombatManager.ChangeCombatState(CombatState.COMBAT_END);
         }
     }
 }

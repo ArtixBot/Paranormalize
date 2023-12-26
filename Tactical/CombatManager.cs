@@ -122,8 +122,10 @@ public static class CombatManager {
         bool playerVictory;
         // If all players and enemies are dead at once, you still win!
         if (!enemiesRemaining) {
+            GD.Print("Players win!");
             playerVictory = true;
         } else {
+            GD.Print("Enemies win!");
             playerVictory = false;
         }
 
