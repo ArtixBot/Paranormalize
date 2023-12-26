@@ -275,11 +275,18 @@ public static class CombatManager {
             if (reactTargeting){
                 ResolveDieRoll(combatInstance.reactAbility.OWNER, combatInstance.activeChar, die, dieRoll, rolledDuringClash: false);
             } else {
-                foreach (AbstractCharacter target in combatInstance.activeAbilityTargets){
+                // Explicit .ToList() cast to avoid error of modifying a collection in-loop.
+                foreach (AbstractCharacter target in combatInstance.activeAbilityTargets.ToList()){
                     ResolveDieRoll(combatInstance.activeAbility.OWNER, target, die, dieRoll, rolledDuringClash: false);
                 }
             }
-            combatInstance.activeAbilityDice.RemoveAt(0);
+
+            try {
+                // An exception can occur if all targets in combatInstance.activeAbilityTargets are removed from combat, as this will preemptively remove all dice from activeAbilityDice.
+                combatInstance.activeAbilityDice.RemoveAt(0);
+            } catch (ArgumentOutOfRangeException){
+                GD.Print("Attempted to remove dice at position zero but no dice existed, as all targets died and thus dice were preemptively removed.");
+            }
             i += 1;
         }
     }
@@ -373,32 +380,6 @@ public static class CombatManager {
             }
         }
         return availableReactionAbilties;
-    }
-
-    // TODO: Make this private?
-    public static void ResolveCombatantDeath(AbstractCharacter character){
-        // In a resolve ability state, immediately clear the remaining dice queue if no targets are remaining (an AoE attack continues unless ALL units are dead).
-        // Do nothing for all other states other than standard unsubscribes.
-        if (combatInstance?.combatState == CombatState.RESOLVE_ABILITIES){
-            combatInstance.activeAbilityTargets.Remove(character);      // Remove dead char from targets list.
-            // If targets list is empty, or if the dead character was the attacker, immediately clear dice queue (which goes to POST_RESOLVE)
-            if (combatInstance.activeAbilityTargets.Count == 0 || character == combatInstance.activeChar){
-                combatInstance.activeAbilityDice.Clear();
-                combatInstance.reactAbilityDice.Clear();
-            }
-        }
-        eventManager.BroadcastEvent(new CombatEventCharacterDeath(character));
-        // TODO: Unsubscribe all of character's abilities and passives as well.
-        eventManager.UnsubscribeAll(character);
-
-        // Remove the fighter from the fighter list, then check if no player/enemy combatants remain.
-        combatInstance?.fighters.Remove(character);
-        bool playersRemaining = combatInstance.fighters.Where(fighter => fighter.CHAR_FACTION == CharacterFaction.PLAYER).ToHashSet().Count > 0;
-        bool enemiesRemaining = combatInstance.fighters.Where(fighter => fighter.CHAR_FACTION == CharacterFaction.ENEMY).ToHashSet().Count > 0;
-
-        if (!enemiesRemaining || !playersRemaining){
-            ChangeCombatState(CombatState.COMBAT_END);
-        }
     }
 
     public static void ExecuteAction(AbstractAction action){

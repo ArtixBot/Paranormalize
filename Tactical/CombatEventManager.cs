@@ -19,7 +19,7 @@ public enum CombatEventType {
     ON_TURN_START, ON_TURN_END,
     ON_ABILITY_ACTIVATED,
     // Attacks will always trigger ON_DEAL_DAMAGE, then ON_TAKE_DAMAGE. Status effects like burn/bleed will only trigger ON_TAKE_DAMAGE.
-    ON_DEAL_DAMAGE, ON_TAKE_DAMAGE,
+    ON_DEAL_DAMAGE, ON_DEAL_POISE_DAMAGE, ON_TAKE_DAMAGE, ON_TAKE_POISE_DAMAGE,
     ON_CHARACTER_DEATH,
     ON_DIE_ROLLED, ON_PRE_HIT,
     ON_CLASH_ELIGIBLE, ON_CLASH, ON_CLASH_WIN, ON_CLASH_TIE, ON_CLASH_LOSS,
@@ -268,5 +268,31 @@ public class CombatEventStatusApplied : CombatEventData {
         this.eventType = CombatEventType.ON_STATUS_APPLIED;
         this.statusEffect = effect;
         this.effectAppliedToLane = lane;
+    }
+}
+
+public class CombatEventDamageDealt : CombatEventData {
+    public AbstractCharacter dealer;
+    public int damageDealt;
+    public bool isPoiseDamage;
+
+    public CombatEventDamageDealt(AbstractCharacter dealer, ref int damageDealt, bool isPoiseDamage){
+        this.eventType = CombatEventType.ON_TAKE_DAMAGE;
+        this.dealer = dealer;
+        this.damageDealt = damageDealt;
+        this.isPoiseDamage = isPoiseDamage;
+    }
+}
+
+public class CombatEventDamageTaken : CombatEventData {
+    public AbstractCharacter target;
+    public int damageTaken;
+    public bool isPoiseDamage;
+
+    public CombatEventDamageTaken(AbstractCharacter target, ref int damageTaken, bool isPoiseDamage){
+        this.eventType = CombatEventType.ON_TAKE_DAMAGE;
+        this.target = target;
+        this.damageTaken = damageTaken;
+        this.isPoiseDamage = isPoiseDamage;
     }
 }

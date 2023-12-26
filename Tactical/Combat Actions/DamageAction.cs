@@ -17,22 +17,26 @@ public class DamageAction : AbstractAction {
 
     public override void Execute(){
         if (this.defender == null) return;
+        // Attacker can be null from status effect damage (burn, bleed, etc.)
+        if (this.attacker != null) {
+            CombatManager.eventManager.BroadcastEvent(new CombatEventDamageDealt(this.attacker, ref this.damage, this.isPoiseDamage));
+        }
 
+        CombatManager.eventManager.BroadcastEvent(new CombatEventDamageTaken(this.defender, ref this.damage, this.isPoiseDamage));
         if (this.isPoiseDamage) {
             this.defender.CurPoise -= this.damage;
-            // CombatManager.eventManager.BroadcastEvent(new CombatEventPoiseDamageDealt());
         } else {
             this.defender.CurHP -= this.damage;
-            // CombatManager.eventManager.BroadcastEvent(new CombatEventHpDamageDealt());
         }
 
         if (this.defender.CurPoise <= 0){
-            // Note that passives which prevent stagger for the first time in combat should listen to CombatEventPoiseDamageDealt instead.
+            // Note that passives which prevent stagger for the first time in combat should listen to CombatEventDamageDealt instead.
             CombatManager.ExecuteAction(new ApplyStatusAction(this.defender, new ConditionStaggered()));
         }
         if (this.defender.CurHP <= 0){
+            // Ditto with above.
             // TODO: Swap with CombatManager.ExecuteAction(new RemoveCombatantAction(combatant));
-            // CombatManager.ResolveCombatantDeath(this.defender);
+            CombatManager.ExecuteAction(new RemoveCombatantAction(this.defender));
         }
     }
 }
