@@ -2,10 +2,10 @@ using Godot;
 using System;
 using System.Collections.Generic;
 
-public class BuffHaste : AbstractStatusEffect{
-    public BuffHaste(){
-        this.ID = "HASTE";
-        this.TYPE = StatusEffectType.BUFF;
+public class DebuffSlow : AbstractStatusEffect{
+    public DebuffSlow(){
+        this.ID = "SLOW";
+        this.TYPE = StatusEffectType.DEBUFF;
     }
 
     public override void InitSubscriptions(){
@@ -13,7 +13,7 @@ public class BuffHaste : AbstractStatusEffect{
     }
 
     public override void HandleEvent(CombatEventData data){
-        CombatManager.combatInstance.turnlist.ModifyItemPriority(this.OWNER, this.STACKS);
+        CombatManager.combatInstance.turnlist.ModifyItemPriority(this.OWNER, -this.STACKS);
         CombatManager.ExecuteAction(new RemoveStatusAction(this.OWNER, this));
     }
 }

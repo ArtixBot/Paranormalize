@@ -22,12 +22,18 @@ public class PullAction : AbstractAction {
         int maxPullDistance = Math.Min(Math.Abs(puller.Position - pullee.Position), this.pullDistance);
         bool pullLeft = this.puller.Position < this.pullee.Position;
         
+        CombatManager.eventManager.BroadcastEvent(
+            new CombatEventUnitMoved(this.pullee, 
+                                     this.pullee.Position, 
+                                     ref maxPullDistance, 
+                                     isMoveLeft: pullLeft, 
+                                     isForcedMovement: true));
+
         if (pullLeft) {
             this.pullee.Position -= maxPullDistance;
         } else {
             this.pullee.Position += maxPullDistance;
         }
-        // TODO: CombatManager.eventManager.BroadcastEvent(new CombatEventUnitMoved).
         return;
     }
 }

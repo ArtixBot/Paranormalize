@@ -329,16 +329,13 @@ public static class CombatManager {
             eventManager.BroadcastEvent(new CombatEventDieRolled(atkDie, ref atkRoll));
             eventManager.BroadcastEvent(new CombatEventDieRolled(reactDie, ref reactRoll));
 
-            combatInstance.activeAbilityDice.RemoveAt(0);
-            combatInstance.reactAbilityDice.RemoveAt(0);
-
-            i += 1;
 
             // On a tie, remove both dice.
             if (atkRoll == reactRoll){
-                // eventManager.BroadcastEvent(new CombatEventClashTie);
+                eventManager.BroadcastEvent(new CombatEventClashTie(atkDie, reactDie));
                 continue;
             }
+
             Die winningDie = (atkRoll > reactRoll) ? atkDie : reactDie;
             Die losingDie = (atkRoll > reactRoll) ? reactDie : atkDie;
 
@@ -349,16 +346,22 @@ public static class CombatManager {
             AbstractCharacter losingChar = (atkRoll > reactRoll) ? combatInstance.activeAbilityTargets[0] : combatInstance.activeChar;
 
             // If the losing die was a block die, and the winning die was an attack die, reduce the winning roll by the losing roll.
-            // TODO: Should this be done here instead of during event management?
             if (winningDie.IsAttackDie && losingDie.DieType == DieType.BLOCK) {
                 winningRoll -= losingRoll;
             }
+            eventManager.BroadcastEvent(new CombatEventClashWin(winningDie, ref winningRoll));
+            eventManager.BroadcastEvent(new CombatEventClashLose(losingDie, ref losingRoll));
 
-            // TODO: losing die should reduce winning die roll if winning die is an attack and losing die is a block
-            // eventManager.BroadcastEvent(new CombatEventClashWin);
-            // eventManager.BroadcastEvent(new CombatEventClashLose);
 
             ResolveDieRoll(winningChar, losingChar, winningDie, winningRoll, rolledDuringClash: true);
+            try {
+                combatInstance.activeAbilityDice.RemoveAt(0);
+                combatInstance.reactAbilityDice.RemoveAt(0);
+            } catch (ArgumentOutOfRangeException){
+                GD.Print("Attempted to remove dice at position zero but no dice existed, as all targets died and thus dice were preemptively removed.");
+            }
+
+            i += 1;
         }
         ResolveUnopposedAbility();      // After one of the two clashing die queues is empty, just invoke ResolveUnopposedAbility.
     }

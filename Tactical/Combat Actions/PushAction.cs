@@ -19,6 +19,14 @@ public class PushAction : AbstractAction {
 
     public override void Execute(){
         if (this.pusher == null || this.pushee == null) return;
+        bool pushLeft = this.pusher.Position > this.pushee.Position;
+
+        CombatManager.eventManager.BroadcastEvent(
+            new CombatEventUnitMoved(this.pushee, 
+                                     this.pushee.Position, 
+                                     ref pushDistance, 
+                                     isMoveLeft: pushLeft,
+                                     isForcedMovement: true));
 
         // If pusher and pushee are in the same lane, push towards the center.
         if (this.pusher.Position == this.pushee.Position){
@@ -27,16 +35,13 @@ public class PushAction : AbstractAction {
             } else {
                 this.pushee.Position = Math.Max(this.pushee.Position - this.pushDistance, GameVariables.MIN_LANES);
             }
-            // TODO: CombatManager.eventManager.BroadcastEvent(new CombatEventUnitMoved).
             return;
         }
 
-        bool pushLeft = this.pusher.Position > this.pushee.Position;
         if (pushLeft) {
             this.pushee.Position = Math.Max(this.pushee.Position - this.pushDistance, GameVariables.MIN_LANES);
         } else {
             this.pushee.Position = Math.Min(this.pushee.Position + this.pushDistance, GameVariables.MAX_LANES);
-            // TODO: CombatManager.eventManager.BroadcastEvent(new CombatEventUnitMoved).
         }
         return;
     }

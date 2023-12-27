@@ -30,12 +30,11 @@ public class DamageAction : AbstractAction {
         }
 
         if (this.defender.CurPoise <= 0){
-            // Note that passives which prevent stagger for the first time in combat should listen to CombatEventDamageDealt instead.
+            // Note that passives which prevent stagger for the first time in combat should listen to CombatEventDamageDealt.
             CombatManager.ExecuteAction(new ApplyStatusAction(this.defender, new ConditionStaggered()));
         }
         if (this.defender.CurHP <= 0){
             // Ditto with above.
-            // TODO: Swap with CombatManager.ExecuteAction(new RemoveCombatantAction(combatant));
             CombatManager.ExecuteAction(new RemoveCombatantAction(this.defender));
         }
     }

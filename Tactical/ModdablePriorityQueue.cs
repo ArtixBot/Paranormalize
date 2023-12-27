@@ -47,6 +47,19 @@ public partial class ModdablePriorityQueue<T>{
         return nextItem;
     }
 
+    /// <summary>
+    /// Given a T element, modify *all* inclusions of that element by priority (higher value means it will happen earlier), then reorder the queue.
+    /// </summary>
+    public void ModifyItemPriority(T elementToModify, int modPriority){
+        for (int i = 0; i < this.queue.Count; i++){
+            (T element, int priority) = this.queue[i];
+            if (element.Equals(elementToModify)){
+                this.queue[i] = (element, priority + modPriority);
+            }
+        }
+        this.queue = this.queue.OrderByDescending(x => x.priority).ToList();
+    }
+
     /// <summary>Find and return all items in the priority queue in the tuple (T element, int priority).<br/>
     /// If that item does not have any remaining actions in the queue, returns an empty list.</summary>
     public List<(T element, int priority)> GetAllInstancesOfItem(T elementToFind){

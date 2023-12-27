@@ -22,7 +22,8 @@ public enum CombatEventType {
     ON_DEAL_DAMAGE, ON_TAKE_DAMAGE,
     ON_CHARACTER_DEATH,
     ON_DIE_ROLLED, ON_PRE_HIT,
-    ON_CLASH_ELIGIBLE, ON_CLASH, ON_CLASH_WIN, ON_CLASH_TIE, ON_CLASH_LOSS,
+    ON_CLASH_ELIGIBLE, ON_CLASH, ON_CLASH_TIE, ON_CLASH_WIN, ON_CLASH_LOSE,
+    ON_UNIT_MOVED,
     ON_STATUS_APPLIED, ON_STATUS_EXPIRED,
 }
 
@@ -294,5 +295,57 @@ public class CombatEventDamageTaken : CombatEventData {
         this.target = target;
         this.damageTaken = damageTaken;
         this.isPoiseDamage = isPoiseDamage;
+    }
+}
+
+public class CombatEventClashTie : CombatEventData {
+
+    public Die atkDie;
+    public Die reactDie;
+
+    public CombatEventClashTie(Die atkDie, Die reactDie){
+        this.eventType = CombatEventType.ON_CLASH_TIE;
+        this.atkDie = atkDie;
+        this.reactDie = reactDie;
+    }
+}
+
+public class CombatEventClashWin : CombatEventData {
+    public Die winningDie;
+    public int winningRoll;
+
+    public CombatEventClashWin(Die winningDie, ref int winningRoll){
+        this.eventType = CombatEventType.ON_CLASH_WIN;
+        this.winningDie = winningDie;
+        this.winningRoll = winningRoll;
+    }
+}
+
+public class CombatEventClashLose : CombatEventData {
+    public Die losingDie;
+    public int losingRoll;
+
+    public CombatEventClashLose(Die losingDie, ref int losingRoll){
+        this.eventType = CombatEventType.ON_CLASH_LOSE;
+        this.losingDie = losingDie;
+        this.losingRoll = losingRoll;
+    }
+}
+
+
+public class CombatEventUnitMoved : CombatEventData {
+    public AbstractCharacter movedUnit;
+    public int originalLane;
+    public int moveMagnitude;
+    public bool isMoveLeft;       // If false, assume move right.
+    public bool isForcedMovement;   // Voluntary lane shifts and shifts as part of an ability effect are not considered "forced movement", but Pushes/Pulls are.
+
+    public CombatEventUnitMoved(AbstractCharacter movedUnit, int originalLane, ref int moveMagnitude, bool isMoveLeft, bool isForcedMovement){
+        this.eventType = CombatEventType.ON_UNIT_MOVED;
+        this.movedUnit = movedUnit;
+        this.originalLane = originalLane;
+        this.moveMagnitude = moveMagnitude;
+        this.isMoveLeft = isMoveLeft;
+        this.isForcedMovement = isForcedMovement;
     }
 }
