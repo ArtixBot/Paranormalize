@@ -47,7 +47,7 @@ public enum AbilityTag {
     EXHAUST
 };
 
-public abstract class AbstractAbility : IEventSubscriber {
+public abstract class AbstractAbility : IEventSubscriber, IEventHandler<CombatEventAbilityActivated>, IEventHandler<CombatEventRoundEnd> {
 
     public string ID;
     public string NAME;
@@ -166,17 +166,15 @@ public abstract class AbstractAbility : IEventSubscriber {
         CombatEventManager.instance?.Subscribe(CombatEventType.ON_ROUND_END, this, CombatEventPriority.HIGHEST_PRIORITY);
     }
 
-    public virtual void HandleEvent(CombatEventData eventData){
-        CombatEventType eventType = eventData.eventType;
-        if (eventType == CombatEventType.ON_ABILITY_ACTIVATED) {
-            CombatEventAbilityActivated data = (CombatEventAbilityActivated) eventData;
-            if (data.abilityActivated == this){
-                this.curCooldown = this.BASE_CD;
-                this.Activate(data);
-            }
-        } else if (eventType == CombatEventType.ON_ROUND_END) {
-            this.curCooldown = Math.Max(this.curCooldown - 1, 0);
+    public virtual void HandleEvent(CombatEventAbilityActivated data){
+        if (data.abilityActivated == this){
+            this.curCooldown = this.BASE_CD;
+            this.Activate(data);
         }
+    }
+
+    public virtual void HandleEvent(CombatEventRoundEnd data){
+        this.curCooldown = Math.Max(this.curCooldown - 1, 0);
     }
 
     // Should be overridden by Utility abilties.

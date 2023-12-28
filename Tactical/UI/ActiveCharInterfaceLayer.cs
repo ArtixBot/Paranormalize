@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 
-public partial class ActiveCharInterfaceLayer : Control, IEventSubscriber {
+public partial class ActiveCharInterfaceLayer : Control, IEventSubscriber, IEventHandler<CombatEventTurnStart>, IEventHandler<CombatEventCombatStateChanged> {
 
 	private Label charName;
 
@@ -113,18 +113,14 @@ public partial class ActiveCharInterfaceLayer : Control, IEventSubscriber {
 		CombatManager.eventManager.Subscribe(CombatEventType.ON_COMBAT_STATE_CHANGE, this, CombatEventPriority.UI);
     }
 
-    public void HandleEvent(CombatEventData data){
-		switch (data.eventType){
-			case CombatEventType.ON_TURN_START:
-				UpdateAvailableAbilities();
-				UpdateCharacterName();
-				break;
-			case CombatEventType.ON_COMBAT_STATE_CHANGE:
-				CombatEventCombatStateChanged eventData = (CombatEventCombatStateChanged) data;
-				if (eventData.prevState == CombatState.AWAITING_ABILITY_INPUT && eventData.newState == CombatState.AWAITING_CLASH_INPUT){
-					UpdateAvailableAbilities();
-				}
-				break;
+    public void HandleEvent(CombatEventTurnStart data){
+		UpdateAvailableAbilities();
+		UpdateCharacterName();
+	}
+
+	public void HandleEvent(CombatEventCombatStateChanged data){
+		if (data.prevState == CombatState.AWAITING_ABILITY_INPUT && data.newState == CombatState.AWAITING_CLASH_INPUT){
+			UpdateAvailableAbilities();
 		}
 	}
 }

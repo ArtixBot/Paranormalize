@@ -2,7 +2,7 @@ using Godot;
 using System;
 using System.Collections.Generic;
 
-public partial class CombatInterface : Control, IEventSubscriber {
+public partial class CombatInterface : Control, IEventSubscriber, IEventHandler<CombatEventRoundStart>, IEventHandler<CombatEventTurnStart>, IEventHandler<CombatEventCombatStateChanged> {
 	private readonly PackedScene character = GD.Load<PackedScene>("res://Tactical/UI/Characters/Character.tscn");
 	private Label roundCounter;
 	private Label turnList;
@@ -70,17 +70,15 @@ public partial class CombatInterface : Control, IEventSubscriber {
 		CombatManager.eventManager.Subscribe(CombatEventType.ON_COMBAT_STATE_CHANGE, this, CombatEventPriority.UI);
     }
 
-    public void HandleEvent(CombatEventData data){
-		switch (data.eventType){
-			case CombatEventType.ON_ROUND_START:
-				UpdateRoundText();
-				break;
-			case CombatEventType.ON_TURN_START:
-				UpdateTurnlistText();
-				break;
-			case CombatEventType.ON_COMBAT_STATE_CHANGE:
-				UpdateCharPositions();
-				break;
-		}
+    public void HandleEvent(CombatEventRoundStart data){
+		UpdateRoundText();
+	}
+
+	public void HandleEvent(CombatEventTurnStart data){
+		UpdateTurnlistText();
+	}
+
+	public void HandleEvent(CombatEventCombatStateChanged data){
+		UpdateCharPositions();
 	}
 }

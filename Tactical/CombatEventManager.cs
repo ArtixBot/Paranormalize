@@ -2,9 +2,11 @@ using Godot;
 using System;
 using System.Collections.Generic;
 
-public interface IEventSubscriber {
-    public abstract void HandleEvent(CombatEventData eventData);
+public interface IEventHandler<T> where T : ICombatEvent {
+    public abstract void HandleEvent(T eventData);
+}
 
+public interface IEventSubscriber{
     /// <summary>
     /// An IEventSubscriber should override InitSubscriptions to begin subscribing to all relevant events.
     /// Note that unsubscribing can be done with CombatEventManager.instance.UnsubscribeAll(this).
@@ -74,13 +76,13 @@ public partial class CombatEventManager{
     }
 
     // Notify all subscribers of a specified event. Subscribers will execute in order.
-    public void BroadcastEvent(CombatEventData eventData){
+    public void BroadcastEvent<T>(T eventData) where T : ICombatEvent{
         if (!events.ContainsKey(eventData.eventType)) return;
         Logging.Log($"CombatEventManager broadcasting event {eventData.eventType} to {events[eventData.eventType].GetQueue().Count} subscribers.", Logging.LogLevel.DEBUG);
         int i = 0;
         List<(IEventSubscriber subscriber, int priority)> eventSubscribers = events[eventData.eventType].GetQueue();
         while (i < eventSubscribers.Count){
-            eventSubscribers[i].subscriber.HandleEvent(eventData);
+            (eventSubscribers[i].subscriber as IEventHandler<T>)?.HandleEvent(eventData);
             i += 1;
         }
     }
@@ -105,55 +107,70 @@ public partial class CombatEventManager{
     }
 }
 
-public abstract class CombatEventData {
-    public CombatEventType eventType;
+public interface ICombatEvent {
+    CombatEventType eventType {get;}
 }
 
-public class CombatEventCombatStart : CombatEventData {
+public class CombatEventCombatStart : ICombatEvent {
+
+    public CombatEventType eventType {
+        get {return CombatEventType.ON_COMBAT_START;}
+    }
+    
     public CombatEventCombatStart(){
-        this.eventType = CombatEventType.ON_COMBAT_START;
     }
 }
 
-public class CombatEventCombatEnd : CombatEventData {
+public class CombatEventCombatEnd : ICombatEvent {
+    public CombatEventType eventType {
+        get {return CombatEventType.ON_COMBAT_END;}
+    }
     public bool playerWon;
 
     public CombatEventCombatEnd(bool playerWon){
-        this.eventType = CombatEventType.ON_COMBAT_END;
         this.playerWon = playerWon;
     }
 }
 
-public class CombatEventRoundStart : CombatEventData {
+public class CombatEventRoundStart : ICombatEvent {
+    public CombatEventType eventType {
+        get {return CombatEventType.ON_ROUND_START;}
+    }
     public int roundStartNum;
 
     public CombatEventRoundStart(int roundStartNum){
-        this.eventType = CombatEventType.ON_ROUND_START;
         this.roundStartNum = roundStartNum;
     }
 }
 
-public class CombatEventRoundEnd : CombatEventData {
+public class CombatEventRoundEnd : ICombatEvent {
+    public CombatEventType eventType {
+        get {return CombatEventType.ON_ROUND_END;}
+    }
     public int roundEndNum;
 
     public CombatEventRoundEnd(int roundEndNum){
-        this.eventType = CombatEventType.ON_ROUND_END;
         this.roundEndNum = roundEndNum;
     }
 }
 
-public class CombatEventTurnStart : CombatEventData {
+public class CombatEventTurnStart : ICombatEvent {
+    public CombatEventType eventType {
+        get {return CombatEventType.ON_TURN_START;}
+    }
     public AbstractCharacter character;
     public int spd;
 
     public CombatEventTurnStart(AbstractCharacter character, int spd){
-        this.eventType = CombatEventType.ON_TURN_START;
         this.character = character;
         this.spd = spd;
     }
 }
 
-public class CombatEventCombatStateChanged : CombatEventData {
+public class CombatEventCombatStateChanged : ICombatEvent {
+    public CombatEventType eventType {
+        get {return CombatEventType.ON_COMBAT_STATE_CHANGE;}
+    }
     public CombatState prevState;
     public CombatState newState;
 
@@ -163,32 +180,38 @@ public class CombatEventCombatStateChanged : CombatEventData {
     /// <param name="prevState"></param>
     /// <param name="newState"></param>
     public CombatEventCombatStateChanged(CombatState prevState, CombatState newState){
-        this.eventType = CombatEventType.ON_COMBAT_STATE_CHANGE;
         this.prevState = prevState;
         this.newState = newState;
     }
 }
 
-public class CombatEventTurnEnd : CombatEventData {
+public class CombatEventTurnEnd : ICombatEvent {
+    public CombatEventType eventType {
+        get {return CombatEventType.ON_TURN_END;}
+    }
     public AbstractCharacter character;
     public int spd;
 
     public CombatEventTurnEnd(AbstractCharacter character, int spd){
-        this.eventType = CombatEventType.ON_TURN_END;
         this.character = character;
         this.spd = spd;
     }
 }
 
-public class CombatEventCharacterDeath : CombatEventData {
+public class CombatEventCharacterDeath : ICombatEvent {
+    public CombatEventType eventType {
+        get {return CombatEventType.ON_CHARACTER_DEATH;}
+    }
     public AbstractCharacter deadChar;
     public CombatEventCharacterDeath(AbstractCharacter deadChar){
-        this.eventType = CombatEventType.ON_CHARACTER_DEATH;
         this.deadChar = deadChar;
     }
 }
 
-public class CombatEventAbilityActivated : CombatEventData {
+public class CombatEventAbilityActivated : ICombatEvent {
+    public CombatEventType eventType {
+        get {return CombatEventType.ON_ABILITY_ACTIVATED;}
+    }
     public AbstractAbility abilityActivated;
     public List<Die> abilityDice;
     public AbstractCharacter caster;
@@ -197,7 +220,6 @@ public class CombatEventAbilityActivated : CombatEventData {
     public List<int> lanes = new List<int>();
 
     public CombatEventAbilityActivated(AbstractCharacter caster, AbstractAbility abilityActivated, List<Die> abilityDice, AbstractCharacter target){
-        this.eventType = CombatEventType.ON_ABILITY_ACTIVATED;
         this.abilityActivated = abilityActivated;
         this.abilityDice = abilityDice;
         this.caster = caster;
@@ -205,7 +227,6 @@ public class CombatEventAbilityActivated : CombatEventData {
     }
     
     public CombatEventAbilityActivated(AbstractCharacter caster, AbstractAbility abilityActivated, List<Die> abilityDice, List<AbstractCharacter> targets){
-        this.eventType = CombatEventType.ON_ABILITY_ACTIVATED;
         this.abilityActivated = abilityActivated;
         this.abilityDice = abilityDice;
         this.caster = caster;
@@ -213,7 +234,6 @@ public class CombatEventAbilityActivated : CombatEventData {
     }
 
     public CombatEventAbilityActivated(AbstractCharacter caster, AbstractAbility abilityActivated, List<Die> abilityDice, List<int> lanes){
-        this.eventType = CombatEventType.ON_ABILITY_ACTIVATED;
         this.abilityActivated = abilityActivated;
         this.abilityDice = abilityDice;
         this.caster = caster;
@@ -221,7 +241,10 @@ public class CombatEventAbilityActivated : CombatEventData {
     }
 }
 
-public class CombatEventClashOccurs : CombatEventData {
+public class CombatEventClashOccurs : ICombatEvent {
+    public CombatEventType eventType {
+        get {return CombatEventType.ON_CLASH;}
+    }
     public AbstractCharacter attacker;
     public AbstractAbility attackerAbility;
     public List<Die> attackerDice;
@@ -232,7 +255,6 @@ public class CombatEventClashOccurs : CombatEventData {
 
     ///<summary>Notify subscribers that a clash is occurring.</summary>
     public CombatEventClashOccurs(AbstractCharacter attacker, AbstractAbility attackerAbility, List<Die> attackerDice, AbstractCharacter reacter, AbstractAbility reacterAbility, List<Die> reacterDice){
-        this.eventType = CombatEventType.ON_CLASH;
         this.attacker = attacker;
         this.attackerAbility = attackerAbility;
         this.attackerDice = attackerDice;
@@ -243,97 +265,113 @@ public class CombatEventClashOccurs : CombatEventData {
     }
 }
 
-public class CombatEventDieRolled : CombatEventData {
+public class CombatEventDieRolled : ICombatEvent {
+    public CombatEventType eventType {
+        get {return CombatEventType.ON_DIE_ROLLED;}
+    }
     public Die die;
     public int rolledValue;
 
     public CombatEventDieRolled(Die die, int rolledValue){
-        this.eventType = CombatEventType.ON_DIE_ROLLED;
         this.die = die;
         this.rolledValue = rolledValue;
     }
 }
 
-public class CombatEventStatusApplied : CombatEventData {
+public class CombatEventStatusApplied : ICombatEvent {
+    public CombatEventType eventType {
+        get {return CombatEventType.ON_STATUS_APPLIED;}
+    }
     public AbstractStatusEffect statusEffect;
     public AbstractCharacter effectAppliedToChar;
     public int effectAppliedToLane;
 
     public CombatEventStatusApplied(AbstractStatusEffect effect, AbstractCharacter character){
-        this.eventType = CombatEventType.ON_STATUS_APPLIED;
         this.statusEffect = effect;
         this.effectAppliedToChar = character;
     }
 
     public CombatEventStatusApplied(AbstractStatusEffect effect, int lane){
-        this.eventType = CombatEventType.ON_STATUS_APPLIED;
         this.statusEffect = effect;
         this.effectAppliedToLane = lane;
     }
 }
 
-public class CombatEventDamageDealt : CombatEventData {
+public class CombatEventDamageDealt : ICombatEvent {
+    public CombatEventType eventType {
+        get {return CombatEventType.ON_DEAL_DAMAGE;}
+    }
     public AbstractCharacter dealer;
     public int damageDealt;
     public bool isPoiseDamage;
 
     public CombatEventDamageDealt(AbstractCharacter dealer, int damageDealt, bool isPoiseDamage){
-        this.eventType = CombatEventType.ON_DEAL_DAMAGE;
         this.dealer = dealer;
         this.damageDealt = damageDealt;
         this.isPoiseDamage = isPoiseDamage;
     }
 }
 
-public class CombatEventDamageTaken : CombatEventData {
+public class CombatEventDamageTaken : ICombatEvent {
+    public CombatEventType eventType {
+        get {return CombatEventType.ON_TAKE_DAMAGE;}
+    }
     public AbstractCharacter target;
     public int damageTaken;
     public bool isPoiseDamage;
 
     public CombatEventDamageTaken(AbstractCharacter target, int damageTaken, bool isPoiseDamage){
-        this.eventType = CombatEventType.ON_TAKE_DAMAGE;
         this.target = target;
         this.damageTaken = damageTaken;
         this.isPoiseDamage = isPoiseDamage;
     }
 }
 
-public class CombatEventClashTie : CombatEventData {
+public class CombatEventClashTie : ICombatEvent {
+    public CombatEventType eventType {
+        get {return CombatEventType.ON_CLASH_TIE;}
+    }
 
     public Die atkDie;
     public Die reactDie;
 
     public CombatEventClashTie(Die atkDie, Die reactDie){
-        this.eventType = CombatEventType.ON_CLASH_TIE;
         this.atkDie = atkDie;
         this.reactDie = reactDie;
     }
 }
 
-public class CombatEventClashWin : CombatEventData {
+public class CombatEventClashWin : ICombatEvent {
+    public CombatEventType eventType {
+        get {return CombatEventType.ON_CLASH_WIN;}
+    }
     public Die winningDie;
     public int winningRoll;
 
     public CombatEventClashWin(Die winningDie, int winningRoll){
-        this.eventType = CombatEventType.ON_CLASH_WIN;
         this.winningDie = winningDie;
         this.winningRoll = winningRoll;
     }
 }
 
-public class CombatEventClashLose : CombatEventData {
+public class CombatEventClashLose : ICombatEvent {
+    public CombatEventType eventType {
+        get {return CombatEventType.ON_CLASH_LOSE;}
+    }
     public Die losingDie;
     public int losingRoll;
 
     public CombatEventClashLose(Die losingDie, int losingRoll){
-        this.eventType = CombatEventType.ON_CLASH_LOSE;
         this.losingDie = losingDie;
         this.losingRoll = losingRoll;
     }
 }
 
 
-public class CombatEventUnitMoved : CombatEventData {
+public class CombatEventUnitMoved : ICombatEvent {
+    public CombatEventType eventType {
+        get {return CombatEventType.ON_UNIT_MOVED;}
+    }
     public AbstractCharacter movedUnit;
     public int originalLane;
     public int moveMagnitude;
@@ -341,7 +379,6 @@ public class CombatEventUnitMoved : CombatEventData {
     public bool isForcedMovement;   // Voluntary lane shifts and shifts as part of an ability effect are not considered "forced movement", but Pushes/Pulls are.
 
     public CombatEventUnitMoved(AbstractCharacter movedUnit, int originalLane, int moveMagnitude, bool isMoveLeft, bool isForcedMovement){
-        this.eventType = CombatEventType.ON_UNIT_MOVED;
         this.movedUnit = movedUnit;
         this.originalLane = originalLane;
         this.moveMagnitude = moveMagnitude;

@@ -2,7 +2,7 @@ using Godot;
 using System;
 using System.Linq;
 
-public partial class CharacterUI : Control, IEventSubscriber
+public partial class CharacterUI : Control, IEventSubscriber, IEventHandler<CombatEventTurnEnd>
 {
 	private AbstractCharacter _character;
 	public AbstractCharacter Character {
@@ -55,7 +55,7 @@ public partial class CharacterUI : Control, IEventSubscriber
 		CombatManager.eventManager?.Subscribe(CombatEventType.ON_TURN_END, this, CombatEventPriority.UI);
     }
 
-    public void HandleEvent(CombatEventData eventData){
+    public void HandleEvent(CombatEventTurnEnd eventData){
         UpdateStatsText();
     }
 }

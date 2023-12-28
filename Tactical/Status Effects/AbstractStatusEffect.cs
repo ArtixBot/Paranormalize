@@ -11,9 +11,4 @@ public abstract class AbstractStatusEffect : IEventSubscriber{
     public bool CAN_GAIN_STACKS = true;       // If false, once applied, this cannot gain additional stacks until the status is removed. Defaults to true.
 
     public virtual void InitSubscriptions(){}
-
-    public virtual void HandleEvent(CombatEventData data){
-        CombatEventStatusApplied eventData = (CombatEventStatusApplied) data;
-        if (eventData.statusEffect != this) return;
-    }
 }

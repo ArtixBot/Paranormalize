@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 public enum CharacterFaction {PLAYER, NEUTRAL, ENEMY};
 
-public partial class AbstractCharacter : IEventSubscriber {
+public partial class AbstractCharacter : IEventSubscriber, IEventHandler<CombatEventCharacterDeath> {
     public CharacterFaction CHAR_FACTION;
     public string CHAR_NAME;
 
@@ -94,16 +94,12 @@ public partial class AbstractCharacter : IEventSubscriber {
         }
     }
 
-    public virtual void HandleEvent(CombatEventData data){
-        switch (data.eventType) {
-            case CombatEventType.ON_CHARACTER_DEATH:
-                CombatEventCharacterDeath deathData = (CombatEventCharacterDeath) data;
-                if (deathData.deadChar != this) return;
-                // Handle death stuff.
-                foreach (AbstractAbility ability in this.abilities){
-                    CombatManager.eventManager?.UnsubscribeAll(ability);
-                }
-                return;
+    public virtual void HandleEvent(CombatEventCharacterDeath data){
+        if (data.deadChar != this) return;
+        // Handle death stuff.
+        foreach (AbstractAbility ability in this.abilities){
+            CombatManager.eventManager?.UnsubscribeAll(ability);
         }
+        return;
     }
 }

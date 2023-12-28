@@ -2,7 +2,7 @@ using Godot;
 using System;
 using System.Collections.Generic;
 
-public class ConditionStaggered : AbstractStatusEffect{
+public class ConditionStaggered : AbstractStatusEffect, IEventHandler<CombatEventDamageTaken>, IEventHandler<CombatEventRoundEnd>{
     private int oldActionsPerTurn;
 
     public ConditionStaggered(){
@@ -30,27 +30,20 @@ public class ConditionStaggered : AbstractStatusEffect{
         CombatManager.combatInstance.turnlist.RemoveAllInstancesOfItem(this.OWNER);
     }
 
-    public override void HandleEvent(CombatEventData data){
-        switch (data.eventType){
-            case CombatEventType.ON_TAKE_DAMAGE:
-                data = data as CombatEventDamageTaken;
-                // TODO: Despite passing by reference the payload itself (CombatEventData data) is not having its value changed. Need to look into this.
-                // See https://stackoverflow.com/a/1429763?
-                // if (!data.isPoiseDamage){
-                //     data.damageTaken *= 2;      // Damage taken while staggered is doubled.
-                // }
-                break;
-            case CombatEventType.ON_ROUND_END:
-                // At end of round, reduce stacks (duration) by 1.
-                this.STACKS -= 1;
+    public void HandleEvent(CombatEventDamageTaken data){
+        if (data.target == this.OWNER && !data.isPoiseDamage){
+            data.damageTaken *= 2;      // Damage taken while staggered is doubled.
+        }
+    }
 
-                // At 0 stacks, Staggered is removed.
-                if (this.STACKS == 0){
-                    this.OWNER.ActionsPerTurn = this.oldActionsPerTurn;
-                    CombatManager.ExecuteAction(new RecoverPoiseAction(this.OWNER, this.OWNER.MaxPoise));
-                    CombatManager.ExecuteAction(new RemoveStatusAction(this.OWNER, this));
-                }
-                break;
+    public void HandleEvent(CombatEventRoundEnd data){
+        this.STACKS -= 1;
+
+        // At 0 stacks, Staggered is removed.
+        if (this.STACKS == 0){
+            this.OWNER.ActionsPerTurn = this.oldActionsPerTurn;
+            CombatManager.ExecuteAction(new RecoverPoiseAction(this.OWNER, this.OWNER.MaxPoise));
+            CombatManager.ExecuteAction(new RemoveStatusAction(this.OWNER, this));
         }
     }
 }
