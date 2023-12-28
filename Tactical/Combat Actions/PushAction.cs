@@ -24,7 +24,7 @@ public class PushAction : AbstractAction {
         CombatManager.eventManager.BroadcastEvent(
             new CombatEventUnitMoved(this.pushee, 
                                      this.pushee.Position, 
-                                     ref pushDistance, 
+                                     pushDistance, 
                                      isMoveLeft: pushLeft,
                                      isForcedMovement: true));
 

@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 
 public interface IEventSubscriber {
-    public abstract void HandleEvent(ref CombatEventData eventData);
+    public abstract void HandleEvent(CombatEventData eventData);
 
     /// <summary>
     /// An IEventSubscriber should override InitSubscriptions to begin subscribing to all relevant events.
@@ -80,7 +80,7 @@ public partial class CombatEventManager{
         int i = 0;
         List<(IEventSubscriber subscriber, int priority)> eventSubscribers = events[eventData.eventType].GetQueue();
         while (i < eventSubscribers.Count){
-            eventSubscribers[i].subscriber.HandleEvent(ref eventData);
+            eventSubscribers[i].subscriber.HandleEvent(eventData);
             i += 1;
         }
     }
@@ -196,7 +196,7 @@ public class CombatEventAbilityActivated : CombatEventData {
     public List<AbstractCharacter> targets = new List<AbstractCharacter>();
     public List<int> lanes = new List<int>();
 
-    public CombatEventAbilityActivated(AbstractCharacter caster, AbstractAbility abilityActivated, ref List<Die> abilityDice, ref AbstractCharacter target){
+    public CombatEventAbilityActivated(AbstractCharacter caster, AbstractAbility abilityActivated, List<Die> abilityDice, AbstractCharacter target){
         this.eventType = CombatEventType.ON_ABILITY_ACTIVATED;
         this.abilityActivated = abilityActivated;
         this.abilityDice = abilityDice;
@@ -204,7 +204,7 @@ public class CombatEventAbilityActivated : CombatEventData {
         this.target = target;
     }
     
-    public CombatEventAbilityActivated(AbstractCharacter caster, AbstractAbility abilityActivated, ref List<Die> abilityDice, ref List<AbstractCharacter> targets){
+    public CombatEventAbilityActivated(AbstractCharacter caster, AbstractAbility abilityActivated, List<Die> abilityDice, List<AbstractCharacter> targets){
         this.eventType = CombatEventType.ON_ABILITY_ACTIVATED;
         this.abilityActivated = abilityActivated;
         this.abilityDice = abilityDice;
@@ -212,7 +212,7 @@ public class CombatEventAbilityActivated : CombatEventData {
         this.targets = targets;
     }
 
-    public CombatEventAbilityActivated(AbstractCharacter caster, AbstractAbility abilityActivated, ref List<Die> abilityDice, List<int> lanes){
+    public CombatEventAbilityActivated(AbstractCharacter caster, AbstractAbility abilityActivated, List<Die> abilityDice, List<int> lanes){
         this.eventType = CombatEventType.ON_ABILITY_ACTIVATED;
         this.abilityActivated = abilityActivated;
         this.abilityDice = abilityDice;
@@ -231,7 +231,7 @@ public class CombatEventClashOccurs : CombatEventData {
     public List<Die> reacterDice;
 
     ///<summary>Notify subscribers that a clash is occurring.</summary>
-    public CombatEventClashOccurs(AbstractCharacter attacker, AbstractAbility attackerAbility, ref List<Die> attackerDice, AbstractCharacter reacter, AbstractAbility reacterAbility, ref List<Die> reacterDice){
+    public CombatEventClashOccurs(AbstractCharacter attacker, AbstractAbility attackerAbility, List<Die> attackerDice, AbstractCharacter reacter, AbstractAbility reacterAbility, List<Die> reacterDice){
         this.eventType = CombatEventType.ON_CLASH;
         this.attacker = attacker;
         this.attackerAbility = attackerAbility;
@@ -247,7 +247,7 @@ public class CombatEventDieRolled : CombatEventData {
     public Die die;
     public int rolledValue;
 
-    public CombatEventDieRolled(Die die, ref int rolledValue){
+    public CombatEventDieRolled(Die die, int rolledValue){
         this.eventType = CombatEventType.ON_DIE_ROLLED;
         this.die = die;
         this.rolledValue = rolledValue;
@@ -277,7 +277,7 @@ public class CombatEventDamageDealt : CombatEventData {
     public int damageDealt;
     public bool isPoiseDamage;
 
-    public CombatEventDamageDealt(AbstractCharacter dealer, ref int damageDealt, bool isPoiseDamage){
+    public CombatEventDamageDealt(AbstractCharacter dealer, int damageDealt, bool isPoiseDamage){
         this.eventType = CombatEventType.ON_DEAL_DAMAGE;
         this.dealer = dealer;
         this.damageDealt = damageDealt;
@@ -290,7 +290,7 @@ public class CombatEventDamageTaken : CombatEventData {
     public int damageTaken;
     public bool isPoiseDamage;
 
-    public CombatEventDamageTaken(AbstractCharacter target, ref int damageTaken, bool isPoiseDamage){
+    public CombatEventDamageTaken(AbstractCharacter target, int damageTaken, bool isPoiseDamage){
         this.eventType = CombatEventType.ON_TAKE_DAMAGE;
         this.target = target;
         this.damageTaken = damageTaken;
@@ -314,7 +314,7 @@ public class CombatEventClashWin : CombatEventData {
     public Die winningDie;
     public int winningRoll;
 
-    public CombatEventClashWin(Die winningDie, ref int winningRoll){
+    public CombatEventClashWin(Die winningDie, int winningRoll){
         this.eventType = CombatEventType.ON_CLASH_WIN;
         this.winningDie = winningDie;
         this.winningRoll = winningRoll;
@@ -325,7 +325,7 @@ public class CombatEventClashLose : CombatEventData {
     public Die losingDie;
     public int losingRoll;
 
-    public CombatEventClashLose(Die losingDie, ref int losingRoll){
+    public CombatEventClashLose(Die losingDie, int losingRoll){
         this.eventType = CombatEventType.ON_CLASH_LOSE;
         this.losingDie = losingDie;
         this.losingRoll = losingRoll;
@@ -340,7 +340,7 @@ public class CombatEventUnitMoved : CombatEventData {
     public bool isMoveLeft;       // If false, assume move right.
     public bool isForcedMovement;   // Voluntary lane shifts and shifts as part of an ability effect are not considered "forced movement", but Pushes/Pulls are.
 
-    public CombatEventUnitMoved(AbstractCharacter movedUnit, int originalLane, ref int moveMagnitude, bool isMoveLeft, bool isForcedMovement){
+    public CombatEventUnitMoved(AbstractCharacter movedUnit, int originalLane, int moveMagnitude, bool isMoveLeft, bool isForcedMovement){
         this.eventType = CombatEventType.ON_UNIT_MOVED;
         this.movedUnit = movedUnit;
         this.originalLane = originalLane;

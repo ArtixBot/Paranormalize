@@ -222,9 +222,9 @@ public static class CombatManager {
             List<int> laneTargeting = combatInstance.activeAbilityLanes;
             // Check whether to emit a unit-targeted ABILITY_ACTIVATED event or a lane-targeted ABILITY_ACTIVATED event.
             if (charTargeting != null){
-                eventManager.BroadcastEvent(new CombatEventAbilityActivated(combatInstance.activeChar, combatInstance.activeAbility, ref combatInstance.activeAbilityDice, ref charTargeting));
+                eventManager.BroadcastEvent(new CombatEventAbilityActivated(combatInstance.activeChar, combatInstance.activeAbility, combatInstance.activeAbilityDice, charTargeting));
             } else if (laneTargeting != null){
-                eventManager.BroadcastEvent(new CombatEventAbilityActivated(combatInstance.activeChar, combatInstance.activeAbility, ref combatInstance.activeAbilityDice, laneTargeting));
+                eventManager.BroadcastEvent(new CombatEventAbilityActivated(combatInstance.activeChar, combatInstance.activeAbility, combatInstance.activeAbilityDice, laneTargeting));
             }
 
             ResolveUnopposedAbility();
@@ -233,14 +233,14 @@ public static class CombatManager {
         if (combatInstance.reactAbility != null){
             AbstractCharacter attacker = combatInstance.activeChar;
             AbstractCharacter defender = combatInstance.activeAbilityTargets.First();
-            eventManager.BroadcastEvent(new CombatEventAbilityActivated(attacker, combatInstance.activeAbility, ref combatInstance.activeAbilityDice, ref defender));
-            eventManager.BroadcastEvent(new CombatEventAbilityActivated(defender, combatInstance.reactAbility, ref combatInstance.reactAbilityDice, ref attacker));
+            eventManager.BroadcastEvent(new CombatEventAbilityActivated(attacker, combatInstance.activeAbility, combatInstance.activeAbilityDice, defender));
+            eventManager.BroadcastEvent(new CombatEventAbilityActivated(defender, combatInstance.reactAbility, combatInstance.reactAbilityDice, attacker));
             eventManager.BroadcastEvent(new CombatEventClashOccurs(attacker, 
                                                                     combatInstance.activeAbility, 
-                                                                    ref combatInstance.activeAbilityDice, 
+                                                                    combatInstance.activeAbilityDice, 
                                                                     defender, 
                                                                     combatInstance.reactAbility, 
-                                                                    ref combatInstance.reactAbilityDice));
+                                                                    combatInstance.reactAbilityDice));
             ResolveClash();
         }
         // If the active ability had Cantrip, don't end turn and instead return to AWAITING_ABILITY_INPUT.
@@ -263,7 +263,7 @@ public static class CombatManager {
             Die die = combatInstance.activeAbilityDice[0];
             int dieRoll = die.Roll();
             Logging.Log($"{combatInstance.activeAbility.OWNER.CHAR_NAME} rolls a(n) {die.DieType} die (range: {die.MinValue} - {die.MaxValue}, natural roll: {dieRoll}).", Logging.LogLevel.ESSENTIAL);
-            eventManager.BroadcastEvent(new CombatEventDieRolled(die, ref dieRoll));
+            eventManager.BroadcastEvent(new CombatEventDieRolled(die, dieRoll));
 
             foreach (AbstractCharacter target in combatInstance.activeAbilityTargets.ToList()){
                 ResolveDieRoll(combatInstance.activeAbility.OWNER, target, die, dieRoll, rolledDuringClash: false);
@@ -283,7 +283,7 @@ public static class CombatManager {
             Die die = combatInstance.reactAbilityDice[0];
             int dieRoll = die.Roll();
             Logging.Log($"{combatInstance.reactAbility.OWNER.CHAR_NAME} rolls a(n) {die.DieType} die (range: {die.MinValue} - {die.MaxValue}, natural roll: {dieRoll}).", Logging.LogLevel.ESSENTIAL);
-            eventManager.BroadcastEvent(new CombatEventDieRolled(die, ref dieRoll));
+            eventManager.BroadcastEvent(new CombatEventDieRolled(die, dieRoll));
 
             ResolveDieRoll(combatInstance.reactAbility.OWNER, combatInstance.activeChar, die, dieRoll, rolledDuringClash: false);
 
@@ -330,8 +330,8 @@ public static class CombatManager {
             $"\n\t{combatInstance.activeAbility.OWNER.CHAR_NAME}: {atkDie.DieType} die (range {atkDie.MinValue} - {atkDie.MaxValue}, roll: {atkRoll})" +
             $"\n\t{combatInstance.reactAbility.OWNER.CHAR_NAME}: {reactDie.DieType} die (range {reactDie.MinValue} - {reactDie.MaxValue}, roll: {reactRoll}))", Logging.LogLevel.ESSENTIAL);
 
-            eventManager.BroadcastEvent(new CombatEventDieRolled(atkDie, ref atkRoll));
-            eventManager.BroadcastEvent(new CombatEventDieRolled(reactDie, ref reactRoll));
+            eventManager.BroadcastEvent(new CombatEventDieRolled(atkDie, atkRoll));
+            eventManager.BroadcastEvent(new CombatEventDieRolled(reactDie, reactRoll));
 
             // On tie, remove both dice.
             if (atkRoll == reactRoll){
@@ -352,8 +352,8 @@ public static class CombatManager {
             if (winningDie.IsAttackDie && losingDie.DieType == DieType.BLOCK) {
                 winningRoll -= losingRoll;
             }
-            eventManager.BroadcastEvent(new CombatEventClashWin(winningDie, ref winningRoll));
-            eventManager.BroadcastEvent(new CombatEventClashLose(losingDie, ref losingRoll));
+            eventManager.BroadcastEvent(new CombatEventClashWin(winningDie, winningRoll));
+            eventManager.BroadcastEvent(new CombatEventClashLose(losingDie, losingRoll));
 
 
             ResolveDieRoll(winningChar, losingChar, winningDie, winningRoll, rolledDuringClash: true);

@@ -12,7 +12,7 @@ public class DebuffSlow : AbstractStatusEffect{
         CombatManager.eventManager.Subscribe(CombatEventType.ON_ROUND_START, this, CombatEventPriority.STANDARD);
     }
 
-    public override void HandleEvent(ref CombatEventData data){
+    public override void HandleEvent(CombatEventData data){
         CombatManager.combatInstance.turnlist.ModifyItemPriority(this.OWNER, -this.STACKS);
         CombatManager.ExecuteAction(new RemoveStatusAction(this.OWNER, this));
     }

@@ -55,7 +55,7 @@ public partial class CharacterUI : Control, IEventSubscriber
 		CombatManager.eventManager?.Subscribe(CombatEventType.ON_TURN_END, this, CombatEventPriority.UI);
     }
 
-    public void HandleEvent(ref CombatEventData eventData){
+    public void HandleEvent(CombatEventData eventData){
         UpdateStatsText();
     }
 }

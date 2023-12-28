@@ -94,7 +94,7 @@ public partial class AbstractCharacter : IEventSubscriber {
         }
     }
 
-    public virtual void HandleEvent(ref CombatEventData data){
+    public virtual void HandleEvent(CombatEventData data){
         switch (data.eventType) {
             case CombatEventType.ON_CHARACTER_DEATH:
                 CombatEventCharacterDeath deathData = (CombatEventCharacterDeath) data;

@@ -25,7 +25,7 @@ public class PullAction : AbstractAction {
         CombatManager.eventManager.BroadcastEvent(
             new CombatEventUnitMoved(this.pullee, 
                                      this.pullee.Position, 
-                                     ref maxPullDistance, 
+                                     maxPullDistance, 
                                      isMoveLeft: pullLeft, 
                                      isForcedMovement: true));
 

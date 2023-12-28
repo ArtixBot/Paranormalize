@@ -70,7 +70,7 @@ public partial class CombatInterface : Control, IEventSubscriber {
 		CombatManager.eventManager.Subscribe(CombatEventType.ON_COMBAT_STATE_CHANGE, this, CombatEventPriority.UI);
     }
 
-    public void HandleEvent(ref CombatEventData data){
+    public void HandleEvent(CombatEventData data){
 		switch (data.eventType){
 			case CombatEventType.ON_ROUND_START:
 				UpdateRoundText();

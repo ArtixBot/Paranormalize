@@ -30,11 +30,11 @@ public class ConditionStaggered : AbstractStatusEffect{
         CombatManager.combatInstance.turnlist.RemoveAllInstancesOfItem(this.OWNER);
     }
 
-    public override void HandleEvent(ref CombatEventData data){
+    public override void HandleEvent(CombatEventData data){
         switch (data.eventType){
             case CombatEventType.ON_TAKE_DAMAGE:
                 data = data as CombatEventDamageTaken;
-                // TODO: Despite passing by reference the payload itself (ref CombatEventData data) is not having its value changed. Need to look into this.
+                // TODO: Despite passing by reference the payload itself (CombatEventData data) is not having its value changed. Need to look into this.
                 // See https://stackoverflow.com/a/1429763?
                 // if (!data.isPoiseDamage){
                 //     data.damageTaken *= 2;      // Damage taken while staggered is doubled.
