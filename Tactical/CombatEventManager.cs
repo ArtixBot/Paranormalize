@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 
 public interface IEventSubscriber {
-    public abstract void HandleEvent(CombatEventData eventData);
+    public abstract void HandleEvent(ref CombatEventData eventData);
 
     /// <summary>
     /// An IEventSubscriber should override InitSubscriptions to begin subscribing to all relevant events.
@@ -80,7 +80,7 @@ public partial class CombatEventManager{
         int i = 0;
         List<(IEventSubscriber subscriber, int priority)> eventSubscribers = events[eventData.eventType].GetQueue();
         while (i < eventSubscribers.Count){
-            eventSubscribers[i].subscriber.HandleEvent(eventData);
+            eventSubscribers[i].subscriber.HandleEvent(ref eventData);
             i += 1;
         }
     }
@@ -196,7 +196,7 @@ public class CombatEventAbilityActivated : CombatEventData {
     public List<AbstractCharacter> targets = new List<AbstractCharacter>();
     public List<int> lanes = new List<int>();
 
-    public CombatEventAbilityActivated(AbstractCharacter caster, AbstractAbility abilityActivated, ref List<Die> abilityDice, AbstractCharacter target){
+    public CombatEventAbilityActivated(AbstractCharacter caster, AbstractAbility abilityActivated, ref List<Die> abilityDice, ref AbstractCharacter target){
         this.eventType = CombatEventType.ON_ABILITY_ACTIVATED;
         this.abilityActivated = abilityActivated;
         this.abilityDice = abilityDice;

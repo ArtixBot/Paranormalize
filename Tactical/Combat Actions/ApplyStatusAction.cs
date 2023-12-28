@@ -8,7 +8,7 @@ public class ApplyStatusAction : AbstractAction {
     private AbstractStatusEffect effect;
     private int stacksToApply;
 
-    public ApplyStatusAction(AbstractCharacter target, AbstractStatusEffect effect, int stacksToApply = 0){
+    public ApplyStatusAction(AbstractCharacter target, AbstractStatusEffect effect, int stacksToApply){
         this.target = target;
         this.effect = effect;
         this.stacksToApply = stacksToApply;

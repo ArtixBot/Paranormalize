@@ -113,7 +113,7 @@ public partial class ActiveCharInterfaceLayer : Control, IEventSubscriber {
 		CombatManager.eventManager.Subscribe(CombatEventType.ON_COMBAT_STATE_CHANGE, this, CombatEventPriority.UI);
     }
 
-    public void HandleEvent(CombatEventData data){
+    public void HandleEvent(ref CombatEventData data){
 		switch (data.eventType){
 			case CombatEventType.ON_TURN_START:
 				UpdateAvailableAbilities();

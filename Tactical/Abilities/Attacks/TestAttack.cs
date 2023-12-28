@@ -10,7 +10,7 @@ public class TestAttack : AbstractAbility {
     private static string desc = "";
 
     // TODO: Should gameplay attributes also be defined in JSON? e.g. base CD, min range, max range, dice, etc...
-    private static int cd = 1;
+    private static int cd = 0;
     private static int min_range = 0;
     private static int max_range = 1;
     private static bool targetsLane = false;
@@ -28,8 +28,7 @@ public class TestAttack : AbstractAbility {
         needsUnit,
         new HashSet<TargetingModifiers>{TargetingModifiers.ENEMIES_ONLY}
     ){
-        Die atkDieA = new Die(DieType.BLUNT, 10, 20);
-        Die atkDieB = new Die(DieType.BLUNT, 2, 3);
-        this.BASE_DICE = new List<Die>{atkDieA, atkDieB};
+        Die atkDieA = new Die(DieType.BLUNT, 1, 1);
+        this.BASE_DICE = new List<Die>{atkDieA};
     }
 }

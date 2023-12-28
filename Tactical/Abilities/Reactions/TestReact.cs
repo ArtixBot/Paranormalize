@@ -27,10 +27,7 @@ public class TestReact : AbstractAbility {
         targetsLane,
         needsUnit
     ){
-        Die atkDieA = new Die(DieType.BLUNT, 4, 6);
-        Die atkDieB = new Die(DieType.PIERCE, 4, 6);
-        Die defDieA = new Die(DieType.BLOCK, 3, 8);
-        Die defDieB = new Die(DieType.EVADE, 1, 11);
-        this.BASE_DICE = new List<Die>{atkDieA, atkDieB, defDieA, defDieB};
+        Die atkDieA = new Die(DieType.BLOCK, 40, 60);
+        this.BASE_DICE = new List<Die>{atkDieA, atkDieA};
     }
 }

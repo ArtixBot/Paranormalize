@@ -231,14 +231,16 @@ public static class CombatManager {
         }
         // Clash occurs!
         if (combatInstance.reactAbility != null){
-            eventManager.BroadcastEvent(new CombatEventAbilityActivated(combatInstance.activeChar, combatInstance.activeAbility, ref combatInstance.activeAbilityDice, ref combatInstance.activeAbilityTargets));
-            eventManager.BroadcastEvent(new CombatEventAbilityActivated(combatInstance.activeAbilityTargets[0], combatInstance.reactAbility, ref combatInstance.reactAbilityDice, combatInstance.activeChar));
-            eventManager.BroadcastEvent(new CombatEventClashOccurs(combatInstance.activeChar, 
-                                                                combatInstance.activeAbility, 
-                                                                ref combatInstance.activeAbilityDice, 
-                                                                combatInstance.activeAbilityTargets[0], 
-                                                                combatInstance.reactAbility, 
-                                                                ref combatInstance.reactAbilityDice));
+            AbstractCharacter attacker = combatInstance.activeChar;
+            AbstractCharacter defender = combatInstance.activeAbilityTargets.First();
+            eventManager.BroadcastEvent(new CombatEventAbilityActivated(attacker, combatInstance.activeAbility, ref combatInstance.activeAbilityDice, ref defender));
+            eventManager.BroadcastEvent(new CombatEventAbilityActivated(defender, combatInstance.reactAbility, ref combatInstance.reactAbilityDice, ref attacker));
+            eventManager.BroadcastEvent(new CombatEventClashOccurs(attacker, 
+                                                                    combatInstance.activeAbility, 
+                                                                    ref combatInstance.activeAbilityDice, 
+                                                                    defender, 
+                                                                    combatInstance.reactAbility, 
+                                                                    ref combatInstance.reactAbilityDice));
             ResolveClash();
         }
         // If the active ability had Cantrip, don't end turn and instead return to AWAITING_ABILITY_INPUT.
@@ -255,39 +257,41 @@ public static class CombatManager {
     }
 
     private static void ResolveUnopposedAbility(){
-        // Check whether to resolve the attacker's ability, or whether to resolve the reacter's ability (if their ability has more dice than the attacker's).
-        List<Die> resolverDice = null;
-        bool reactTargeting = false;
-        if (combatInstance.activeAbilityDice?.Count > 0){
-            resolverDice = combatInstance.activeAbilityDice;
-        } else if (combatInstance.reactAbility != null && combatInstance.reactAbilityDice?.Count > 0){
-            resolverDice = combatInstance.reactAbilityDice;
-            reactTargeting = true;
-        }
-        if (resolverDice == null) return;
-        
         // Use a while loop since additional dice can be tossed into the queue during combat processing (e.g. die has "Cycle" effect).
         int i = 0;      // There should never be more than 100 iterations but if somehow there were an infinite Cycle loop, this should break that.
-        while (resolverDice.Count > 0 && i < 100){
-            Die die = resolverDice[0];
+        while (combatInstance.activeAbilityDice?.Count > 0 && i < 100){
+            Die die = combatInstance.activeAbilityDice[0];
             int dieRoll = die.Roll();
             Logging.Log($"{combatInstance.activeAbility.OWNER.CHAR_NAME} rolls a(n) {die.DieType} die (range: {die.MinValue} - {die.MaxValue}, natural roll: {dieRoll}).", Logging.LogLevel.ESSENTIAL);
             eventManager.BroadcastEvent(new CombatEventDieRolled(die, ref dieRoll));
 
-            if (reactTargeting){
-                ResolveDieRoll(combatInstance.reactAbility.OWNER, combatInstance.activeChar, die, dieRoll, rolledDuringClash: false);
-            } else {
-                // Explicit .ToList() cast to avoid error of modifying a collection in-loop.
-                foreach (AbstractCharacter target in combatInstance.activeAbilityTargets.ToList()){
-                    ResolveDieRoll(combatInstance.activeAbility.OWNER, target, die, dieRoll, rolledDuringClash: false);
-                }
+            foreach (AbstractCharacter target in combatInstance.activeAbilityTargets.ToList()){
+                ResolveDieRoll(combatInstance.activeAbility.OWNER, target, die, dieRoll, rolledDuringClash: false);
             }
 
             try {
                 // An exception can occur if all targets in combatInstance.activeAbilityTargets are removed from combat, as this will preemptively remove all dice from activeAbilityDice.
                 combatInstance.activeAbilityDice.RemoveAt(0);
             } catch (ArgumentOutOfRangeException){
-                GD.Print("Attempted to remove dice at position zero but no dice existed, as all targets died and thus dice were preemptively removed.");
+                GD.Print("Attempted to remove dice at position zero but no dice existed, as all targets were staggered/died and thus dice were preemptively removed.");
+            }
+            i += 1;
+        }
+
+        i = 0;
+        while (combatInstance.reactAbilityDice?.Count > 0 && i < 100){
+            Die die = combatInstance.reactAbilityDice[0];
+            int dieRoll = die.Roll();
+            Logging.Log($"{combatInstance.reactAbility.OWNER.CHAR_NAME} rolls a(n) {die.DieType} die (range: {die.MinValue} - {die.MaxValue}, natural roll: {dieRoll}).", Logging.LogLevel.ESSENTIAL);
+            eventManager.BroadcastEvent(new CombatEventDieRolled(die, ref dieRoll));
+
+            ResolveDieRoll(combatInstance.reactAbility.OWNER, combatInstance.activeChar, die, dieRoll, rolledDuringClash: false);
+
+            try {
+                // An exception can occur if the attacker is killed during unopposed ability resolution, as this will preemptively remove all dice from reactAbilityDice.
+                combatInstance.reactAbilityDice.RemoveAt(0);
+            } catch (ArgumentOutOfRangeException){
+                GD.Print("Attempted to remove dice at position zero but no dice existed, as the attacker was staggered/died and thus dice were preemptively removed.");
             }
             i += 1;
         }
@@ -329,8 +333,7 @@ public static class CombatManager {
             eventManager.BroadcastEvent(new CombatEventDieRolled(atkDie, ref atkRoll));
             eventManager.BroadcastEvent(new CombatEventDieRolled(reactDie, ref reactRoll));
 
-
-            // On a tie, remove both dice.
+            // On tie, remove both dice.
             if (atkRoll == reactRoll){
                 eventManager.BroadcastEvent(new CombatEventClashTie(atkDie, reactDie));
                 continue;
@@ -356,9 +359,13 @@ public static class CombatManager {
             ResolveDieRoll(winningChar, losingChar, winningDie, winningRoll, rolledDuringClash: true);
             try {
                 combatInstance.activeAbilityDice.RemoveAt(0);
+            } catch (ArgumentOutOfRangeException){
+                GD.Print("Attempted to remove attacker dice at position zero, but dice were preemptively removed since either the attacker was staggered or the defender was killed.");
+            }
+            try {
                 combatInstance.reactAbilityDice.RemoveAt(0);
             } catch (ArgumentOutOfRangeException){
-                GD.Print("Attempted to remove dice at position zero but no dice existed, as all targets died and thus dice were preemptively removed.");
+                GD.Print("Attempted to remove defender dice at position zero, but dice were preemptively removed since either the defender was staggered or the attacker was killed.");
             }
 
             i += 1;

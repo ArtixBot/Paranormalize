@@ -12,7 +12,7 @@ public abstract class AbstractStatusEffect : IEventSubscriber{
 
     public virtual void InitSubscriptions(){}
 
-    public virtual void HandleEvent(CombatEventData data){
+    public virtual void HandleEvent(ref CombatEventData data){
         CombatEventStatusApplied eventData = (CombatEventStatusApplied) data;
         if (eventData.statusEffect != this) return;
     }

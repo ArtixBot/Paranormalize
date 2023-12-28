@@ -166,7 +166,7 @@ public abstract class AbstractAbility : IEventSubscriber {
         CombatEventManager.instance?.Subscribe(CombatEventType.ON_ROUND_END, this, CombatEventPriority.HIGHEST_PRIORITY);
     }
 
-    public virtual void HandleEvent(CombatEventData eventData){
+    public virtual void HandleEvent(ref CombatEventData eventData){
         CombatEventType eventType = eventData.eventType;
         if (eventType == CombatEventType.ON_ABILITY_ACTIVATED) {
             CombatEventAbilityActivated data = (CombatEventAbilityActivated) eventData;

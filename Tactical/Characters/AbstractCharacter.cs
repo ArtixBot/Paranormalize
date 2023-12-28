@@ -29,7 +29,6 @@ public partial class AbstractCharacter : IEventSubscriber {
         set { _MaxPoise = value; CurPoise = CurPoise;}
     }   
 
-    public float DamageTakenMod = 1.0f;
     public int ActionsPerTurn;
     public int MinSpd, MaxSpd;      // Speed modifiers like Haste or Slow are done in event handling.
     public int Position;
@@ -95,7 +94,7 @@ public partial class AbstractCharacter : IEventSubscriber {
         }
     }
 
-    public virtual void HandleEvent(CombatEventData data){
+    public virtual void HandleEvent(ref CombatEventData data){
         switch (data.eventType) {
             case CombatEventType.ON_CHARACTER_DEATH:
                 CombatEventCharacterDeath deathData = (CombatEventCharacterDeath) data;
