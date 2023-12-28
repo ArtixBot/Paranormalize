@@ -75,9 +75,11 @@ public partial class CombatEventManager{
         return false;
     }
 
-    // Notify all subscribers of a specified event. Subscribers will execute in order.
-    public void BroadcastEvent<T>(T eventData) where T : ICombatEvent{
-        if (!events.ContainsKey(eventData.eventType)) return;
+    /// <summary>
+    /// Notify all subscribers of a specified event. Subscribers will execute in order. Returns the modified eventData after all subscribers have finished eventData payload changes.
+    /// </summary>
+    public T BroadcastEvent<T>(T eventData) where T : ICombatEvent{
+        if (!events.ContainsKey(eventData.eventType)) return default;
         Logging.Log($"CombatEventManager broadcasting event {eventData.eventType} to {events[eventData.eventType].GetQueue().Count} subscribers.", Logging.LogLevel.DEBUG);
         int i = 0;
         List<(IEventSubscriber subscriber, int priority)> eventSubscribers = events[eventData.eventType].GetQueue();
@@ -85,6 +87,7 @@ public partial class CombatEventManager{
             (eventSubscribers[i].subscriber as IEventHandler<T>)?.HandleEvent(eventData);
             i += 1;
         }
+        return eventData;
     }
 
     // Return true if the subscriber is in the events dictionary for that event type, false otherwise.

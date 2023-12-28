@@ -22,13 +22,12 @@ public class DamageAction : AbstractAction {
             CombatManager.eventManager.BroadcastEvent(new CombatEventDamageDealt(this.attacker, this.damage, this.isPoiseDamage));
         }
 
-        GD.Print($"Base damage taken: {this.damage}");
-        CombatManager.eventManager.BroadcastEvent(new CombatEventDamageTaken(this.defender, this.damage, this.isPoiseDamage));
-        GD.Print($"Damage taken after event handling: {this.damage}");
-        if (this.isPoiseDamage) {
-            this.defender.CurPoise -= this.damage;
+        CombatEventDamageTaken damageData = new(this.defender, this.damage, this.isPoiseDamage);
+        damageData = CombatManager.eventManager.BroadcastEvent(damageData);
+        if (damageData.isPoiseDamage) {
+            this.defender.CurPoise -= damageData.damageTaken;
         } else {
-            this.defender.CurHP -= this.damage;
+            this.defender.CurHP -= damageData.damageTaken;
         }
 
         if (this.defender.CurPoise <= 0){
