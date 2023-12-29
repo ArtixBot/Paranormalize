@@ -263,10 +263,10 @@ public static class CombatManager {
             Die die = combatInstance.activeAbilityDice[0];
             int dieRoll = die.Roll();
             Logging.Log($"{combatInstance.activeAbility.OWNER.CHAR_NAME} rolls a(n) {die.DieType} die (range: {die.MinValue} - {die.MaxValue}, natural roll: {dieRoll}).", Logging.LogLevel.ESSENTIAL);
-            eventManager.BroadcastEvent(new CombatEventDieRolled(die, dieRoll));
+            int modifiedRoll = eventManager.BroadcastEvent(new CombatEventDieRolled(die, dieRoll)).rolledValue;
 
             foreach (AbstractCharacter target in combatInstance.activeAbilityTargets.ToList()){
-                ResolveDieRoll(combatInstance.activeAbility.OWNER, target, die, dieRoll, rolledDuringClash: false);
+                ResolveDieRoll(combatInstance.activeAbility.OWNER, target, die, dieRoll, modifiedRoll, rolledDuringClash: false);
             }
 
             try {
@@ -283,9 +283,9 @@ public static class CombatManager {
             Die die = combatInstance.reactAbilityDice[0];
             int dieRoll = die.Roll();
             Logging.Log($"{combatInstance.reactAbility.OWNER.CHAR_NAME} rolls a(n) {die.DieType} die (range: {die.MinValue} - {die.MaxValue}, natural roll: {dieRoll}).", Logging.LogLevel.ESSENTIAL);
-            eventManager.BroadcastEvent(new CombatEventDieRolled(die, dieRoll));
+            int modifiedRoll = eventManager.BroadcastEvent(new CombatEventDieRolled(die, dieRoll)).rolledValue;
 
-            ResolveDieRoll(combatInstance.reactAbility.OWNER, combatInstance.activeChar, die, dieRoll, rolledDuringClash: false);
+            ResolveDieRoll(combatInstance.reactAbility.OWNER, combatInstance.activeChar, die, dieRoll, modifiedRoll, rolledDuringClash: false);
 
             try {
                 // An exception can occur if the attacker is killed during unopposed ability resolution, as this will preemptively remove all dice from reactAbilityDice.
@@ -297,23 +297,23 @@ public static class CombatManager {
         }
     }
 
-    private static void ResolveDieRoll(AbstractCharacter roller, AbstractCharacter target, Die die, int roll, bool rolledDuringClash){
+    private static void ResolveDieRoll(AbstractCharacter roller, AbstractCharacter target, Die die, int naturalRoll, int actualRoll, bool rolledDuringClash){
         switch (die.DieType){
             case DieType.SLASH:
             case DieType.PIERCE:
             case DieType.BLUNT:
             case DieType.MAGIC:
-                CombatManager.ExecuteAction(new DamageAction(roller, target, roll, isPoiseDamage: false));
-                CombatManager.ExecuteAction(new DamageAction(roller, target, roll, isPoiseDamage: true));
-                eventManager.BroadcastEvent(new CombatEventDieHit(roller, target, die, roll));
+                CombatManager.ExecuteAction(new DamageAction(roller, target, actualRoll, isPoiseDamage: false));
+                CombatManager.ExecuteAction(new DamageAction(roller, target, actualRoll, isPoiseDamage: true));
+                eventManager.BroadcastEvent(new CombatEventDieHit(roller, target, die, naturalRoll, actualRoll));
                 break;
             case DieType.BLOCK:
                 if (!rolledDuringClash) break;
-                CombatManager.ExecuteAction(new DamageAction(roller, target, roll, isPoiseDamage: true));
+                CombatManager.ExecuteAction(new DamageAction(roller, target, actualRoll, isPoiseDamage: true));
                 break;
             case DieType.EVADE:
                 if (!rolledDuringClash) break;
-                CombatManager.ExecuteAction(new RecoverPoiseAction(roller, roll));
+                CombatManager.ExecuteAction(new RecoverPoiseAction(roller, actualRoll));
                 break;
             case DieType.UNIQUE:
             default:
@@ -325,30 +325,32 @@ public static class CombatManager {
         int i = 0;      // There should never be more than 100 iterations but if somehow there were an infinite Cycle loop, this should break that.
         while (combatInstance.activeAbilityDice.Count > 0 && combatInstance.reactAbilityDice.Count > 0 && i < 100){
             Die atkDie = combatInstance.activeAbilityDice[0], reactDie = combatInstance.reactAbilityDice[0];
-            int atkRoll = atkDie.Roll(), reactRoll = reactDie.Roll();
+            int natAtkRoll = atkDie.Roll(), natReactRoll = reactDie.Roll();
 
             Logging.Log($"Clash {i+1}:" +
-            $"\n\t{combatInstance.activeAbility.OWNER.CHAR_NAME}: {atkDie.DieType} die (range {atkDie.MinValue} - {atkDie.MaxValue}, roll: {atkRoll})" +
-            $"\n\t{combatInstance.reactAbility.OWNER.CHAR_NAME}: {reactDie.DieType} die (range {reactDie.MinValue} - {reactDie.MaxValue}, roll: {reactRoll}))", Logging.LogLevel.ESSENTIAL);
+            $"\n\t{combatInstance.activeAbility.OWNER.CHAR_NAME}: {atkDie.DieType} die (range {atkDie.MinValue} - {atkDie.MaxValue}, roll: {natAtkRoll})" +
+            $"\n\t{combatInstance.reactAbility.OWNER.CHAR_NAME}: {reactDie.DieType} die (range {reactDie.MinValue} - {reactDie.MaxValue}, roll: {natReactRoll}))", Logging.LogLevel.ESSENTIAL);
 
             // Reassign to atkRoll/reactRoll to handle any changes in dice power.
-            atkRoll = eventManager.BroadcastEvent(new CombatEventDieRolled(atkDie, atkRoll)).rolledValue;
-            reactRoll = eventManager.BroadcastEvent(new CombatEventDieRolled(reactDie, reactRoll)).rolledValue;
+            int modAtkRoll = eventManager.BroadcastEvent(new CombatEventDieRolled(atkDie, natAtkRoll)).rolledValue;
+            int modReactRoll = eventManager.BroadcastEvent(new CombatEventDieRolled(reactDie, natReactRoll)).rolledValue;
 
             // On tie, remove both dice.
-            if (atkRoll == reactRoll){
+            if (modAtkRoll == modReactRoll){
                 eventManager.BroadcastEvent(new CombatEventClashTie(atkDie, reactDie));
                 continue;
             }
 
-            Die winningDie = (atkRoll > reactRoll) ? atkDie : reactDie;
-            Die losingDie = (atkRoll > reactRoll) ? reactDie : atkDie;
+            Die winningDie = (modAtkRoll > modReactRoll) ? atkDie : reactDie;
+            Die losingDie = (modAtkRoll > modReactRoll) ? reactDie : atkDie;
 
-            int winningRoll = (atkRoll > reactRoll) ? atkRoll : reactRoll;
-            int losingRoll = (atkRoll > reactRoll) ? reactRoll : atkRoll;
+            int winningNatRoll = (modAtkRoll > modReactRoll) ? natAtkRoll : natReactRoll;
+            int winningRoll = (modAtkRoll > modReactRoll) ? modAtkRoll : modReactRoll;
 
-            AbstractCharacter winningChar = (atkRoll > reactRoll) ? combatInstance.activeChar : combatInstance.activeAbilityTargets[0];
-            AbstractCharacter losingChar = (atkRoll > reactRoll) ? combatInstance.activeAbilityTargets[0] : combatInstance.activeChar;
+            int losingRoll = (modAtkRoll > modReactRoll) ? modReactRoll : modAtkRoll;
+
+            AbstractCharacter winningChar = (modAtkRoll > modReactRoll) ? combatInstance.activeChar : combatInstance.activeAbilityTargets[0];
+            AbstractCharacter losingChar = (modAtkRoll > modReactRoll) ? combatInstance.activeAbilityTargets[0] : combatInstance.activeChar;
 
             // If the losing die was a block die, and the winning die was an attack die, reduce the winning roll by the losing roll.
             if (winningDie.IsAttackDie && losingDie.DieType == DieType.BLOCK) {
@@ -358,7 +360,7 @@ public static class CombatManager {
             eventManager.BroadcastEvent(new CombatEventClashLose(losingDie, losingRoll));
 
 
-            ResolveDieRoll(winningChar, losingChar, winningDie, winningRoll, rolledDuringClash: true);
+            ResolveDieRoll(winningChar, losingChar, winningDie, winningNatRoll, winningRoll, rolledDuringClash: true);
             try {
                 combatInstance.activeAbilityDice.RemoveAt(0);
             } catch (ArgumentOutOfRangeException){
@@ -398,5 +400,16 @@ public static class CombatManager {
 
     public static void ExecuteAction(AbstractAction action){
         action.Execute();
+    }
+
+    /// <summary>
+    /// Helper method to cycle a die for a character.
+    /// </summary>
+    public static void CycleDie(AbstractCharacter character, Die dieToCycle){
+        if (character == combatInstance.activeChar && combatInstance.activeAbilityDice != null){
+            combatInstance.activeAbilityDice.Insert(0, dieToCycle);
+        } else if (combatInstance.reactAbilityDice != null && combatInstance.activeAbilityTargets.Contains(character)){
+            combatInstance.reactAbilityDice.Insert(0, dieToCycle);
+        }
     }
 }

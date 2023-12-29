@@ -167,7 +167,7 @@ public abstract class AbstractAbility : IEventSubscriber, IEventHandler<CombatEv
     }
 
     public virtual void HandleEvent(CombatEventAbilityActivated data){
-        if (data.abilityActivated == this){
+        if (data.abilityActivated.Equals(this)){
             this.curCooldown = this.BASE_CD;
             this.Activate(data);
         }

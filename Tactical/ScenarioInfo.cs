@@ -28,7 +28,9 @@ public class TestScenario : ScenarioInfo {
 
     public TestScenario() : base(scenarioFighters){
         characterA.EquipAbility(new TestReact());
+        characterA.EquipAbility(new RelentlessStabbing());
         characterA.EquipAbility(new TestAttack());
+        characterA.MinSpd = 5;
 
         characterB.ActionsPerTurn = 1;
         characterB.MaxHP = 100;

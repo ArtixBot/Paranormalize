@@ -289,13 +289,20 @@ public class CombatEventDieHit : ICombatEvent {
     public AbstractCharacter hitter;
     public AbstractCharacter hitUnit;
     public Die die;
-    public int roll;
+    public int naturalRoll;
+    public bool rolledMinimumNaturalValue;
+    public bool rolledMaximumNaturalValue;
+    public int actualRoll;
 
-    public CombatEventDieHit(AbstractCharacter hitter, AbstractCharacter hitUnit, Die die, int roll){
+    public CombatEventDieHit(AbstractCharacter hitter, AbstractCharacter hitUnit, Die die, int naturalRoll, int actualRoll){
         this.hitter = hitter;
         this.hitUnit = hitUnit;
         this.die = die;
-        this.roll = roll;
+        this.naturalRoll = naturalRoll;
+        this.actualRoll = actualRoll;
+
+        this.rolledMaximumNaturalValue = naturalRoll == die.MaxValue;
+        this.rolledMinimumNaturalValue = naturalRoll == die.MinValue;
     }
 }
 
