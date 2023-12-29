@@ -32,7 +32,8 @@ public class ConditionStaggered : AbstractStatusEffect, IEventHandler<CombatEven
 
     public void HandleEvent(CombatEventDamageTaken data){
         if (data.target == this.OWNER && !data.isPoiseDamage){
-            data.damageTaken *= 2;      // Damage taken while staggered is doubled.
+            Logging.Log($"{this.OWNER.CHAR_NAME} was Staggered, doubling incoming damage from {data.damageTaken} to {data.damageTaken * 2}.", Logging.LogLevel.INFO);
+            data.damageTaken *= 2.0f;      // Damage taken while staggered is doubled.
         }
     }
 

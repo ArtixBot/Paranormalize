@@ -305,6 +305,7 @@ public static class CombatManager {
             case DieType.MAGIC:
                 CombatManager.ExecuteAction(new DamageAction(roller, target, roll, isPoiseDamage: false));
                 CombatManager.ExecuteAction(new DamageAction(roller, target, roll, isPoiseDamage: true));
+                eventManager.BroadcastEvent(new CombatEventDieHit(roller, target, die, roll));
                 break;
             case DieType.BLOCK:
                 if (!rolledDuringClash) break;
@@ -330,8 +331,9 @@ public static class CombatManager {
             $"\n\t{combatInstance.activeAbility.OWNER.CHAR_NAME}: {atkDie.DieType} die (range {atkDie.MinValue} - {atkDie.MaxValue}, roll: {atkRoll})" +
             $"\n\t{combatInstance.reactAbility.OWNER.CHAR_NAME}: {reactDie.DieType} die (range {reactDie.MinValue} - {reactDie.MaxValue}, roll: {reactRoll}))", Logging.LogLevel.ESSENTIAL);
 
-            eventManager.BroadcastEvent(new CombatEventDieRolled(atkDie, atkRoll));
-            eventManager.BroadcastEvent(new CombatEventDieRolled(reactDie, reactRoll));
+            // Reassign to atkRoll/reactRoll to handle any changes in dice power.
+            atkRoll = eventManager.BroadcastEvent(new CombatEventDieRolled(atkDie, atkRoll)).rolledValue;
+            reactRoll = eventManager.BroadcastEvent(new CombatEventDieRolled(reactDie, reactRoll)).rolledValue;
 
             // On tie, remove both dice.
             if (atkRoll == reactRoll){

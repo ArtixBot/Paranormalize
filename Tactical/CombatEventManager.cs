@@ -23,7 +23,7 @@ public enum CombatEventType {
     // Attacks will always trigger ON_DEAL_DAMAGE, then ON_TAKE_DAMAGE. Status effects like burn/bleed will only trigger ON_TAKE_DAMAGE.
     ON_DEAL_DAMAGE, ON_TAKE_DAMAGE,
     ON_CHARACTER_DEATH,
-    ON_DIE_ROLLED, ON_PRE_HIT,
+    ON_DIE_ROLLED, ON_DIE_HIT,
     ON_CLASH_ELIGIBLE, ON_CLASH, ON_CLASH_TIE, ON_CLASH_WIN, ON_CLASH_LOSE,
     ON_UNIT_MOVED,
     ON_STATUS_APPLIED, ON_STATUS_EXPIRED,
@@ -31,13 +31,14 @@ public enum CombatEventType {
 
 // Higher numbers execute first.
 public enum CombatEventPriority {
-    HIGHEST_PRIORITY = 99999,       // e.g. "revive on death", "the first time you take fatal damage, go to 1 HP instead", invulnerability effects.
+    IMMEDIATELY = 99999,            // E.g. after an ability is activated, *immediately* set it on cooldown.
     DICE_MODIFICATION = 700,        // Adding/removing dice from a dice queue occur first.
     DICE_CONVERSION = 600,          // After all dice queue modifications finish, perform dice conversions (e.g. converting Evade -> Attack die, or Attack -> Block).
     BASE_ADDITIVE = 500,            // Additive modifiers to a value. These happen first and therefore have an outsized effect on multipliers.
     BASE_MULTIPLICATIVE = 400,      // Multiplicative multipliers to a value.
     STANDARD = 200,
-    UI = 1,                         // UI updates should only update after all other calculations are complete.
+    POST_DAMAGE_CALC = 100,         // E.g. passives which would prevent damage that would cause stagger or death should happen after all other calculations are complete.
+    UI = 1,                         // UI updates should only update after everything else is done.
 }
 
 public partial class CombatEventManager{
@@ -281,6 +282,23 @@ public class CombatEventDieRolled : ICombatEvent {
     }
 }
 
+public class CombatEventDieHit : ICombatEvent {
+    public CombatEventType eventType {
+        get {return CombatEventType.ON_DIE_HIT;}
+    }
+    public AbstractCharacter hitter;
+    public AbstractCharacter hitUnit;
+    public Die die;
+    public int roll;
+
+    public CombatEventDieHit(AbstractCharacter hitter, AbstractCharacter hitUnit, Die die, int roll){
+        this.hitter = hitter;
+        this.hitUnit = hitUnit;
+        this.die = die;
+        this.roll = roll;
+    }
+}
+
 public class CombatEventStatusApplied : ICombatEvent {
     public CombatEventType eventType {
         get {return CombatEventType.ON_STATUS_APPLIED;}
@@ -305,10 +323,10 @@ public class CombatEventDamageDealt : ICombatEvent {
         get {return CombatEventType.ON_DEAL_DAMAGE;}
     }
     public AbstractCharacter dealer;
-    public int damageDealt;
+    public float damageDealt;
     public bool isPoiseDamage;
 
-    public CombatEventDamageDealt(AbstractCharacter dealer, int damageDealt, bool isPoiseDamage){
+    public CombatEventDamageDealt(AbstractCharacter dealer, float damageDealt, bool isPoiseDamage){
         this.dealer = dealer;
         this.damageDealt = damageDealt;
         this.isPoiseDamage = isPoiseDamage;
@@ -320,10 +338,10 @@ public class CombatEventDamageTaken : ICombatEvent {
         get {return CombatEventType.ON_TAKE_DAMAGE;}
     }
     public AbstractCharacter target;
-    public int damageTaken;
+    public float damageTaken;
     public bool isPoiseDamage;
 
-    public CombatEventDamageTaken(AbstractCharacter target, int damageTaken, bool isPoiseDamage){
+    public CombatEventDamageTaken(AbstractCharacter target, float damageTaken, bool isPoiseDamage){
         this.target = target;
         this.damageTaken = damageTaken;
         this.isPoiseDamage = isPoiseDamage;

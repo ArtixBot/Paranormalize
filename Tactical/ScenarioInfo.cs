@@ -31,7 +31,9 @@ public class TestScenario : ScenarioInfo {
         characterA.EquipAbility(new TestAttack());
 
         characterB.ActionsPerTurn = 1;
-        characterB.MaxPoise = 1;
+        characterB.MaxHP = 100;
+        characterB.CurHP = 100;
+        characterB.MaxPoise = 10;
         // characterB.EquipAbility(new TestReact());
         characterC.ActionsPerTurn = 0;
         characterD.ActionsPerTurn = 0;

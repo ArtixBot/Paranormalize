@@ -20,7 +20,7 @@ public static class Logging {
         DEBUG = 3,
     }
 
-    public static LogLevel LOGGING_LEVEL = LogLevel.DEBUG;
+    public static LogLevel LOGGING_LEVEL = LogLevel.INFO;
     
     /// <summary>
     /// Invokes Godot's GD.Print() function if the logLevel is less than or equal to GameVariables.LOGGING_LEVEL.

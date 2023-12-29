@@ -162,8 +162,8 @@ public abstract class AbstractAbility : IEventSubscriber, IEventHandler<CombatEv
     }
 
     public virtual void InitSubscriptions(){
-        CombatEventManager.instance?.Subscribe(CombatEventType.ON_ABILITY_ACTIVATED, this, CombatEventPriority.HIGHEST_PRIORITY);
-        CombatEventManager.instance?.Subscribe(CombatEventType.ON_ROUND_END, this, CombatEventPriority.HIGHEST_PRIORITY);
+        CombatEventManager.instance?.Subscribe(CombatEventType.ON_ABILITY_ACTIVATED, this, CombatEventPriority.IMMEDIATELY);
+        CombatEventManager.instance?.Subscribe(CombatEventType.ON_ROUND_END, this, CombatEventPriority.IMMEDIATELY);
     }
 
     public virtual void HandleEvent(CombatEventAbilityActivated data){

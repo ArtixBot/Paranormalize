@@ -19,24 +19,29 @@ public class DamageAction : AbstractAction {
         if (this.defender == null) return;
         // Attacker can be null from status effect damage (burn, bleed, etc.)
         if (this.attacker != null) {
-            CombatManager.eventManager.BroadcastEvent(new CombatEventDamageDealt(this.attacker, this.damage, this.isPoiseDamage));
+            CombatEventDamageDealt dealtData = CombatManager.eventManager.BroadcastEvent(new CombatEventDamageDealt(this.attacker, this.damage, this.isPoiseDamage));
+            this.damage = (int) dealtData.damageDealt;
         }
 
+        // Note that CombatEventDamageTaken does calculations of this.damage as a float.
+        // This accounts for cases like a +50% and +100% damage multiplier, which is 3 * 1.5 => 4.5 * 2 => 9.
         CombatEventDamageTaken damageData = new(this.defender, this.damage, this.isPoiseDamage);
-        damageData = CombatManager.eventManager.BroadcastEvent(damageData);
+        CombatManager.eventManager.BroadcastEvent(damageData);
+
+        // The final value always takes the floor (no rounding up).
         if (damageData.isPoiseDamage) {
-            this.defender.CurPoise -= damageData.damageTaken;
+            this.defender.CurPoise -= (int) damageData.damageTaken;
         } else {
-            this.defender.CurHP -= damageData.damageTaken;
+            this.defender.CurHP -= (int) damageData.damageTaken;
         }
 
         if (this.defender.CurPoise <= 0){
             // Note that passives which prevent stagger for the first time in combat should listen to CombatEventDamageDealt.
-            CombatManager.ExecuteAction(new ApplyStatusAction(this.defender, new ConditionStaggered(), stacksToApply: 2));
+            CombatManager.ExecuteAction(new ApplyStatusAction(damageData.target, new ConditionStaggered(), stacksToApply: 2));
         }
         if (this.defender.CurHP <= 0){
             // Ditto with above.
-            CombatManager.ExecuteAction(new RemoveCombatantAction(this.defender));
+            CombatManager.ExecuteAction(new RemoveCombatantAction(damageData.target));
         }
     }
 }
