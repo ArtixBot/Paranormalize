@@ -1,16 +1,9 @@
-using System;
-using System.Linq;
-using System.Collections;
 using System.Collections.Generic;
-using Godot;
 
 public class TestAttack : AbstractAbility, IEventHandler<CombatEventDieHit> {
-    public static string id = "BASE_ATTACK";
-    // TODO: Make all of these read in by JSON.
-    private static string name = "Base Attack";
-    private static string desc = "";
+    public static string id = "TEST_ATTACK";
+    private static Localization.AbilityStrings strings = Localization.LocalizationLibrary.Instance.GetAbilityStrings(id);
 
-    // TODO: Should gameplay attributes also be defined in JSON? e.g. base CD, min range, max range, dice, etc...
     private static int cd = 0;
     private static int min_range = 0;
     private static int max_range = 1;
@@ -22,8 +15,7 @@ public class TestAttack : AbstractAbility, IEventHandler<CombatEventDieHit> {
 
     public TestAttack(): base(
         id,
-        name,
-        desc,
+        strings,
         AbilityType.ATTACK,
         cd,
         min_range,

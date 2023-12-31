@@ -4,12 +4,9 @@ using System.Collections;
 using System.Collections.Generic;
 
 public class TestReact : AbstractAbility {
-    public static string id = "BASE_REACT";
-    // TODO: Make all of these read in by JSON.
-    private static string name = "Base React";
-    private static string desc = "";
+    public static string id = "TEST_REACT";
+    private static Localization.AbilityStrings strings = Localization.LocalizationLibrary.Instance.GetAbilityStrings(id);
 
-    // TODO: Should gameplay attributes also be defined in JSON? e.g. base CD, min range, max range, dice, etc...
     private static int cd = 1;
     private static int min_range = 0;
     private static int max_range = 0;
@@ -18,8 +15,7 @@ public class TestReact : AbstractAbility {
 
     public TestReact(): base(
         id,
-        name,
-        desc,
+        strings,
         AbilityType.REACTION,
         cd,
         min_range,

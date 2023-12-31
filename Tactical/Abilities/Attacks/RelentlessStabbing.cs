@@ -2,26 +2,22 @@ using System.Collections.Generic;
 
 public class RelentlessStabbing : AbstractAbility, IEventHandler<CombatEventDieHit>, IEventHandler<CombatEventAbilityActivated> {
     public static string id = "RELENTLESS_STABBING";
-    // TODO: Make all of these read in by JSON.
-    private static string name = "Relentless Stabbing";
-    private static string desc = "On lethal hit: Cycle this die (up to 2 times).";
+    private static Localization.AbilityStrings strings = Localization.LocalizationLibrary.Instance.GetAbilityStrings(id);
 
-    // TODO: Should gameplay attributes also be defined in JSON? e.g. base CD, min range, max range, dice, etc...
     private static int cd = 2;
     private static int min_range = 0;
     private static int max_range = 1;
     private static bool targetsLane = false;
     private static bool needsUnit = true;
 
-    private int cycles = 0;
-
     private Die evadeDie = new Die(DieType.EVADE, 7, 10);
     private Die atkDie = new Die(DieType.PIERCE, 7, 8, "LETHAL_HIT_CYCLING");
 
+    private int cycles = 0;
+
     public RelentlessStabbing(): base(
         id,
-        name,
-        desc,
+        strings,
         AbilityType.ATTACK,
         cd,
         min_range,

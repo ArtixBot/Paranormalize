@@ -6,11 +6,8 @@ using Godot;
 
 public class AbilityMove : AbstractAbility {
     public static string id = "MOVE";
-    // TODO: Make all of these read in by JSON.
-    private static string name = "Move";
-    private static string desc = "Move lanes.";
+    private static Localization.AbilityStrings strings = Localization.LocalizationLibrary.Instance.GetAbilityStrings(id);
 
-    // TODO: Should gameplay attributes also be defined in JSON? e.g. base CD, min range, max range, dice, etc...
     private static int cd = 0;
     private static int min_range = 1;
     private static int max_range = 1;
@@ -19,8 +16,7 @@ public class AbilityMove : AbstractAbility {
 
     public AbilityMove(): base(
         id,
-        name,
-        desc,
+        strings,
         AbilityType.SPECIAL,
         cd,
         min_range,

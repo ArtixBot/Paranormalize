@@ -28,15 +28,14 @@ offset_left = 45.0
 offset_top = 8.0
 offset_right = 119.0
 offset_bottom = 34.0
-text = "7 - 10"
+text = "1 - 99"
 label_settings = SubResource("LabelSettings_vivry")
 vertical_alignment = 1
 
 [node name="Description" type="Label" parent="."]
 layout_mode = 0
-offset_left = 85.0
+offset_left = 107.0
 offset_top = 4.0
-offset_right = 744.0
+offset_right = 766.0
 offset_bottom = 43.0
-text = "Description goes here (where applicable)."
 label_settings = SubResource("LabelSettings_lpyuw")

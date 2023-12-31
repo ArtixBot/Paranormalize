@@ -30,6 +30,7 @@ public class TestScenario : ScenarioInfo {
         characterA.EquipAbility(new TestReact());
         characterA.EquipAbility(new RelentlessStabbing());
         characterA.EquipAbility(new TestAttack());
+        characterA.EquipAbility(new Discharge());
         characterA.MinSpd = 5;
 
         characterB.ActionsPerTurn = 1;

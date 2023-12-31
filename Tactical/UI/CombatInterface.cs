@@ -1,6 +1,7 @@
 using Godot;
 using System;
 using System.Collections.Generic;
+namespace UI;
 
 public partial class CombatInterface : Control, IEventSubscriber, IEventHandler<CombatEventRoundStart>, IEventHandler<CombatEventTurnStart>, IEventHandler<CombatEventCombatStateChanged> {
 	private readonly PackedScene character = GD.Load<PackedScene>("res://Tactical/UI/Characters/Character.tscn");

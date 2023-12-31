@@ -51,7 +51,7 @@ public abstract class AbstractAbility : IEventSubscriber, IEventHandler<CombatEv
 
     public string ID;
     public string NAME;
-    public string DESC;
+    public Dictionary<string, string> STRINGS = new();      // STRINGS contains all localized information for the ability and its associated dice.
     public AbstractCharacter OWNER;
     public AbilityType TYPE;
     public int BASE_CD;
@@ -82,10 +82,10 @@ public abstract class AbstractAbility : IEventSubscriber, IEventHandler<CombatEv
         get { return curCooldown == 0; }
     }
     
-    public AbstractAbility(string ID, string NAME, string DESC, AbilityType TYPE, int BASE_CD, int MIN_RANGE, int MAX_RANGE, bool useLaneTargeting, bool requiresUnit, HashSet<TargetingModifiers> targetingModifiers = null){
+    public AbstractAbility(string ID, Localization.AbilityStrings ABILITY_STRINGS, AbilityType TYPE, int BASE_CD, int MIN_RANGE, int MAX_RANGE, bool useLaneTargeting, bool requiresUnit, HashSet<TargetingModifiers> targetingModifiers = null){
         this.ID = ID;
-        this.NAME = NAME;
-        this.DESC = DESC;
+        this.NAME = ABILITY_STRINGS.NAME;
+        this.STRINGS = (ABILITY_STRINGS.STRINGS != null) ? ABILITY_STRINGS.STRINGS : new();
         this.TYPE = TYPE;
         this.BASE_CD = BASE_CD;
         this.MIN_RANGE = MIN_RANGE;

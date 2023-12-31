@@ -1,6 +1,7 @@
 using Godot;
-using System;
 using System.Linq;
+
+namespace UI;
 
 public partial class CharacterUI : Control, IEventSubscriber, IEventHandler<CombatEventTurnEnd>
 {

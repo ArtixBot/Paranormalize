@@ -1,0 +1,41 @@
+[gd_scene load_steps=5 format=3 uid="uid://d2hqnmxninkp4"]
+
+[ext_resource type="Script" path="res://Tactical/UI/Abilities/AbilityDetailPanel.cs" id="1_gm5p2"]
+[ext_resource type="FontFile" uid="uid://bwboh1vdh8npd" path="res://Assets/AlegreyaSans-Regular.ttf" id="2_3awiy"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_txhnc"]
+font = ExtResource("2_3awiy")
+
+[sub_resource type="LabelSettings" id="LabelSettings_d7e0y"]
+font = ExtResource("2_3awiy")
+
+[node name="AbilityDetailPanel" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_gm5p2")
+
+[node name="Panel" type="Panel" parent="."]
+layout_mode = 0
+offset_right = 587.0
+offset_bottom = 335.0
+
+[node name="Ability Type" type="Label" parent="."]
+layout_mode = 0
+offset_left = 13.0
+offset_top = 12.0
+offset_right = 276.0
+offset_bottom = 38.0
+text = "Attack | Range 0 - 0 | Cooldown: 2"
+label_settings = SubResource("LabelSettings_txhnc")
+
+[node name="Ability Desc" type="Label" parent="."]
+layout_mode = 0
+offset_left = 13.0
+offset_top = 37.0
+offset_right = 804.0
+offset_bottom = 98.0
+label_settings = SubResource("LabelSettings_d7e0y")

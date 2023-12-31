@@ -1,11 +1,13 @@
 using Godot;
 using System.Collections.Generic;
+using UI;
 
 public partial class ActiveCharInterfaceLayer : Control, IEventSubscriber, IEventHandler<CombatEventTurnStart>, IEventHandler<CombatEventCombatStateChanged> {
 
 	private Label charName;
 
 	private Control abilityListNode;
+	private readonly PackedScene abilityDetailPanel = GD.Load<PackedScene>("res://Tactical/UI/Abilities/AbilityDetailPanel.tscn");
 	private readonly PackedScene targetingDialog = GD.Load<PackedScene>("res://Tactical/UI/Targeting Panel/SelectTargetPanel.tscn");
 	private readonly PackedScene abilityButton = GD.Load<PackedScene>("res://Tactical/UI/AbilityButton.tscn");
 
@@ -21,6 +23,7 @@ public partial class ActiveCharInterfaceLayer : Control, IEventSubscriber, IEven
 		InitSubscriptions();
 	}
 	
+	private AbilityDetailPanel abilityDetailPanelInstance = new();
 	private List<Node> abilityButtonInstances = new List<Node>();
 	private List<(int lane, HashSet<AbstractCharacter> targetsInLane)> abilityTargeting;
 	private void UpdateAvailableAbilities(){
@@ -42,9 +45,26 @@ public partial class ActiveCharInterfaceLayer : Control, IEventSubscriber, IEven
 			AbstractAbility ability = activeChar.abilities[i];
 			instance.Disabled = !ability.IsAvailable || (ability.TYPE == AbilityType.REACTION && CombatManager.combatInstance.combatState != CombatState.AWAITING_CLASH_INPUT);
 			instance.Text = ability.NAME + ((ability.curCooldown > 0) ? $" ({ability.curCooldown})" : "");
-			instance.Pressed += () => GetTargeting(ability);
-
+			instance.MouseEntered += () => CreateAbilityDetailPanel(ability);
+			instance.MouseExited += () => DeleteAbilityDetailPanel();
+			instance.Pressed += () => GetTargeting(ability); 
 			abilityListNode.AddChild(instance);
+		}
+	}
+
+	private void CreateAbilityDetailPanel(AbstractAbility ability){
+		AbilityDetailPanel node = (AbilityDetailPanel) abilityDetailPanel.Instantiate();
+		AddChild(node);
+		node.Ability = ability;
+		node.SetPosition(new Vector2(300, 750));
+
+		abilityDetailPanelInstance = node;
+	}
+
+	private void DeleteAbilityDetailPanel(){
+		if (abilityDetailPanelInstance != null){
+			RemoveChild(abilityDetailPanelInstance);
+			abilityDetailPanelInstance = null;
 		}
 	}
 

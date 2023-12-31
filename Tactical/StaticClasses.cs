@@ -1,5 +1,9 @@
 using Godot;
-using System;
+
+public static class GameVariables {
+    public const int MIN_LANES = 1;
+    public const int MAX_LANES = 6;
+}
 
 public static class Rng {
     private static readonly RandomNumberGenerator rng = new();
@@ -33,9 +37,4 @@ public static class Logging {
             GD.Print(logString);
         }
     }
-}
-
-public static class GameVariables {
-    public const int MIN_LANES = 1;
-    public const int MAX_LANES = 6;
 }

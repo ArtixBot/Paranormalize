@@ -1,22 +1,34 @@
 using Godot;
-using System;
+
+namespace UI;
 
 public partial class AbilityDie : Control
 {
 	private Die _die;
 	public Die Die {
 		get {return _die;}
-		set {_die = value; UpdateImage(); UpdateText(); UpdateDescription();}
+		set {_die = value; UpdateImage(); UpdateRollRange();}
+	}
+
+	private Label _dieDesc;
+	public string DieDesc {
+		get {return _dieDesc?.Text;}
+		set {_dieDesc.Text = value;}
 	}
 
 	private TextureRect DieImage;
 	private Label DieRange;
-	private Label DieDesc;
+
+	public override void _Ready() {
+		// Note: Children _Ready() callbacks are always triggered first, see https://docs.godotengine.org/en/3.2/classes/class_node.html#class-node-method-ready
+		DieImage = (TextureRect) GetNode("TextureRect");
+		DieRange = (Label) GetNode("Roll Range");
+		_dieDesc = (Label) GetNode("Description");
+	}
 
 	private void UpdateImage(){
-		switch (Die.DieType){
+		switch (_die.DieType){
 			case DieType.SLASH:
-				// TODO: Preload this instead: https://docs.godotengine.org/en/stable/classes/class_%40gdscript.html#class-gdscript-method-preload
 				DieImage.Texture = ResourceLoader.Load<Texture2D>("res://Sprites/die - slash.png");
 				break;
 			case DieType.PIERCE:
@@ -37,28 +49,7 @@ public partial class AbilityDie : Control
 		}
 	}
 
-	public override void _Ready() {
-		// Note: Children _Ready() callbacks are always triggered first, see https://docs.godotengine.org/en/3.2/classes/class_node.html#class-node-method-ready
-		DieImage = (TextureRect) GetNode("TextureRect");
-		DieRange = (Label) GetNode("Roll Range");
-		DieDesc = (Label) GetNode("Description");
-		Die = new Die(DieType.BLOCK, 7, 9);
-	}
-
-	private void UpdateText(){
+	private void UpdateRollRange(){
 		DieRange.Text = $"{Die.MinValue} - {Die.MaxValue}";
 	}
-
-	private void UpdateDescription(){
-		DieDesc.Text = "DESC";
-	}
-
-	// // Called when the node enters the scene tree for the first time.
-	// public override void _Ready() {
-	// }
-
-	// // Called every frame. 'delta' is the elapsed time since the previous frame.
-	// public override void _Process(double delta)
-	// {
-	// }
 }
