@@ -1,0 +1,42 @@
+[gd_scene load_steps=6 format=3 uid="uid://bu0br31a5wwlu"]
+
+[ext_resource type="Texture2D" uid="uid://be2dx8wnx2c1" path="res://Sprites/die - evade.png" id="1_1kbt0"]
+[ext_resource type="Script" path="res://Tactical/UI/Abilities/AbilityDie.cs" id="1_xf6p5"]
+[ext_resource type="FontFile" uid="uid://bwboh1vdh8npd" path="res://Assets/AlegreyaSans-Regular.ttf" id="2_ygdr6"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_vivry"]
+font = ExtResource("2_ygdr6")
+
+[sub_resource type="LabelSettings" id="LabelSettings_lpyuw"]
+font = ExtResource("2_ygdr6")
+
+[node name="Die" type="Control"]
+layout_mode = 3
+anchors_preset = 0
+script = ExtResource("1_xf6p5")
+
+[node name="TextureRect" type="TextureRect" parent="."]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+texture = ExtResource("1_1kbt0")
+expand_mode = 1
+
+[node name="Roll Range" type="Label" parent="."]
+layout_mode = 0
+offset_left = 45.0
+offset_top = 8.0
+offset_right = 119.0
+offset_bottom = 34.0
+text = "7 - 10"
+label_settings = SubResource("LabelSettings_vivry")
+vertical_alignment = 1
+
+[node name="Description" type="Label" parent="."]
+layout_mode = 0
+offset_left = 85.0
+offset_top = 4.0
+offset_right = 744.0
+offset_bottom = 43.0
+text = "Description goes here (where applicable)."
+label_settings = SubResource("LabelSettings_lpyuw")

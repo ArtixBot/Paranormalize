@@ -1,8 +1,5 @@
 using Godot;
-using System;
 using System.Collections.Generic;
-using System.Data;
-using System.Linq;
 
 public partial class ActiveCharInterfaceLayer : Control, IEventSubscriber, IEventHandler<CombatEventTurnStart>, IEventHandler<CombatEventCombatStateChanged> {
 
@@ -16,22 +13,14 @@ public partial class ActiveCharInterfaceLayer : Control, IEventSubscriber, IEven
 	public override void _Ready() {
 		CombatManager.combatInstance = new CombatInstance(new TestScenario());
         CombatManager.ChangeCombatState(CombatState.COMBAT_START);        // TODO: Remove, this is for debugging
-		_on_ability_list_ready();
-		_on_name_ready();
+		abilityListNode = GetNode<Control>("Ability List");
+		charName = GetNode<Label>("Name");
 
-		this.InitSubscriptions();
+		UpdateAvailableAbilities();
+		UpdateCharacterName();
+		InitSubscriptions();
 	}
 	
-	public void _on_ability_list_ready(){
-		abilityListNode = GetNode<Control>("Ability List");
-		UpdateAvailableAbilities();
-	}
-
-	public void _on_name_ready(){
-		charName = GetNode<Label>("Name");
-		UpdateCharacterName();
-	}
-
 	private List<Node> abilityButtonInstances = new List<Node>();
 	private List<(int lane, HashSet<AbstractCharacter> targetsInLane)> abilityTargeting;
 	private void UpdateAvailableAbilities(){
@@ -52,7 +41,7 @@ public partial class ActiveCharInterfaceLayer : Control, IEventSubscriber, IEven
 
 			AbstractAbility ability = activeChar.abilities[i];
 			instance.Disabled = !ability.IsAvailable || (ability.TYPE == AbilityType.REACTION && CombatManager.combatInstance.combatState != CombatState.AWAITING_CLASH_INPUT);
-			instance.Text = ability.NAME;
+			instance.Text = ability.NAME + ((ability.curCooldown > 0) ? $" ({ability.curCooldown})" : "");
 			instance.Pressed += () => GetTargeting(ability);
 
 			abilityListNode.AddChild(instance);

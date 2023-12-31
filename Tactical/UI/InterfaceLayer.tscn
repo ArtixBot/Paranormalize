@@ -1,9 +1,10 @@
-[gd_scene load_steps=5 format=3 uid="uid://cdon4x8pubue0"]
+[gd_scene load_steps=6 format=3 uid="uid://cdon4x8pubue0"]
 
 [ext_resource type="PackedScene" uid="uid://yyhqttdpvpjw" path="res://Tactical/UI/ActiveCharInterfaceLayer.tscn" id="1_4hy55"]
 [ext_resource type="Script" path="res://Tactical/UI/CombatInterface.cs" id="2_0ptl1"]
 [ext_resource type="Texture2D" uid="uid://brloppmdsx20t" path="res://Sprites/lane.png" id="3_dwvag"]
 [ext_resource type="Script" path="res://Tactical/UI/Lane.cs" id="4_n4yp2"]
+[ext_resource type="PackedScene" uid="uid://d2hqnmxninkp4" path="res://Tactical/UI/Abilities/Ability Detail Panel.tscn" id="5_3nrae"]
 
 [node name="InterfaceLayer" type="Control"]
 layout_mode = 3
@@ -120,5 +121,9 @@ flip_h = true
 script = ExtResource("4_n4yp2")
 position = 6
 
-[connection signal="ready" from="Combat Interface/Round" to="Combat Interface" method="_on_round_ready"]
-[connection signal="ready" from="Combat Interface/Turn List" to="Combat Interface" method="_on_turn_list_ready"]
+[node name="Ability Detail Panel" parent="." instance=ExtResource("5_3nrae")]
+layout_mode = 1
+offset_left = 355.0
+offset_top = 748.0
+offset_right = 355.0
+offset_bottom = 748.0

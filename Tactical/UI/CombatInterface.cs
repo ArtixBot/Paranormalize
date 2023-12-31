@@ -9,21 +9,14 @@ public partial class CombatInterface : Control, IEventSubscriber, IEventHandler<
 
 	// Called when the node enters the scene tree for the first time.
 	public override void _Ready() {
-		_on_round_ready();
-		_on_turn_list_ready();
+		roundCounter = GetNode<Label>("Round");
+		turnList = GetNode<Label>("Turn List");
+
+		UpdateRoundText();
+		UpdateTurnlistText();
 		UpdateCharPositions();
 
 		InitSubscriptions();
-	}
-
-	public void _on_round_ready(){
-		roundCounter = GetNode<Label>("Round");
-		UpdateRoundText();
-	}
-
-	public void _on_turn_list_ready(){
-		turnList = GetNode<Label>("Turn List");
-		UpdateTurnlistText();
 	}
 
 	private void UpdateRoundText(){

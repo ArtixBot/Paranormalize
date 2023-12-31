@@ -29,8 +29,4 @@ offset_bottom = 204.0
 text = "Status Effects: None"
 horizontal_alignment = 1
 
-[connection signal="ready" from="Sprite2D" to="." method="_on_sprite_2d_ready"]
-[connection signal="ready" from="Sprite2D/Label" to="." method="_on_label_ready"]
 [connection signal="tree_exited" from="Sprite2D/Label" to="." method="_on_label_tree_exited"]
-[connection signal="ready" from="Sprite2D/Status Effects" to="." method="_on_label_ready"]
-[connection signal="tree_exited" from="Sprite2D/Status Effects" to="." method="_on_label_tree_exited"]

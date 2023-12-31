@@ -17,7 +17,8 @@ public class TestAttack : AbstractAbility, IEventHandler<CombatEventDieHit> {
     private static bool targetsLane = false;
     private static bool needsUnit = true;
 
-    private Die atkDieA = new Die(DieType.BLUNT, 3, 3, "APPLY_VULNERABILITY");
+    private Die atkDieA = new Die(DieType.BLUNT, 3, 3, "FIRST_DIE");
+    private Die atkDieB = new Die(DieType.SLASH, 1, 5);
 
     public TestAttack(): base(
         id,
@@ -31,7 +32,7 @@ public class TestAttack : AbstractAbility, IEventHandler<CombatEventDieHit> {
         needsUnit,
         new HashSet<TargetingModifiers>{TargetingModifiers.ENEMIES_ONLY}
     ){
-        this.BASE_DICE = new List<Die>{atkDieA};
+        this.BASE_DICE = new List<Die>{atkDieA, atkDieB};
     }
 
     public override void InitSubscriptions(){

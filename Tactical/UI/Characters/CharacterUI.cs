@@ -14,17 +14,11 @@ public partial class CharacterUI : Control, IEventSubscriber, IEventHandler<Comb
 	private Label Stats;
 	// Called when the node enters the scene tree for the first time.
 	public override void _Ready() {
-		InitSubscriptions();
-	}
-
-	public void _on_label_ready(){
+		Sprite = GetNode<Sprite2D>("Sprite2D");
 		Stats = GetNode<Label>("Sprite2D/Label");
 		UpdateStatsText();
-	}
-
-	public void _on_sprite_2d_ready(){
-		Sprite = GetNode<Sprite2D>("Sprite2D");
 		UpdateSprite();
+		InitSubscriptions();
 	}
 
 	public void _on_label_tree_exited(){

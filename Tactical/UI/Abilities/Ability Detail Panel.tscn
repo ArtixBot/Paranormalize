@@ -1,0 +1,53 @@
+[gd_scene load_steps=5 format=3 uid="uid://d2hqnmxninkp4"]
+
+[ext_resource type="PackedScene" uid="uid://bu0br31a5wwlu" path="res://Tactical/UI/Abilities/AbilityDie.tscn" id="1_6slra"]
+[ext_resource type="FontFile" uid="uid://bwboh1vdh8npd" path="res://Assets/AlegreyaSans-Regular.ttf" id="3_7i4sq"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_txhnc"]
+font = ExtResource("3_7i4sq")
+
+[sub_resource type="LabelSettings" id="LabelSettings_d7e0y"]
+font = ExtResource("3_7i4sq")
+
+[node name="Ability Detail Panel" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Panel" type="Panel" parent="."]
+layout_mode = 0
+offset_right = 587.0
+offset_bottom = 335.0
+
+[node name="Ability Type" type="Label" parent="Panel"]
+layout_mode = 0
+offset_left = 13.0
+offset_top = 12.0
+offset_right = 276.0
+offset_bottom = 38.0
+text = "Attack | Range 0 - 0 | Cooldown: 2"
+label_settings = SubResource("LabelSettings_txhnc")
+
+[node name="Ability Desc" type="Label" parent="Panel"]
+layout_mode = 0
+offset_left = 13.0
+offset_top = 37.0
+offset_right = 804.0
+offset_bottom = 98.0
+text = "On activate: Gain 2 Critical."
+label_settings = SubResource("LabelSettings_d7e0y")
+
+[node name="Die" parent="Panel" instance=ExtResource("1_6slra")]
+offset_left = 13.0
+offset_top = 79.0
+offset_right = 806.0
+offset_bottom = 140.0
+
+[node name="Die2" parent="Panel" instance=ExtResource("1_6slra")]
+offset_left = 13.0
+offset_top = 126.0
+offset_right = 806.0
+offset_bottom = 187.0

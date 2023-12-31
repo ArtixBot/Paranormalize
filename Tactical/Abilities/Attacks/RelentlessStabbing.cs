@@ -7,7 +7,7 @@ public class RelentlessStabbing : AbstractAbility, IEventHandler<CombatEventDieH
     private static string desc = "On lethal hit: Cycle this die (up to 2 times).";
 
     // TODO: Should gameplay attributes also be defined in JSON? e.g. base CD, min range, max range, dice, etc...
-    private static int cd = 0;
+    private static int cd = 2;
     private static int min_range = 0;
     private static int max_range = 1;
     private static bool targetsLane = false;
