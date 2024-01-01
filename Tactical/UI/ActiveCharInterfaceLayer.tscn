@@ -1,10 +1,15 @@
-[gd_scene load_steps=4 format=3 uid="uid://yyhqttdpvpjw"]
+[gd_scene load_steps=6 format=3 uid="uid://yyhqttdpvpjw"]
 
 [ext_resource type="Script" path="res://Tactical/UI/ActiveCharInterfaceLayer.cs" id="1_qyu5r"]
 [ext_resource type="Texture2D" uid="uid://654pve5epxq3" path="res://Sprites/icon.svg" id="2_lgul8"]
+[ext_resource type="FontFile" uid="uid://bwboh1vdh8npd" path="res://Assets/AlegreyaSans-Regular.ttf" id="3_ascrk"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_g3f1q"]
 font_size = 24
+
+[sub_resource type="LabelSettings" id="LabelSettings_b5uew"]
+font = ExtResource("3_ascrk")
+font_size = 32
 
 [node name="ActiveCharInterfaceLayer" type="Control"]
 layout_mode = 3
@@ -28,12 +33,12 @@ grow_vertical = 0
 texture = ExtResource("2_lgul8")
 expand_mode = 1
 
-[node name="Name" type="Label" parent="."]
+[node name="Name" type="Label" parent="Portrait"]
 layout_mode = 0
-offset_left = 154.0
-offset_top = 748.0
-offset_right = 357.0
-offset_bottom = 788.0
+offset_left = 152.0
+offset_top = 5.0
+offset_right = 355.0
+offset_bottom = 45.0
 text = "Character Name"
 label_settings = SubResource("LabelSettings_g3f1q")
 
@@ -45,3 +50,13 @@ anchor_bottom = 1.0
 offset_top = -68.0
 offset_right = 0.399994
 grow_vertical = 0
+
+[node name="Prompt Text" type="Label" parent="."]
+layout_mode = 0
+offset_left = 742.0
+offset_top = 160.0
+offset_right = 1336.0
+offset_bottom = 309.0
+text = "Prompt text goes here."
+label_settings = SubResource("LabelSettings_b5uew")
+horizontal_alignment = 1

@@ -8,6 +8,8 @@ public partial class CombatInterface : Control, IEventSubscriber, IEventHandler<
 	private Label roundCounter;
 	private Label turnList;
 
+	public Dictionary<AbstractCharacter, Node> characterToNodeMap = new();
+
 	// Called when the node enters the scene tree for the first time.
 	public override void _Ready() {
 		roundCounter = GetNode<Label>("Round");

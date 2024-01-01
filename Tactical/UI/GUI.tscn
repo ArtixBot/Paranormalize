@@ -5,11 +5,12 @@
 [ext_resource type="Texture2D" uid="uid://brloppmdsx20t" path="res://Sprites/lane.png" id="3_dwvag"]
 [ext_resource type="Script" path="res://Tactical/UI/Lane.cs" id="4_n4yp2"]
 
-[node name="InterfaceLayer" type="Control"]
+[node name="GUI" type="Control"]
 layout_mode = 3
 anchors_preset = 0
 offset_right = 40.0
 offset_bottom = 40.0
+mouse_filter = 2
 
 [node name="Active Character" parent="." instance=ExtResource("1_4hy55")]
 layout_mode = 1
@@ -17,11 +18,14 @@ offset_left = 1.0
 offset_top = 4.0
 offset_right = 1879.0
 offset_bottom = 1033.0
+mouse_filter = 2
 
 [node name="Combat Interface" type="Control" parent="."]
+layout_mode = 3
 anchors_preset = 0
 offset_right = 40.0
 offset_bottom = 40.0
+mouse_filter = 2
 script = ExtResource("2_0ptl1")
 
 [node name="Round" type="Label" parent="Combat Interface"]
@@ -44,6 +48,7 @@ text = "Turnlist: "
 [node name="Lanes" type="Control" parent="Combat Interface"]
 visible = false
 anchors_preset = 0
+mouse_filter = 2
 
 [node name="Lane 1" type="TextureRect" parent="Combat Interface/Lanes"]
 layout_mode = 0

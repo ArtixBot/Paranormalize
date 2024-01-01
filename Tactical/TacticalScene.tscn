@@ -1,9 +1,7 @@
 [gd_scene load_steps=2 format=3 uid="uid://m41v8x2ryyk7"]
 
-[ext_resource type="PackedScene" uid="uid://cdon4x8pubue0" path="res://Tactical/UI/InterfaceLayer.tscn" id="3_m5w6t"]
+[ext_resource type="PackedScene" uid="uid://cdon4x8pubue0" path="res://Tactical/UI/GUI.tscn" id="3_m5w6t"]
 
 [node name="TacticalScene" type="Node2D"]
 
-[node name="CombatLayer" type="Node" parent="."]
-
-[node name="InterfaceLayer" parent="." instance=ExtResource("3_m5w6t")]
+[node name="GUI" parent="." instance=ExtResource("3_m5w6t")]

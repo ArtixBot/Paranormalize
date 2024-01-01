@@ -10,7 +10,7 @@ public partial class Lane : TextureRect
     {
         base._GuiInput(@event);
 		if (@event is InputEventMouseButton mouseButton && !mouseButton.IsPressed()){
-			// GD.Print($"Clicked on Lane {this.position} at {@event}");
+			GD.Print($"Clicked on Lane {this.position}.");
 		}
     }
 }

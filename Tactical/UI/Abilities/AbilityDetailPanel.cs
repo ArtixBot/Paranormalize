@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Godot;
 
 namespace UI;
@@ -27,11 +28,7 @@ public partial class AbilityDetailPanel : Control
 
 	private void UpdateDescriptions(){
 		abilityType.Text = $"{_ability.TYPE} | Range: {_ability.MIN_RANGE} - {_ability.MAX_RANGE} | Cooldown: {_ability.BASE_CD}";
-		if (_ability.STRINGS.ContainsKey("GENERIC")){
-			_abilityDesc.Text = _ability.STRINGS["GENERIC"];
-		} else {
-			_abilityDesc.Text = "";
-		}
+		_abilityDesc.Text = _ability.STRINGS.GetValueOrDefault("GENERIC", "");
 
 		for (int i = 0; i < _ability.BASE_DICE.Count; i++){
             AbilityDie node = (AbilityDie) abilityDie.Instantiate();
@@ -39,10 +36,7 @@ public partial class AbilityDetailPanel : Control
 			node.SetPosition(new Vector2(10, 50 + (i * 50)));		// TODO: Reevaluate use of constant values.
 
 			node.Die = _ability.BASE_DICE[i];
-            if (_ability.STRINGS.ContainsKey(node.Die.DieId)){
-				node.DieDesc = _ability.STRINGS[node.Die.DieId];
-			}
-
+			node.DieDesc = _ability.STRINGS.GetValueOrDefault(node.Die.DieId, "");
 		}
 	}
 }

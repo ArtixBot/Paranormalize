@@ -1,5 +1,6 @@
 using Godot;
 using System.Linq;
+using System.Reflection.Metadata;
 
 namespace UI;
 
@@ -13,14 +14,21 @@ public partial class CharacterUI : Control, IEventSubscriber, IEventHandler<Comb
 
 	public Sprite2D Sprite;
 	private Label Stats;
+
 	// Called when the node enters the scene tree for the first time.
 	public override void _Ready() {
-		Sprite = GetNode<Sprite2D>("Sprite2D");
-		Stats = GetNode<Label>("Sprite2D/Label");
+		Sprite = GetNode<Sprite2D>("Area2D/Sprite2D");
+		Stats = GetNode<Label>("Area2D/Sprite2D/Label");
 		UpdateStatsText();
 		UpdateSprite();
 		InitSubscriptions();
 	}
+
+    public void _on_area_2d_input_event(Viewport viewport, InputEvent @event, int shape_idx){
+        if (@event is InputEventMouseButton && @event.IsPressed() == false){
+			GD.Print($"{Character.CHAR_NAME} was clicked.");
+		}
+    }
 
 	public void _on_label_tree_exited(){
 		CombatManager.eventManager?.UnsubscribeAll(this);
