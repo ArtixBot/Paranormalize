@@ -15,7 +15,6 @@ public partial class ActiveCharInterfaceLayer : Control, IEventSubscriber, IEven
 	private Control abilityListNode;
 	private readonly PackedScene abilityButton = GD.Load<PackedScene>("res://Tactical/UI/Abilities/AbilityButton.tscn");
 	private readonly PackedScene abilityDetailPanel = GD.Load<PackedScene>("res://Tactical/UI/Abilities/AbilityDetailPanel.tscn");
-	private readonly PackedScene targetingDialog = GD.Load<PackedScene>("res://Tactical/UI/Targeting Panel/SelectTargetPanel.tscn");
 
 	// Called when the node enters the scene tree for the first time.
 	public override void _Ready() {		
