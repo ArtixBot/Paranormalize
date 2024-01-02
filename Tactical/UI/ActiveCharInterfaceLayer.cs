@@ -1,30 +1,29 @@
 using Godot;
 using System.Collections.Generic;
-using System.Runtime.CompilerServices;
 using UI;
 
-public partial class ActiveCharInterfaceLayer : Control, IEventSubscriber, IEventHandler<CombatEventTurnStart>, IEventHandler<CombatEventCombatStateChanged> {
+public partial class ActiveCharInterfaceLayer : Control, IEventSubscriber, IEventHandler<CombatEventTurnStart> {
+
+	private AbstractCharacter _activeChar;
+	public AbstractCharacter ActiveChar {
+		get {return _activeChar;}
+		set {_activeChar = value; UpdateAvailableAbilities(); UpdateCharacterName();}
+	}
 
 	private Label charName;
 	private Label userPromptText;
 
 	private Control abilityListNode;
+	private readonly PackedScene abilityButton = GD.Load<PackedScene>("res://Tactical/UI/Abilities/AbilityButton.tscn");
 	private readonly PackedScene abilityDetailPanel = GD.Load<PackedScene>("res://Tactical/UI/Abilities/AbilityDetailPanel.tscn");
 	private readonly PackedScene targetingDialog = GD.Load<PackedScene>("res://Tactical/UI/Targeting Panel/SelectTargetPanel.tscn");
-	private readonly PackedScene abilityButton = GD.Load<PackedScene>("res://Tactical/UI/AbilityButton.tscn");
 
 	// Called when the node enters the scene tree for the first time.
-	public override void _Ready() {
-		CombatManager.combatInstance = new CombatInstance(new TestScenario());
-        CombatManager.ChangeCombatState(CombatState.COMBAT_START);        // TODO: Remove, this is for debugging
-		
+	public override void _Ready() {		
 		abilityListNode = GetNode<Control>("Ability List");
 		charName = GetNode<Label>("Portrait/Name");
 		userPromptText = GetNode<Label>("Prompt Text");
 
-		UpdatePromptText("");
-		UpdateAvailableAbilities();
-		UpdateCharacterName();
 		InitSubscriptions();
 	}
 	
@@ -40,19 +39,19 @@ public partial class ActiveCharInterfaceLayer : Control, IEventSubscriber, IEven
 
 		CombatInstance combatInstance = CombatManager.combatInstance;
 
-		if (combatInstance == null) return;
-		AbstractCharacter activeChar = combatInstance.activeChar;
-		for(int i = 0; i < activeChar.abilities.Count; i++){
+		if (combatInstance == null || ActiveChar == null) return;
+		for(int i = 0; i < ActiveChar.abilities.Count; i++){
 			Button instance = (Button) abilityButton.Instantiate();
 			abilityButtonInstances.Add(instance);
 			instance.SetPosition(new Vector2(0, -i * instance.Size.Y));
 
-			AbstractAbility ability = activeChar.abilities[i];
+			AbstractAbility ability = ActiveChar.abilities[i];
 			instance.Disabled = !ability.IsAvailable || (ability.TYPE == AbilityType.REACTION && CombatManager.combatInstance.combatState != CombatState.AWAITING_CLASH_INPUT);
 			instance.Text = ability.NAME + ((ability.curCooldown > 0) ? $" ({ability.curCooldown})" : "");
 			instance.MouseEntered += () => CreateAbilityDetailPanel(ability);
 			instance.MouseExited += () => DeleteAbilityDetailPanel();
-			instance.Pressed += () => GetTargeting(ability); 
+			instance.Pressed += () => GetTargeting(ability);
+
 			abilityListNode.AddChild(instance);
 		}
 	}
@@ -98,11 +97,11 @@ public partial class ActiveCharInterfaceLayer : Control, IEventSubscriber, IEven
 			}
 		}
 
-		string promptText = (!ability.useLaneTargeting) ? "Select a unit" : "Select a lane";
+		string promptText = (!ability.useLaneTargeting) ? $"Select a unit for {ability.NAME}" : $"Select a lane for {ability.NAME}";
 		UpdatePromptText(promptText);
 
 		// open unit-selection dialog
-		// TODO: This should be a part of the regular combat interface instead of a separate dialog, but this is for testing purposes.
+		// TODO: Remove this, as this should be a part of the regular combat interface instead of a separate dialog, but this is for testing purposes.
 		SelectTargetPanel instance = (SelectTargetPanel) targetingDialog.Instantiate();
 		instance.SetPosition(new Vector2(500, 500));
 		this.AddChild(instance);
@@ -131,14 +130,7 @@ public partial class ActiveCharInterfaceLayer : Control, IEventSubscriber, IEven
     }
 
     public void HandleEvent(CombatEventTurnStart data){
-		UpdateAvailableAbilities();
-		UpdateCharacterName();
+		this.ActiveChar = data.character;
 		UpdatePromptText("");
-	}
-
-	public void HandleEvent(CombatEventCombatStateChanged data){
-		if (data.prevState == CombatState.AWAITING_ABILITY_INPUT && data.newState == CombatState.AWAITING_CLASH_INPUT){
-			UpdateAvailableAbilities();
-		}
 	}
 }

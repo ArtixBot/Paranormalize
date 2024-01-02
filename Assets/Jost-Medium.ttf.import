@@ -2,13 +2,13 @@
 
 importer="font_data_dynamic"
 type="FontFile"
-uid="uid://bg5yjcskoynyh"
-path="res://.godot/imported/Jost-Regular.ttf-5443f1b98105401980d91d1fffc1191c.fontdata"
+uid="uid://bbbh26n3nsxrr"
+path="res://.godot/imported/Jost-Medium.ttf-bc4d4662a13f6471b60387b50fc409ba.fontdata"
 
 [deps]
 
-source_file="res://Assets/Jost-Regular.ttf"
-dest_files=["res://.godot/imported/Jost-Regular.ttf-5443f1b98105401980d91d1fffc1191c.fontdata"]
+source_file="res://Assets/Jost-Medium.ttf"
+dest_files=["res://.godot/imported/Jost-Medium.ttf-bc4d4662a13f6471b60387b50fc409ba.fontdata"]
 
 [params]
 

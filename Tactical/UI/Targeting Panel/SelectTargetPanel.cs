@@ -22,7 +22,7 @@ public partial class SelectTargetPanel : Panel
 	public AbstractAbility ability;
 
 	private Label selectName;
-	private readonly PackedScene abilityButton = GD.Load<PackedScene>("res://Tactical/UI/AbilityButton.tscn");
+	private readonly PackedScene abilityButton = GD.Load<PackedScene>("res://Tactical/UI/Abilities/AbilityButton.tscn");
 
 	// Called when the node enters the scene tree for the first time.
 	public override void _Ready()

@@ -3,12 +3,12 @@ using System;
 using System.Collections.Generic;
 namespace UI;
 
-public partial class CombatInterface : Control, IEventSubscriber, IEventHandler<CombatEventRoundStart>, IEventHandler<CombatEventTurnStart>, IEventHandler<CombatEventCombatStateChanged> {
-	private readonly PackedScene character = GD.Load<PackedScene>("res://Tactical/UI/Characters/Character.tscn");
+public partial class CombatInterface : Control, IEventSubscriber, IEventHandler<CombatEventCombatStart>, IEventHandler<CombatEventRoundStart>, IEventHandler<CombatEventTurnStart>, IEventHandler<CombatEventCombatStateChanged>, IEventHandler<CombatEventCharacterDeath> {
+	private readonly PackedScene characterNode = GD.Load<PackedScene>("res://Tactical/UI/Characters/Character.tscn");
 	private Label roundCounter;
 	private Label turnList;
 
-	public Dictionary<AbstractCharacter, Node> characterToNodeMap = new();
+	public Dictionary<AbstractCharacter, CharacterUI> characterToNodeMap = new();
 
 	// Called when the node enters the scene tree for the first time.
 	public override void _Ready() {
@@ -39,7 +39,6 @@ public partial class CombatInterface : Control, IEventSubscriber, IEventHandler<
 		turnList.Text = turnlistText;
 	}
 
-
 	private List<Node> charInstances = new List<Node>();
 	private void UpdateCharPositions(){
 		foreach(Node instance in charInstances){
@@ -50,21 +49,30 @@ public partial class CombatInterface : Control, IEventSubscriber, IEventHandler<
 		CombatInstance combatInstance = CombatManager.combatInstance;
 		if (combatInstance == null) return;
 
-		foreach (AbstractCharacter fighter in combatInstance.fighters){
-			CharacterUI x = (CharacterUI) character.Instantiate();
-			x.Character = fighter;
-
-			charInstances.Add(x);
-			x.SetPosition(new Vector2((fighter.Position - 1) * 300, 500));
-			this.AddChild(x);
+		foreach (CharacterUI charUI in characterToNodeMap.Values){
+			charUI.SetPosition(new Vector2((charUI.Character.Position - 1) * 300, 500));
 		}
 	}
 
 	public virtual void InitSubscriptions(){
+		CombatManager.eventManager.Subscribe(CombatEventType.ON_COMBAT_START, this, CombatEventPriority.UI);
+		CombatManager.eventManager.Subscribe(CombatEventType.ON_CHARACTER_DEATH, this, CombatEventPriority.UI);
 		CombatManager.eventManager.Subscribe(CombatEventType.ON_ROUND_START, this, CombatEventPriority.UI);
 		CombatManager.eventManager.Subscribe(CombatEventType.ON_TURN_START, this, CombatEventPriority.UI);
 		CombatManager.eventManager.Subscribe(CombatEventType.ON_COMBAT_STATE_CHANGE, this, CombatEventPriority.UI);
     }
+
+	public void HandleEvent(CombatEventCombatStart data){
+		HashSet<AbstractCharacter> fighters = CombatManager.combatInstance.fighters;
+		foreach (AbstractCharacter fighter in fighters){
+			CharacterUI charUI = (CharacterUI) characterNode.Instantiate();
+			charUI.Character = fighter;
+			characterToNodeMap[fighter] = charUI;
+
+			charUI.SetPosition(new Vector2((fighter.Position - 1) * 300, 500));
+			this.AddChild(charUI);
+		}
+	}
 
     public void HandleEvent(CombatEventRoundStart data){
 		UpdateRoundText();
@@ -76,5 +84,13 @@ public partial class CombatInterface : Control, IEventSubscriber, IEventHandler<
 
 	public void HandleEvent(CombatEventCombatStateChanged data){
 		UpdateCharPositions();
+	}
+
+	public void HandleEvent(CombatEventCharacterDeath data){
+		CharacterUI charUI = characterToNodeMap.GetValueOrDefault(data.deadChar);
+		if (charUI == null) return;
+
+		this.RemoveChild(charUI);
+		characterToNodeMap.Remove(data.deadChar);
 	}
 }

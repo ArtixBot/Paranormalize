@@ -3,10 +3,10 @@
 [ext_resource type="Texture2D" uid="uid://be2dx8wnx2c1" path="res://Sprites/die - evade.png" id="1_1kbt0"]
 [ext_resource type="Script" path="res://Tactical/UI/Abilities/AbilityDie.cs" id="1_xf6p5"]
 [ext_resource type="FontFile" uid="uid://bwboh1vdh8npd" path="res://Assets/AlegreyaSans-Regular.ttf" id="2_ygdr6"]
-[ext_resource type="FontFile" uid="uid://bg5yjcskoynyh" path="res://Assets/Jost-Regular.ttf" id="3_g1brd"]
+[ext_resource type="FontFile" uid="uid://bbbh26n3nsxrr" path="res://Assets/Jost-Medium.ttf" id="3_pjtgi"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_vivry"]
-font = ExtResource("3_g1brd")
+font = ExtResource("3_pjtgi")
 font_size = 18
 shadow_color = Color(0, 0, 0, 1)
 shadow_offset = Vector2(0, 1)

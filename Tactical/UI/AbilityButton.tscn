@@ -1,8 +1,0 @@
-[gd_scene format=3 uid="uid://dnmvasqntebig"]
-
-[node name="Button" type="Button"]
-offset_right = 239.0
-offset_bottom = 42.0
-text = "Ability Name"
-alignment = 0
-text_overrun_behavior = 3
