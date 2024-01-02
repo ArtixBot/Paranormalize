@@ -39,16 +39,7 @@ public partial class CombatInterface : Control, IEventSubscriber, IEventHandler<
 		turnList.Text = turnlistText;
 	}
 
-	private List<Node> charInstances = new List<Node>();
 	private void UpdateCharPositions(){
-		foreach(Node instance in charInstances){
-			this.RemoveChild(instance);
-		}
-		charInstances.Clear();
-		
-		CombatInstance combatInstance = CombatManager.combatInstance;
-		if (combatInstance == null) return;
-
 		foreach (CharacterUI charUI in characterToNodeMap.Values){
 			charUI.SetPosition(new Vector2((charUI.Character.Position - 1) * 300, 500));
 		}
