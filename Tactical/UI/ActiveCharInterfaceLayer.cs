@@ -52,7 +52,6 @@ public partial class ActiveCharInterfaceLayer : Control, IEventSubscriber, IEven
 
 			instance.MouseEntered += () => CreateAbilityDetailPanel(ability);
 			instance.MouseExited += () => DeleteAbilityDetailPanel();
-			// instance.Pressed += () => GetTargeting(ability);
 		}
 	}
 
@@ -68,46 +67,6 @@ public partial class ActiveCharInterfaceLayer : Control, IEventSubscriber, IEven
 	private void DeleteAbilityDetailPanel(){
 		RemoveChild(abilityDetailPanelInstance);
 	}
-
-	// private void GetTargeting(AbstractAbility ability){
-		// abilityTargeting = ability.GetValidTargets();
-
-		// List<AbstractCharacter> characters = new();
-		// List<int> lanes = new();
-		// if (!ability.useLaneTargeting){
-		// 	foreach ((int _, HashSet<AbstractCharacter> targetsInLane) in abilityTargeting){
-		// 		foreach (AbstractCharacter target in targetsInLane){
-		// 			characters.Add(target);
-		// 		}
-		// 	}
-		// 	if (characters.Count == 0) {
-		// 		Logging.Log("No targets were in range!", Logging.LogLevel.ESSENTIAL);
-		// 		return;
-		// 	}
-			
-		// } else {
-		// 	foreach ((int lane, HashSet<AbstractCharacter> _) in abilityTargeting){
-		// 		lanes.Add(lane);
-		// 	}
-		// 	if (lanes.Count == 0) {
-		// 		Logging.Log("No lanes were in range!", Logging.LogLevel.ESSENTIAL);
-		// 		return;
-		// 	}
-		// }
-
-		// open unit-selection dialog
-		// TODO: Remove this, as this should be a part of the regular combat interface instead of a separate dialog, but this is for testing purposes.
-	// 	SelectTargetPanel instance = (SelectTargetPanel) targetingDialog.Instantiate();
-	// 	instance.SetPosition(new Vector2(500, 500));
-	// 	this.AddChild(instance);
-	// 	instance.ability = ability;
-	// 	instance.RequiresText = !ability.useLaneTargeting;
-	// 	if (characters.Count > 0){
-	// 		instance.Chars = characters;
-	// 	} else {
-	// 		instance.Lanes = lanes;
-	// 	}
-	// }
 
 	private void UpdateCharacterName(){
 		CombatInstance combatInstance = CombatManager.combatInstance;

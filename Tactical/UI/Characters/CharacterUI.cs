@@ -6,6 +6,9 @@ namespace UI;
 
 public partial class CharacterUI : Control, IEventSubscriber, IEventHandler<CombatEventTurnEnd>
 {
+	[Signal]
+	public delegate void CharacterSelectedEventHandler(CharacterUI character);
+
 	private AbstractCharacter _character;
 	public AbstractCharacter Character {
 		get {return _character;}
@@ -35,8 +38,8 @@ public partial class CharacterUI : Control, IEventSubscriber, IEventHandler<Comb
 	}
 
     public void _on_area_2d_input_event(Viewport viewport, InputEvent @event, int shape_idx){
-        if (@event is InputEventMouseButton && @event.IsPressed() == false){
-			GD.Print($"{Character?.CHAR_NAME} was clicked.");
+        if (IsClickable && @event is InputEventMouseButton && @event.IsPressed() == false){
+			EmitSignal(nameof(CharacterSelected), this);
 		}
     }
 

@@ -23,7 +23,7 @@ public partial class AbilityButton : Button
 
     public override void _Pressed(){
         base._Pressed();
-		EmitSignal(nameof(AbilitySelected), this);		// Listeners can access the Ability field.
+		EmitSignal(nameof(AbilitySelected), this);		// LINK - Tactical\UI\ActiveCharInterfaceLayer.cs:51
     }
 
     private void UpdateDisplay(){
