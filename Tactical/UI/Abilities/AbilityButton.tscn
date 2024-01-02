@@ -1,6 +1,7 @@
-[gd_scene load_steps=4 format=3 uid="uid://dnmvasqntebig"]
+[gd_scene load_steps=5 format=3 uid="uid://dnmvasqntebig"]
 
 [ext_resource type="Texture2D" uid="uid://doan60felig4d" path="res://Sprites/cooldown.png" id="1_0d473"]
+[ext_resource type="Script" path="res://Tactical/UI/Abilities/AbilityButton.cs" id="2_xwad4"]
 [ext_resource type="FontFile" uid="uid://bbbh26n3nsxrr" path="res://Assets/Jost-Medium.ttf" id="3_e7bb3"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_thm6x"]
@@ -15,8 +16,9 @@ theme_override_fonts/font = ExtResource("3_e7bb3")
 text = "Ability Name"
 alignment = 0
 text_overrun_behavior = 3
+script = ExtResource("2_xwad4")
 
-[node name="TextureRect" type="TextureRect" parent="."]
+[node name="Cooldown Img" type="TextureRect" parent="."]
 visible = false
 layout_mode = 0
 offset_left = 174.0
@@ -24,7 +26,7 @@ offset_right = 214.0
 offset_bottom = 40.0
 texture = ExtResource("1_0d473")
 
-[node name="Cooldown Label" type="Label" parent="TextureRect"]
+[node name="Cooldown Label" type="Label" parent="Cooldown Img"]
 layout_mode = 0
 offset_left = 43.0
 offset_right = 83.0

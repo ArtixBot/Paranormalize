@@ -1,10 +1,15 @@
-[gd_scene load_steps=6 format=3 uid="uid://cdon4x8pubue0"]
+[gd_scene load_steps=8 format=3 uid="uid://cdon4x8pubue0"]
 
 [ext_resource type="PackedScene" uid="uid://yyhqttdpvpjw" path="res://Tactical/UI/ActiveCharInterfaceLayer.tscn" id="1_4hy55"]
 [ext_resource type="Script" path="res://Tactical/UI/GUIOrchestrator.cs" id="1_7ak4a"]
 [ext_resource type="Script" path="res://Tactical/UI/CombatInterface.cs" id="2_0ptl1"]
 [ext_resource type="Texture2D" uid="uid://brloppmdsx20t" path="res://Sprites/lane.png" id="3_dwvag"]
 [ext_resource type="Script" path="res://Tactical/UI/Lane.cs" id="4_n4yp2"]
+[ext_resource type="FontFile" uid="uid://bwboh1vdh8npd" path="res://Assets/AlegreyaSans-Regular.ttf" id="6_xeyi2"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_a110w"]
+font = ExtResource("6_xeyi2")
+font_size = 32
 
 [node name="GUI" type="Control"]
 layout_mode = 3
@@ -13,6 +18,16 @@ offset_right = 40.0
 offset_bottom = 40.0
 mouse_filter = 2
 script = ExtResource("1_7ak4a")
+
+[node name="Prompt Text" type="Label" parent="."]
+layout_mode = 0
+offset_left = 742.0
+offset_top = 160.0
+offset_right = 1336.0
+offset_bottom = 309.0
+text = "Prompt text goes here."
+label_settings = SubResource("LabelSettings_a110w")
+horizontal_alignment = 1
 
 [node name="Active Character" parent="." instance=ExtResource("1_4hy55")]
 layout_mode = 1

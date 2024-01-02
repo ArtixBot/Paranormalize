@@ -6,6 +6,8 @@ public partial class Lane : TextureRect
 	[Export]
 	public int position;
 
+	public bool IsClickable;
+
     public override void _GuiInput(InputEvent @event)
     {
         base._GuiInput(@event);

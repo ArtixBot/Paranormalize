@@ -50,7 +50,7 @@ public partial class SelectTargetPanel : Panel
 	private void ChangeSelectables(){
 		// Only one of Chars/Lanes is ever filled.
 		for (int i = 0; i < Lanes.Count; i++){
-			Button instance = (Button) abilityButton.Instantiate();
+			AbilityButton instance = (AbilityButton) abilityButton.Instantiate();
 			instance.SetPosition(new Vector2(0, 100 + i * instance.Size.Y));
 			instance.Text = $"Lane {Lanes[i]}";
 			List<int> lanes = new List<int>{Lanes[i]};		// For some reason I can't just pipe the new list in the InputAbility() fn?
@@ -60,7 +60,7 @@ public partial class SelectTargetPanel : Panel
 			this.AddChild(instance);
 		}
 		for (int i = 0; i < Chars.Count; i++){
-			Button instance = (Button) abilityButton.Instantiate();
+			AbilityButton instance = (AbilityButton) abilityButton.Instantiate();
 			instance.SetPosition(new Vector2(0, 100 + i * instance.Size.Y));
 			instance.Text = $"{Chars[i].CHAR_NAME}";
 			List<AbstractCharacter> chars = new List<AbstractCharacter>{Chars[i]};
