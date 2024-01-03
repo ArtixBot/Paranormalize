@@ -33,6 +33,15 @@ public partial class AbstractCharacter : IEventSubscriber, IEventHandler<CombatE
     public int MinSpd, MaxSpd;      // Speed modifiers like Haste or Slow are done in event handling.
     public int Position;
 
+    /// <summary>
+    /// Filled out by AI-controlled units only. The unit will use this ability on its turn. If ever made unavailable, a new intended action should be selected.
+    /// </summary>
+    public AbstractAbility actionIntent;
+    /// <summary>
+    /// Filled out by AI-controlled units only. If targeted by a clashable attack, the unit will attempt to react with this ability. If the ability in question is ineligible to react, the target will choose not to react.
+    /// </summary>
+    public AbstractAbility reactionIntent;
+
     public AbstractCharacter() : this(10, 10, 1, 5, CharacterFaction.NEUTRAL, "Unnamed Fighter") {}
     public AbstractCharacter(string name) : this(10, 10, 1, 5, CharacterFaction.NEUTRAL, name) {}
     public AbstractCharacter(string name, CharacterFaction faction) : this(10, 10, 1, 5, faction, name) {}

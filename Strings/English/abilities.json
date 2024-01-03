@@ -12,6 +12,9 @@
             "FIRST_DIE": "This is a description. On hit: Apply Vulnerable and gain 2 Haste."
         }
     },
+    "THWACK": {
+        "NAME": "Thwack"
+    },
     "RELENTLESS_STABBING": {
         "NAME": "Relentless Stabbing",
         "STRINGS": {

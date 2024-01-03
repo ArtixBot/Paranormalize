@@ -37,7 +37,7 @@ public class TestScenario : ScenarioInfo {
         characterB.MaxHP = 100;
         characterB.CurHP = 100;
         characterB.MaxPoise = 10;
-        // characterB.EquipAbility(new TestReact());
+        characterB.EquipAbility(new Thwack());
         characterC.ActionsPerTurn = 0;
         characterD.ActionsPerTurn = 0;
     }

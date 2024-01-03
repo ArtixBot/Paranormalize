@@ -96,8 +96,8 @@ public static class CombatManager {
                     // AI chooses an ability (since activeChar was the player).
                     AbstractCharacter ai = combatInstance.activeAbilityTargets[0];
                     List<AbstractAbility> reactableAbilities = CombatManager.GetEligibleReactions(ai);
+                    // TODO: Do AI control here instead of just returning the first ability possible.
                     AbstractAbility reactAbility = reactableAbilities.DefaultIfEmpty(null).First();
-                    // TODO: Do AI control here instead of just returning null.
                     InputAbility(reactAbility, new List<AbstractCharacter>{combatInstance.activeChar});
                 } else {
                     // Player chooses an ability (since activeChar was AI).
@@ -338,6 +338,17 @@ public static class CombatManager {
             // On tie, remove both dice.
             if (modAtkRoll == modReactRoll){
                 eventManager.BroadcastEvent(new CombatEventClashTie(atkDie, reactDie));
+                try {
+                    combatInstance.activeAbilityDice.RemoveAt(0);
+                } catch (ArgumentOutOfRangeException){
+                    GD.Print("Attempted to remove attacker dice at position zero, but dice were preemptively removed since either the attacker was staggered or the defender was killed.");
+                }
+                try {
+                    combatInstance.reactAbilityDice.RemoveAt(0);
+                } catch (ArgumentOutOfRangeException){
+                    GD.Print("Attempted to remove defender dice at position zero, but dice were preemptively removed since either the defender was staggered or the attacker was killed.");
+                }
+                i += 1;
                 continue;
             }
 
