@@ -1,6 +1,7 @@
 using Godot;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 public enum CharacterFaction {PLAYER, NEUTRAL, ENEMY};
 
@@ -9,6 +10,9 @@ public partial class AbstractCharacter : IEventSubscriber, IEventHandler<CombatE
     public string CHAR_NAME;
 
     public List<AbstractAbility> abilities = new();       // At the start of combat, deep-copy everything from PERMA_ABILITIES.
+    public List<AbstractAbility> AvailableAbilities {
+        get {return abilities.Where(ability => ability.IsAvailable).ToList();}
+    }
     public List<AbstractStatusEffect> statusEffects = new();
 
     private int _CurHP, _MaxHP, _CurPoise, _MaxPoise;
@@ -34,13 +38,10 @@ public partial class AbstractCharacter : IEventSubscriber, IEventHandler<CombatE
     public int Position;
 
     /// <summary>
-    /// Filled out by AI-controlled units only. The unit will use this ability on its turn. If ever made unavailable, a new intended action should be selected.
-    /// </summary>
-    public AbstractAbility actionIntent;
-    /// <summary>
     /// Filled out by AI-controlled units only. If targeted by a clashable attack, the unit will attempt to react with this ability. If the ability in question is ineligible to react, the target will choose not to react.
     /// </summary>
     public AbstractAbility reactionIntent;
+    public AiBehavior Behavior;
 
     public AbstractCharacter() : this(10, 10, 1, 5, CharacterFaction.NEUTRAL, "Unnamed Fighter") {}
     public AbstractCharacter(string name) : this(10, 10, 1, 5, CharacterFaction.NEUTRAL, name) {}
@@ -56,6 +57,7 @@ public partial class AbstractCharacter : IEventSubscriber, IEventHandler<CombatE
         this.ActionsPerTurn = 2;
         this.CHAR_FACTION = faction;
         this.CHAR_NAME = name;
+        this.Behavior = new AiBehaviorPureRandom(this);
 
         EquipAbility(new AbilityPass());
         EquipAbility(new AbilityMove());

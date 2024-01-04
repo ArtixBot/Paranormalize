@@ -85,19 +85,26 @@ public static class CombatManager {
             case CombatState.TURN_END:
                 TurnEnd();
                 break;
-            case CombatState.AWAITING_ABILITY_INPUT:    // This state doesn't do anything by itself, but allows use of InputAbility while at this stage.
+            // This state doesn't do anything by itself, but allows use of InputAbility while at this stage.
+            case CombatState.AWAITING_ABILITY_INPUT:
                 if (combatInstance.activeChar.CHAR_FACTION != CharacterFaction.PLAYER){
-                    // TODO: do AI control here, instead of just passing.
-                    InputAbility(combatInstance.activeChar.abilities.Where(ability => ability.ID == "PASS").First(), new List<AbstractCharacter>{combatInstance.activeChar});
+                    if (combatInstance.activeChar.Behavior == null){        // This should never happen.
+                        InputAbility(combatInstance.activeChar.abilities.FirstOrDefault(ability => ability.ID == "PASS"), new List<AbstractCharacter>{combatInstance.activeChar});
+                        break;
+                    }
+                    combatInstance.activeChar.Behavior.DecideAbilityToUse();
                 }
                 break;
-            case CombatState.AWAITING_CLASH_INPUT:      // This state doesn't do anything by itself, but allows use of InputAbility while at this stage.
+            // This state doesn't do anything by itself, but allows use of InputAbility while at this stage.
+            case CombatState.AWAITING_CLASH_INPUT:
                 if (combatInstance.activeChar.CHAR_FACTION == CharacterFaction.PLAYER){
                     // AI chooses an ability (since activeChar was the player).
                     AbstractCharacter ai = combatInstance.activeAbilityTargets[0];
                     List<AbstractAbility> reactableAbilities = CombatManager.GetEligibleReactions(ai);
-                    // TODO: Do AI control here instead of just returning the first ability possible.
-                    AbstractAbility reactAbility = reactableAbilities.DefaultIfEmpty(null).First();
+                    
+                    // Use whatever's in ReactionIntent. If there's nothing, don't clash. If the ReactionIntent cannot clash, also don't clash.
+                    // ai.reactionIntent = reactableAbilities[0];  // TODO - Remove; this is just to test that reactions are WAI.
+                    AbstractAbility reactAbility = reactableAbilities.Contains(ai.reactionIntent) ? ai.reactionIntent : null;
                     InputAbility(reactAbility, new List<AbstractCharacter>{combatInstance.activeChar});
                 } else {
                     // Player chooses an ability (since activeChar was AI).
@@ -242,6 +249,11 @@ public static class CombatManager {
                                                                     combatInstance.reactAbility, 
                                                                     combatInstance.reactAbilityDice));
             ResolveClash();
+
+            // TODO - Should this be done here? Normally the active character's turn is removed in TurnEnd, but the reacter hasn't reached it, hence why this code is here for now.
+            if (!combatInstance.reactAbility.HasTag(AbilityTag.CANTRIP)){
+                combatInstance.turnlist.RemoveNextInstanceOfItem(combatInstance.reactAbility.OWNER);
+            }
         }
         // If the active ability had Cantrip, don't end turn and instead return to AWAITING_ABILITY_INPUT.
         CombatState nextState = combatInstance.activeAbility.HasTag(AbilityTag.CANTRIP) ? CombatState.AWAITING_ABILITY_INPUT : CombatState.TURN_END;
@@ -369,7 +381,6 @@ public static class CombatManager {
             }
             eventManager.BroadcastEvent(new CombatEventClashWin(winningDie, winningRoll));
             eventManager.BroadcastEvent(new CombatEventClashLose(losingDie, losingRoll));
-
 
             ResolveDieRoll(winningChar, losingChar, winningDie, winningNatRoll, winningRoll, rolledDuringClash: true);
             try {

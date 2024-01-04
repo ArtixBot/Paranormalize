@@ -31,6 +31,7 @@ public class TestScenario : ScenarioInfo {
         characterA.EquipAbility(new RelentlessStabbing());
         characterA.EquipAbility(new TestAttack());
         characterA.EquipAbility(new Discharge());
+        characterA.EquipAbility(new Thwack());
         characterA.MinSpd = 5;
 
         characterB.ActionsPerTurn = 1;
@@ -38,6 +39,7 @@ public class TestScenario : ScenarioInfo {
         characterB.CurHP = 100;
         characterB.MaxPoise = 10;
         characterB.EquipAbility(new Thwack());
+        characterB.Behavior = new AiBehaviorPureRandom(characterB);
         characterC.ActionsPerTurn = 0;
         characterD.ActionsPerTurn = 0;
     }
