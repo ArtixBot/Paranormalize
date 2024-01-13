@@ -7,6 +7,8 @@ public partial class AbilityButton : Button
 	[Signal]
 	public delegate void AbilitySelectedEventHandler(AbilityButton button);
 
+	public bool clashBehavior;
+
 	private AbstractAbility _ability;
 	public AbstractAbility Ability {
 		get {return _ability;}
@@ -25,6 +27,10 @@ public partial class AbilityButton : Button
         base._Pressed();
 		EmitSignal(nameof(AbilitySelected), this);		// LINK - Tactical\UI\ActiveCharInterfaceLayer.cs:51
     }
+
+	public void SetEnabled(bool isEnabled){
+		this.Disabled = !isEnabled;
+	}
 
     private void UpdateDisplay(){
 		this.Text = Ability.NAME;

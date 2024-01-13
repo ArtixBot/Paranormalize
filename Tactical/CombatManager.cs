@@ -18,12 +18,8 @@ public class CombatInstance {
     public HashSet<AbstractCharacter> fighters = new HashSet<AbstractCharacter>();
     public ModdablePriorityQueue<AbstractCharacter> turnlist = new ModdablePriorityQueue<AbstractCharacter>();
     
-    public AbstractCharacter activeChar {
-        get {return turnlist[0].element; }
-    }
-    public int activeCharSpd {
-        get {return turnlist[0].priority; }
-    }
+    public AbstractCharacter activeChar;
+    public int activeCharSpd;
 
     public AbstractAbility activeAbility;
     public List<Die> activeAbilityDice;
@@ -99,7 +95,7 @@ public static class CombatManager {
             case CombatState.AWAITING_CLASH_INPUT:
                 if (combatInstance.activeChar.CHAR_FACTION == CharacterFaction.PLAYER){
                     // AI chooses an ability (since activeChar was the player).
-                    AbstractCharacter ai = combatInstance.activeAbilityTargets[0];
+                    AbstractCharacter ai = combatInstance.activeAbilityTargets.First();
                     List<AbstractAbility> reactableAbilities = CombatManager.GetEligibleReactions(ai);
                     
                     // Use whatever's in ReactionIntent. If there's nothing, don't clash. If the ReactionIntent cannot clash, also don't clash.
@@ -108,6 +104,13 @@ public static class CombatManager {
                     InputAbility(reactAbility, new List<AbstractCharacter>{combatInstance.activeChar});
                 } else {
                     // Player chooses an ability (since activeChar was AI).
+                    AbstractCharacter defender = combatInstance.activeAbilityTargets.First();
+                    eventManager.BroadcastEvent(new CombatEventClashEligible(
+                        attacker: combatInstance.activeChar, 
+                        attackerAbility: combatInstance.activeAbility,
+                        defender: defender,
+                        reactableAbilities: CombatManager.GetEligibleReactions(defender)
+                    ));
                 }
                 break;
             case CombatState.RESOLVE_ABILITIES:         // Triggers after AWAITING_ABILITY_INPUT, or (optionally) AWAITING_CLASH_INPUT.
@@ -159,6 +162,8 @@ public static class CombatManager {
     }
 
     private static void TurnStart(){
+        combatInstance.activeChar = combatInstance.turnlist[0].element;
+        combatInstance.activeCharSpd = combatInstance.turnlist[0].priority;
         Logging.Log($"{combatInstance.activeChar?.CHAR_NAME} ({combatInstance.activeCharSpd}) is taking their turn. They have {combatInstance.activeChar.CountAvailableAbilities()} available abilities.", Logging.LogLevel.INFO);
         eventManager.BroadcastEvent(new CombatEventTurnStart(combatInstance.activeChar, combatInstance.activeCharSpd));
         ChangeCombatState(CombatState.AWAITING_ABILITY_INPUT);
@@ -297,6 +302,7 @@ public static class CombatManager {
             Logging.Log($"{combatInstance.reactAbility.OWNER.CHAR_NAME} rolls a(n) {die.DieType} die (range: {die.MinValue} - {die.MaxValue}, natural roll: {dieRoll}).", Logging.LogLevel.ESSENTIAL);
             int modifiedRoll = eventManager.BroadcastEvent(new CombatEventDieRolled(die, dieRoll)).rolledValue;
 
+            GD.Print($"{combatInstance.reactAbility.OWNER.CHAR_NAME} targets {combatInstance.activeChar.CHAR_NAME}");
             ResolveDieRoll(combatInstance.reactAbility.OWNER, combatInstance.activeChar, die, dieRoll, modifiedRoll, rolledDuringClash: false);
 
             try {
@@ -372,8 +378,8 @@ public static class CombatManager {
 
             int losingRoll = (modAtkRoll > modReactRoll) ? modReactRoll : modAtkRoll;
 
-            AbstractCharacter winningChar = (modAtkRoll > modReactRoll) ? combatInstance.activeChar : combatInstance.activeAbilityTargets[0];
-            AbstractCharacter losingChar = (modAtkRoll > modReactRoll) ? combatInstance.activeAbilityTargets[0] : combatInstance.activeChar;
+            AbstractCharacter winningChar = (modAtkRoll > modReactRoll) ? combatInstance.activeChar : combatInstance.activeAbilityTargets.First();
+            AbstractCharacter losingChar = (modAtkRoll > modReactRoll) ? combatInstance.activeAbilityTargets.First() : combatInstance.activeChar;
 
             // If the losing die was a block die, and the winning die was an attack die, reduce the winning roll by the losing roll.
             if (winningDie.IsAttackDie && losingDie.DieType == DieType.BLOCK) {

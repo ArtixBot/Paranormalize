@@ -2,7 +2,7 @@ using Godot;
 using System.Collections.Generic;
 using UI;
 
-public partial class ActiveCharInterfaceLayer : Control, IEventSubscriber, IEventHandler<CombatEventTurnStart> {
+public partial class ActiveCharInterfaceLayer : Control, IEventSubscriber, IEventHandler<CombatEventTurnStart>, IEventHandler<CombatEventClashEligible> {
 
 	private AbstractCharacter _activeChar;
 	public AbstractCharacter ActiveChar {
@@ -26,7 +26,7 @@ public partial class ActiveCharInterfaceLayer : Control, IEventSubscriber, IEven
 	
 	private AbilityDetailPanel abilityDetailPanelInstance = new();
 	private List<AbilityButton> abilityButtonInstances = new();
-	private List<(int lane, HashSet<AbstractCharacter> targetsInLane)> abilityTargeting;
+	private List<AbstractAbility> reactionAbilities = new();
 	private void UpdateAvailableAbilities(){
 		// Remove previous instances from code.
 		foreach(AbilityButton instance in abilityButtonInstances){
@@ -37,17 +37,24 @@ public partial class ActiveCharInterfaceLayer : Control, IEventSubscriber, IEven
 		CombatInstance combatInstance = CombatManager.combatInstance;
 
 		if (combatInstance == null || ActiveChar == null) return;
-		for(int i = 0; i < ActiveChar.abilities.Count; i++){
+		bool doClashProcessing = CombatManager.combatInstance?.combatState == CombatState.AWAITING_CLASH_INPUT;
+
+		List<AbstractAbility> abilitiesToDisplay = doClashProcessing ? reactionAbilities : ActiveChar.abilities;
+		for(int i = 0; i < abilitiesToDisplay.Count; i++){
 			AbilityButton instance = (AbilityButton) abilityButton.Instantiate();
 			abilityButtonInstances.Add(instance);
 			instance.SetPosition(new Vector2(0, -i * instance.Size.Y));
 
-			AbstractAbility ability = ActiveChar.abilities[i];
+			AbstractAbility ability = abilitiesToDisplay[i];
 			abilityListNode.AddChild(instance);
 			instance.Ability = ability;
 			
 			GUIOrchestrator parent = (GUIOrchestrator) GetParent();
-			instance.AbilitySelected += (instance) => parent._on_child_ability_selection(instance.Ability);
+			if (doClashProcessing){
+				instance.AbilitySelected += (instance) => parent._on_child_clash_selection(instance.Ability);
+			} else {
+				instance.AbilitySelected += (instance) => parent._on_child_ability_selection(instance.Ability);
+			}
 
 			instance.MouseEntered += () => CreateAbilityDetailPanel(ability);
 			instance.MouseExited += () => DeleteAbilityDetailPanel();
@@ -75,10 +82,15 @@ public partial class ActiveCharInterfaceLayer : Control, IEventSubscriber, IEven
 	
 	public virtual void InitSubscriptions(){
 		CombatManager.eventManager.Subscribe(CombatEventType.ON_TURN_START, this, CombatEventPriority.UI);
-		CombatManager.eventManager.Subscribe(CombatEventType.ON_COMBAT_STATE_CHANGE, this, CombatEventPriority.UI);
+		CombatManager.eventManager.Subscribe(CombatEventType.ON_CLASH_ELIGIBLE, this, CombatEventPriority.UI);
     }
 
     public void HandleEvent(CombatEventTurnStart data){
 		this.ActiveChar = data.character;
+	}
+
+	public void HandleEvent(CombatEventClashEligible data){
+		this.reactionAbilities = data.reactableAbilities;		// This should be set first since setting ActiveChar will force an update of abilities.
+		this.ActiveChar = data.defender;
 	}
 }

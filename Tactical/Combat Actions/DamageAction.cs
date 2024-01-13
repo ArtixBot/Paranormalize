@@ -35,6 +35,8 @@ public class DamageAction : AbstractAction {
             this.defender.CurHP -= (int) damageData.damageTaken;
         }
 
+        GD.Print($"{attacker.CHAR_NAME} attacks {defender.CHAR_NAME} dealing {damageData.damageTaken} {(isPoiseDamage ? "Poise " : "")}damage.");
+
         if (this.defender.CurPoise <= 0){
             // Note that passives which prevent stagger for the first time in combat should listen to CombatEventDamageDealt.
             CombatManager.ExecuteAction(new ApplyStatusAction(damageData.target, new ConditionStaggered(), stacksToApply: 2));

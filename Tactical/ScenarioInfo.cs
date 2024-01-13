@@ -32,7 +32,8 @@ public class TestScenario : ScenarioInfo {
         characterA.EquipAbility(new TestAttack());
         characterA.EquipAbility(new Discharge());
         characterA.EquipAbility(new Thwack());
-        characterA.MinSpd = 5;
+        characterA.MinSpd = -1;
+        characterA.MaxSpd = -1;
 
         characterB.ActionsPerTurn = 1;
         characterB.MaxHP = 100;

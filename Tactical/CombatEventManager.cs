@@ -414,3 +414,24 @@ public class CombatEventUnitMoved : ICombatEvent {
         this.isForcedMovement = isForcedMovement;
     }
 }
+
+/// <summary>
+/// Only UI elements should listen to this event. Triggers when an enemy attacks a player character who has eligible reaction abilities.
+/// </summary>
+public class CombatEventClashEligible : ICombatEvent {
+    public CombatEventType eventType {
+        get {return CombatEventType.ON_CLASH_ELIGIBLE;}
+    }
+
+    public AbstractCharacter attacker;
+    public AbstractAbility attackerAbility;
+    public AbstractCharacter defender;
+    public List<AbstractAbility> reactableAbilities;
+
+    public CombatEventClashEligible(AbstractCharacter attacker, AbstractAbility attackerAbility, AbstractCharacter defender, List<AbstractAbility> reactableAbilities){
+        this.attacker = attacker;
+        this.attackerAbility = attackerAbility;
+        this.defender = defender;
+        this.reactableAbilities = reactableAbilities;
+    }
+}
