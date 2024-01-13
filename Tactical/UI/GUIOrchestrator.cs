@@ -12,7 +12,7 @@ public partial class GUIOrchestrator : Control, IEventSubscriber, IEventHandler<
 	private CombatInterface combatInterfaceNode;
 
 	public GUIOrchestrator(){
-		// TODO: Remove, this is for debugging
+		// TODO: Remove, this is for debugging. Should be done on game end before loading into the scene.
 		CombatManager.combatInstance = new CombatInstance(new TestScenario());
 		combatData = CombatManager.combatInstance;
 	}

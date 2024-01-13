@@ -149,6 +149,9 @@ public static class CombatManager {
             for (int i = 0; i < character.ActionsPerTurn; i++){
                 combatInstance.turnlist.AddToQueue(character, Rng.RandiRange(character.MinSpd, character.MaxSpd));
             }
+            if (character.CHAR_FACTION != CharacterFaction.PLAYER){
+                // TODO: Decide reactions.
+            }
         }
         Logging.Log($"Starting round {combatInstance.round} with {combatInstance.turnlist.Count} actions in the queue.", Logging.LogLevel.INFO);
         eventManager.BroadcastEvent(new CombatEventRoundStart(combatInstance.round));
@@ -171,7 +174,10 @@ public static class CombatManager {
 
     private static void TurnEnd(){
         eventManager.BroadcastEvent(new CombatEventTurnEnd(combatInstance.activeChar, combatInstance.activeCharSpd));
-        combatInstance.turnlist.PopNextItem();
+        // If the active character is staggered, their actions are automatically removed from the turn queue, so only pop if the active character is not staggered.
+        if (combatInstance.turnlist.GetNextItem().element == combatInstance.activeChar){
+            combatInstance.turnlist.PopNextItem();
+        }
         if (combatInstance.turnlist.GetNextItem() == (null, 0)){
             Logging.Log("No remaining actions on the turnlist. Ending round.", Logging.LogLevel.INFO);
             ChangeCombatState(CombatState.ROUND_END);

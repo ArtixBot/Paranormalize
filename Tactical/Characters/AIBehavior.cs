@@ -14,6 +14,11 @@ public abstract class AiBehavior {
     /// Decide on an ability to use. The decision process should vary between implementations.
     /// </summary>
     public abstract void DecideAbilityToUse();
+
+    /// <summary>
+    /// Decide on what abilities will be used as reactions this round.
+    /// </summary>
+    public abstract void DecideReactions();
 }
 
 /// <summary>
@@ -57,6 +62,10 @@ public class AiBehaviorPureRandom : AiBehavior {
             CombatManager.InputAbility(abilityToUse, new List<int>{laneChosen});
         }
     }
+
+    public override void DecideReactions() {
+        throw new NotImplementedException();
+    }
 }
 
 /// <summary>
@@ -68,5 +77,9 @@ public class AiBehaviorBackline : AiBehavior {
 
     public override void DecideAbilityToUse(){
         return;
+    }
+
+    public override void DecideReactions(){
+        throw new NotImplementedException();
     }
 }
