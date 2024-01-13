@@ -1,4 +1,5 @@
 using Godot;
+using System;
 using System.Collections.Generic;
 using UI;
 
@@ -71,7 +72,9 @@ public partial class ActiveCharInterfaceLayer : Control, IEventSubscriber, IEven
 	}
 
 	private void DeleteAbilityDetailPanel(){
-		RemoveChild(abilityDetailPanelInstance);
+		if (IsInstanceValid(abilityDetailPanelInstance)){
+			abilityDetailPanelInstance.QueueFree();
+		}
 	}
 
 	private void UpdateCharacterName(){
@@ -87,6 +90,7 @@ public partial class ActiveCharInterfaceLayer : Control, IEventSubscriber, IEven
 
     public void HandleEvent(CombatEventTurnStart data){
 		this.ActiveChar = data.character;
+		DeleteAbilityDetailPanel();			// TODO: This deletes the ability panel if a clash occurs (since MouseExited doesn't apply). Find a better way to do this.
 	}
 
 	public void HandleEvent(CombatEventClashEligible data){
