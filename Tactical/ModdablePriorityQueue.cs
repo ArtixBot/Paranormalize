@@ -106,9 +106,25 @@ public partial class ModdablePriorityQueue<T>{
         return;
     }
 
-    /// <summary>Removes all of a character's actions from the queue (use when a character is staggered, killed, stunned, etc.).</summary>
-    public void RemoveAllInstancesOfItem(T elementToRemove){
-        this.queue.RemoveAll(item => item.element.Equals(elementToRemove));
+    /// <summary>
+    /// Removes or sets to default all of an element's appearances from the queue. Used for character turnlist (when a character is staggered, killed, stunned, etc.) and the event system.
+    /// </summary>
+    /// <param name="insteadMarkAsNull">
+    /// If true, will instead mark set the element to its default (e.g. null). This is useful in cases where the moddable priority queue does NOT want the overall order
+    /// to change, but does need to disable behavior of a set of elements. This is used for event handling; in a case where the Haste buff removes itself from RoundStart after use,
+    /// we need to mark it null instead of removing it outright from the moddable priority queue, as removing it would cause the *last* subscriber in RoundStart (UI elements) from getting
+    /// to trigger.
+    /// </param>
+    public void RemoveAllInstancesOfItem(T elementToRemove, bool insteadMarkAsNull = false){
+        if (insteadMarkAsNull){
+            this.queue.ForEach(item => {
+                if (item.element.Equals(elementToRemove)){
+                    item.element = default;
+                }
+            });
+        } else {
+            this.queue.RemoveAll(item => item.element.Equals(elementToRemove));
+        }
     }
 
     public List<(T element, int priority)> GetQueue(){

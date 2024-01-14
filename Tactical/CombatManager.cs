@@ -18,12 +18,8 @@ public class CombatInstance {
     public HashSet<AbstractCharacter> fighters = new HashSet<AbstractCharacter>();
     public ModdablePriorityQueue<AbstractCharacter> turnlist = new ModdablePriorityQueue<AbstractCharacter>();
     
-    public AbstractCharacter activeChar {
-        get {return turnlist[0].element; }
-    }
-    public int activeCharSpd {
-        get {return turnlist[0].priority; }
-    }
+    public AbstractCharacter activeChar;
+    public int activeCharSpd;
 
     public AbstractAbility activeAbility;
     public List<Die> activeAbilityDice;
@@ -85,22 +81,45 @@ public static class CombatManager {
             case CombatState.TURN_END:
                 TurnEnd();
                 break;
-            case CombatState.AWAITING_ABILITY_INPUT:    // This state doesn't do anything by itself, but allows use of InputAbility while at this stage.
+            // This state doesn't do anything by itself, but allows use of InputAbility while at this stage.
+            case CombatState.AWAITING_ABILITY_INPUT:
                 if (combatInstance.activeChar.CHAR_FACTION != CharacterFaction.PLAYER){
-                    // TODO: do AI control here, instead of just passing.
-                    InputAbility(combatInstance.activeChar.abilities.Where(ability => ability.ID == "PASS").First(), new List<AbstractCharacter>{combatInstance.activeChar});
+                    if (combatInstance.activeChar.Behavior == null){        // This should never happen.
+                        InputAbility(combatInstance.activeChar.abilities.FirstOrDefault(ability => ability.ID == "PASS"), new List<AbstractCharacter>{combatInstance.activeChar});
+                        break;
+                    }
+                    combatInstance.activeChar.Behavior.DecideAbilityToUse();
                 }
                 break;
-            case CombatState.AWAITING_CLASH_INPUT:      // This state doesn't do anything by itself, but allows use of InputAbility while at this stage.
+            // This state doesn't do anything by itself, but allows use of InputAbility while at this stage.
+            case CombatState.AWAITING_CLASH_INPUT:
                 if (combatInstance.activeChar.CHAR_FACTION == CharacterFaction.PLAYER){
                     // AI chooses an ability (since activeChar was the player).
-                    AbstractCharacter ai = combatInstance.activeAbilityTargets[0];
+                    AbstractCharacter ai = combatInstance.activeAbilityTargets.First();
                     List<AbstractAbility> reactableAbilities = CombatManager.GetEligibleReactions(ai);
-                    // TODO: Do AI control here instead of just returning the first ability possible.
-                    AbstractAbility reactAbility = reactableAbilities.DefaultIfEmpty(null).First();
-                    InputAbility(reactAbility, new List<AbstractCharacter>{combatInstance.activeChar});
+                    
+                    // Get unit's first intended reaction intent. If there's nothing, don't clash.
+                    AbstractAbility reactionIntent = ai.Behavior?.reactions.First();
+                    if (reactableAbilities.Contains(reactionIntent)){
+                        InputAbility(reactionIntent, new List<AbstractCharacter>{combatInstance.activeChar});
+                    } else {
+                        InputAbility(null, new List<AbstractCharacter>{combatInstance.activeChar});
+                    }
+                    // Ai then moves to next reaction intent.
+                    try {
+                        ai.Behavior.reactions.RemoveAt(0);
+                    } catch (Exception) {
+                        Logging.Log("AI unit had no remaining reactions to remove.", Logging.LogLevel.ESSENTIAL);
+                    }
                 } else {
                     // Player chooses an ability (since activeChar was AI).
+                    AbstractCharacter defender = combatInstance.activeAbilityTargets.First();
+                    eventManager.BroadcastEvent(new CombatEventClashEligible(
+                        attacker: combatInstance.activeChar, 
+                        attackerAbility: combatInstance.activeAbility,
+                        defender: defender,
+                        reactableAbilities: CombatManager.GetEligibleReactions(defender)
+                    ));
                 }
                 break;
             case CombatState.RESOLVE_ABILITIES:         // Triggers after AWAITING_ABILITY_INPUT, or (optionally) AWAITING_CLASH_INPUT.
@@ -139,6 +158,9 @@ public static class CombatManager {
             for (int i = 0; i < character.ActionsPerTurn; i++){
                 combatInstance.turnlist.AddToQueue(character, Rng.RandiRange(character.MinSpd, character.MaxSpd));
             }
+            if (character.CHAR_FACTION != CharacterFaction.PLAYER){
+                character.Behavior?.DecideReactions();
+            }
         }
         Logging.Log($"Starting round {combatInstance.round} with {combatInstance.turnlist.Count} actions in the queue.", Logging.LogLevel.INFO);
         eventManager.BroadcastEvent(new CombatEventRoundStart(combatInstance.round));
@@ -152,6 +174,8 @@ public static class CombatManager {
     }
 
     private static void TurnStart(){
+        combatInstance.activeChar = combatInstance.turnlist[0].element;
+        combatInstance.activeCharSpd = combatInstance.turnlist[0].priority;
         Logging.Log($"{combatInstance.activeChar?.CHAR_NAME} ({combatInstance.activeCharSpd}) is taking their turn. They have {combatInstance.activeChar.CountAvailableAbilities()} available abilities.", Logging.LogLevel.INFO);
         eventManager.BroadcastEvent(new CombatEventTurnStart(combatInstance.activeChar, combatInstance.activeCharSpd));
         ChangeCombatState(CombatState.AWAITING_ABILITY_INPUT);
@@ -159,7 +183,10 @@ public static class CombatManager {
 
     private static void TurnEnd(){
         eventManager.BroadcastEvent(new CombatEventTurnEnd(combatInstance.activeChar, combatInstance.activeCharSpd));
-        combatInstance.turnlist.PopNextItem();
+        // If the active character is staggered, their actions are automatically removed from the turn queue, so only pop if the active character is not staggered.
+        if (combatInstance.turnlist.GetNextItem().element == combatInstance.activeChar){
+            combatInstance.turnlist.PopNextItem();
+        }
         if (combatInstance.turnlist.GetNextItem() == (null, 0)){
             Logging.Log("No remaining actions on the turnlist. Ending round.", Logging.LogLevel.INFO);
             ChangeCombatState(CombatState.ROUND_END);
@@ -242,6 +269,11 @@ public static class CombatManager {
                                                                     combatInstance.reactAbility, 
                                                                     combatInstance.reactAbilityDice));
             ResolveClash();
+
+            // TODO - Should this be done here? Normally the active character's turn is removed in TurnEnd, but the reacter hasn't reached it, hence why this code is here for now.
+            if (!combatInstance.reactAbility.HasTag(AbilityTag.CANTRIP)){
+                combatInstance.turnlist.RemoveNextInstanceOfItem(combatInstance.reactAbility.OWNER);
+            }
         }
         // If the active ability had Cantrip, don't end turn and instead return to AWAITING_ABILITY_INPUT.
         CombatState nextState = combatInstance.activeAbility.HasTag(AbilityTag.CANTRIP) ? CombatState.AWAITING_ABILITY_INPUT : CombatState.TURN_END;
@@ -285,6 +317,7 @@ public static class CombatManager {
             Logging.Log($"{combatInstance.reactAbility.OWNER.CHAR_NAME} rolls a(n) {die.DieType} die (range: {die.MinValue} - {die.MaxValue}, natural roll: {dieRoll}).", Logging.LogLevel.ESSENTIAL);
             int modifiedRoll = eventManager.BroadcastEvent(new CombatEventDieRolled(die, dieRoll)).rolledValue;
 
+            GD.Print($"{combatInstance.reactAbility.OWNER.CHAR_NAME} targets {combatInstance.activeChar.CHAR_NAME}");
             ResolveDieRoll(combatInstance.reactAbility.OWNER, combatInstance.activeChar, die, dieRoll, modifiedRoll, rolledDuringClash: false);
 
             try {
@@ -323,6 +356,7 @@ public static class CombatManager {
 
     private static void ResolveClash(){
         int i = 0;      // There should never be more than 100 iterations but if somehow there were an infinite Cycle loop, this should break that.
+        Logging.Log($"Clash between {combatInstance.activeAbility.NAME} and {combatInstance.reactAbility.NAME}!", Logging.LogLevel.ESSENTIAL);
         while (combatInstance.activeAbilityDice.Count > 0 && combatInstance.reactAbilityDice.Count > 0 && i < 100){
             Die atkDie = combatInstance.activeAbilityDice[0], reactDie = combatInstance.reactAbilityDice[0];
             int natAtkRoll = atkDie.Roll(), natReactRoll = reactDie.Roll();
@@ -360,8 +394,8 @@ public static class CombatManager {
 
             int losingRoll = (modAtkRoll > modReactRoll) ? modReactRoll : modAtkRoll;
 
-            AbstractCharacter winningChar = (modAtkRoll > modReactRoll) ? combatInstance.activeChar : combatInstance.activeAbilityTargets[0];
-            AbstractCharacter losingChar = (modAtkRoll > modReactRoll) ? combatInstance.activeAbilityTargets[0] : combatInstance.activeChar;
+            AbstractCharacter winningChar = (modAtkRoll > modReactRoll) ? combatInstance.activeChar : combatInstance.activeAbilityTargets.First();
+            AbstractCharacter losingChar = (modAtkRoll > modReactRoll) ? combatInstance.activeAbilityTargets.First() : combatInstance.activeChar;
 
             // If the losing die was a block die, and the winning die was an attack die, reduce the winning roll by the losing roll.
             if (winningDie.IsAttackDie && losingDie.DieType == DieType.BLOCK) {
@@ -369,7 +403,6 @@ public static class CombatManager {
             }
             eventManager.BroadcastEvent(new CombatEventClashWin(winningDie, winningRoll));
             eventManager.BroadcastEvent(new CombatEventClashLose(losingDie, losingRoll));
-
 
             ResolveDieRoll(winningChar, losingChar, winningDie, winningNatRoll, winningRoll, rolledDuringClash: true);
             try {
@@ -393,7 +426,7 @@ public static class CombatManager {
         int defLane = defender.Position;
         List<AbstractAbility> availableReactionAbilties = new List<AbstractAbility>();
         foreach (AbstractAbility ability in defender.abilities){ 
-            if (!ability.IsAvailable || ability.HasTag(AbilityTag.AOE) || ability.HasTag(AbilityTag.CANNOT_REACT) || (ability.TYPE != AbilityType.ATTACK && ability.TYPE != AbilityType.REACTION)){
+            if (!ability.IsActivatable || ability.HasTag(AbilityTag.AOE) || ability.HasTag(AbilityTag.CANNOT_REACT) || (ability.TYPE != AbilityType.ATTACK && ability.TYPE != AbilityType.REACTION)){
                 continue;
             }
             // Available reactions are always eligible for reactions.

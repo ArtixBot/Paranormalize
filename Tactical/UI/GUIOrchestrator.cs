@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Godot;
 using UI;
 
-public partial class GUIOrchestrator : Control, IEventSubscriber, IEventHandler<CombatEventTurnStart>
+public partial class GUIOrchestrator : Control, IEventSubscriber, IEventHandler<CombatEventTurnStart>, IEventHandler<CombatEventClashEligible>
 {	
 	public readonly CombatInstance combatData;
 
@@ -12,7 +12,7 @@ public partial class GUIOrchestrator : Control, IEventSubscriber, IEventHandler<
 	private CombatInterface combatInterfaceNode;
 
 	public GUIOrchestrator(){
-		// TODO: Remove, this is for debugging
+		// TODO: Remove, this is for debugging. Should be done on game end before loading into the scene.
 		CombatManager.combatInstance = new CombatInstance(new TestScenario());
 		combatData = CombatManager.combatInstance;
 	}
@@ -22,6 +22,8 @@ public partial class GUIOrchestrator : Control, IEventSubscriber, IEventHandler<
 		promptTextNode = GetNode<Label>("Prompt Text");
 		activeCharNode = GetNode<ActiveCharInterfaceLayer>("Active Character");
 		combatInterfaceNode = GetNode<CombatInterface>("Combat Interface");
+		InitSubscriptions();
+
 		CombatManager.ChangeCombatState(CombatState.COMBAT_START);
 	}
 
@@ -68,6 +70,11 @@ public partial class GUIOrchestrator : Control, IEventSubscriber, IEventHandler<
 		}
 	}
 
+	public void _on_child_clash_selection(AbstractAbility ability){
+		clickedAbility = ability;
+		CombatManager.InputAbility(clickedAbility, new List<AbstractCharacter>{CombatManager.combatInstance?.activeChar});
+	}
+
 	public void _on_child_character_selection(AbstractCharacter character){
 		if (clickedAbility == null || character == null) return;
 		// TODO - This doesn't work with AoE attacks, figure out how to get *that* to work. Maybe we still just do this and have CombatEventManager.AbilityActivated modify the list of fighters post-hoc?
@@ -84,9 +91,14 @@ public partial class GUIOrchestrator : Control, IEventSubscriber, IEventHandler<
 
     public void InitSubscriptions(){
         CombatManager.eventManager.Subscribe(CombatEventType.ON_TURN_START, this, CombatEventPriority.UI);
+		CombatManager.eventManager.Subscribe(CombatEventType.ON_CLASH_ELIGIBLE, this, CombatEventPriority.UI);
     }
 
     public void HandleEvent(CombatEventTurnStart eventData){
         promptTextNode.Text = "";
     }
+
+	public void HandleEvent(CombatEventClashEligible eventData){
+		promptTextNode.Text = $"{eventData.attacker.CHAR_NAME} attacks {eventData.defender.CHAR_NAME} with {eventData.attackerAbility.NAME}.\nYou may choose an ability to begin a clash.";
+	}
 }

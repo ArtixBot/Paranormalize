@@ -28,8 +28,8 @@ public partial class AbilityButton : Button
 
     private void UpdateDisplay(){
 		this.Text = Ability.NAME;
-		this.Disabled = !Ability.IsAvailable || (Ability.TYPE == AbilityType.REACTION && CombatManager.combatInstance.combatState != CombatState.AWAITING_CLASH_INPUT);
-		cdImageNode.Visible = !Ability.IsAvailable;
-		cdLabel.Text = !Ability.IsAvailable ? Ability.curCooldown.ToString() : "";
+		this.Disabled = !Ability.IsActivatable || (Ability.TYPE == AbilityType.REACTION && CombatManager.combatInstance.combatState != CombatState.AWAITING_CLASH_INPUT);
+		cdImageNode.Visible = !Ability.IsActivatable;
+		cdLabel.Text = !Ability.IsActivatable ? Ability.curCooldown.ToString() : "";
 	}
 }

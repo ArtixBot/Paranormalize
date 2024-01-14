@@ -85,9 +85,11 @@ public partial class CombatEventManager{
         int i = 0;
         List<(IEventSubscriber subscriber, int priority)> eventSubscribers = events[eventData.eventType].GetQueue();
         while (i < eventSubscribers.Count){
+            Logging.Log($"Handling subscriber #{eventSubscribers.Count}. This one is {eventSubscribers[i].subscriber}.", Logging.LogLevel.DEBUG);
             (eventSubscribers[i].subscriber as IEventHandler<T>)?.HandleEvent(eventData);
             i += 1;
         }
+        events[eventData.eventType].RemoveAllInstancesOfItem(null);
         return eventData;
     }
 
@@ -100,13 +102,13 @@ public partial class CombatEventManager{
     // Remove a subscriber from a specified event type from the event dictionary.
     public void Unsubscribe(CombatEventType eventType, IEventSubscriber subscriber){
         if (!events.ContainsKey(eventType)){ return; }
-        events[eventType].RemoveAllInstancesOfItem(subscriber);
+        events[eventType].RemoveAllInstancesOfItem(subscriber, insteadMarkAsNull: true);
     }
 
     // Remove the provided subscriber from all events. Used in instances such as when a character is defeated.
     public void UnsubscribeAll(IEventSubscriber subscriber){
         foreach (CombatEventType eventType in events.Keys){
-            events[eventType].RemoveAllInstancesOfItem(subscriber);
+            events[eventType].RemoveAllInstancesOfItem(subscriber, insteadMarkAsNull: true);
         }
     }
 }
@@ -412,5 +414,26 @@ public class CombatEventUnitMoved : ICombatEvent {
         this.moveMagnitude = moveMagnitude;
         this.isMoveLeft = isMoveLeft;
         this.isForcedMovement = isForcedMovement;
+    }
+}
+
+/// <summary>
+/// Only UI elements should listen to this event. Triggers when an enemy attacks a player character who has eligible reaction abilities.
+/// </summary>
+public class CombatEventClashEligible : ICombatEvent {
+    public CombatEventType eventType {
+        get {return CombatEventType.ON_CLASH_ELIGIBLE;}
+    }
+
+    public AbstractCharacter attacker;
+    public AbstractAbility attackerAbility;
+    public AbstractCharacter defender;
+    public List<AbstractAbility> reactableAbilities;
+
+    public CombatEventClashEligible(AbstractCharacter attacker, AbstractAbility attackerAbility, AbstractCharacter defender, List<AbstractAbility> reactableAbilities){
+        this.attacker = attacker;
+        this.attackerAbility = attackerAbility;
+        this.defender = defender;
+        this.reactableAbilities = reactableAbilities;
     }
 }

@@ -4,7 +4,7 @@ using System.Reflection.Metadata;
 
 namespace UI;
 
-public partial class CharacterUI : Control, IEventSubscriber, IEventHandler<CombatEventTurnEnd>
+public partial class CharacterUI : Control, IEventSubscriber, IEventHandler<CombatEventTurnEnd>, IEventHandler<CombatEventRoundStart>
 {
 	[Signal]
 	public delegate void CharacterSelectedEventHandler(CharacterUI character);
@@ -69,9 +69,14 @@ public partial class CharacterUI : Control, IEventSubscriber, IEventHandler<Comb
 	public virtual void InitSubscriptions(){
 		// TODO: Change this to something like ON_TAKE_DAMAGE or ON_HP_CHANGED instead.
 		CombatManager.eventManager?.Subscribe(CombatEventType.ON_TURN_END, this, CombatEventPriority.UI);
+		CombatManager.eventManager?.Subscribe(CombatEventType.ON_ROUND_START, this, CombatEventPriority.UI);
     }
 
     public void HandleEvent(CombatEventTurnEnd eventData){
+        UpdateStatsText();
+    }
+
+	public void HandleEvent(CombatEventRoundStart eventData){
         UpdateStatsText();
     }
 }
