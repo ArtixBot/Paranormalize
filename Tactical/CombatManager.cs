@@ -106,7 +106,11 @@ public static class CombatManager {
                         InputAbility(null, new List<AbstractCharacter>{combatInstance.activeChar});
                     }
                     // Ai then moves to next reaction intent.
-                    ai.Behavior.reactions.RemoveAt(0);
+                    try {
+                        ai.Behavior.reactions.RemoveAt(0);
+                    } catch (Exception) {
+                        Logging.Log("AI unit had no remaining reactions to remove.", Logging.LogLevel.ESSENTIAL);
+                    }
                 } else {
                     // Player chooses an ability (since activeChar was AI).
                     AbstractCharacter defender = combatInstance.activeAbilityTargets.First();
