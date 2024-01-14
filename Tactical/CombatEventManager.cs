@@ -85,9 +85,11 @@ public partial class CombatEventManager{
         int i = 0;
         List<(IEventSubscriber subscriber, int priority)> eventSubscribers = events[eventData.eventType].GetQueue();
         while (i < eventSubscribers.Count){
+            Logging.Log($"Handling subscriber #{eventSubscribers.Count}. This one is {eventSubscribers[i].subscriber}.", Logging.LogLevel.DEBUG);
             (eventSubscribers[i].subscriber as IEventHandler<T>)?.HandleEvent(eventData);
             i += 1;
         }
+        events[eventData.eventType].RemoveAllInstancesOfItem(null);
         return eventData;
     }
 
@@ -100,13 +102,13 @@ public partial class CombatEventManager{
     // Remove a subscriber from a specified event type from the event dictionary.
     public void Unsubscribe(CombatEventType eventType, IEventSubscriber subscriber){
         if (!events.ContainsKey(eventType)){ return; }
-        events[eventType].RemoveAllInstancesOfItem(subscriber);
+        events[eventType].RemoveAllInstancesOfItem(subscriber, insteadMarkAsNull: true);
     }
 
     // Remove the provided subscriber from all events. Used in instances such as when a character is defeated.
     public void UnsubscribeAll(IEventSubscriber subscriber){
         foreach (CombatEventType eventType in events.Keys){
-            events[eventType].RemoveAllInstancesOfItem(subscriber);
+            events[eventType].RemoveAllInstancesOfItem(subscriber, insteadMarkAsNull: true);
         }
     }
 }

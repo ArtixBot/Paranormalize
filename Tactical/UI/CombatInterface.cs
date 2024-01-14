@@ -20,18 +20,10 @@ public partial class CombatInterface : Control, IEventSubscriber, IEventHandler<
 		turnList = GetNode<Label>("Turn List");
 		parent = (GUIOrchestrator) GetParent();
 
-		UpdateRoundText();
 		UpdateTurnlistText();
 		UpdateCharPositions();
 
 		InitSubscriptions();
-	}
-
-	private void UpdateRoundText(){
-		CombatInstance combatInstance = CombatManager.combatInstance;
-		if (CombatManager.combatInstance != null) {
-			roundCounter.Text = $"Round {combatInstance.round}";
-		}
 	}
 
 	private void UpdateTurnlistText(){
@@ -82,7 +74,7 @@ public partial class CombatInterface : Control, IEventSubscriber, IEventHandler<
 	}
 
     public void HandleEvent(CombatEventRoundStart data){
-		UpdateRoundText();
+		roundCounter.Text = $"Round {data.roundStartNum}";
 	}
 
 	public void HandleEvent(CombatEventTurnStart data){
