@@ -98,10 +98,15 @@ public static class CombatManager {
                     AbstractCharacter ai = combatInstance.activeAbilityTargets.First();
                     List<AbstractAbility> reactableAbilities = CombatManager.GetEligibleReactions(ai);
                     
-                    // Use whatever's in ReactionIntent. If there's nothing, don't clash. If the ReactionIntent cannot clash, also don't clash.
-                    // ai.reactionIntent = reactableAbilities[0];  // TODO - Remove; this is just to test that reactions are WAI.
-                    AbstractAbility reactAbility = reactableAbilities.Contains(ai.reactionIntent) ? ai.reactionIntent : null;
-                    InputAbility(reactAbility, new List<AbstractCharacter>{combatInstance.activeChar});
+                    // Get unit's first intended reaction intent. If there's nothing, don't clash.
+                    AbstractAbility reactionIntent = ai.Behavior?.reactions.First();
+                    if (reactableAbilities.Contains(reactionIntent)){
+                        InputAbility(reactionIntent, new List<AbstractCharacter>{combatInstance.activeChar});
+                    } else {
+                        InputAbility(null, new List<AbstractCharacter>{combatInstance.activeChar});
+                    }
+                    // Ai then moves to next reaction intent.
+                    ai.Behavior.reactions.RemoveAt(0);
                 } else {
                     // Player chooses an ability (since activeChar was AI).
                     AbstractCharacter defender = combatInstance.activeAbilityTargets.First();
@@ -150,7 +155,7 @@ public static class CombatManager {
                 combatInstance.turnlist.AddToQueue(character, Rng.RandiRange(character.MinSpd, character.MaxSpd));
             }
             if (character.CHAR_FACTION != CharacterFaction.PLAYER){
-                // TODO: Decide reactions.
+                character.Behavior?.DecideReactions();
             }
         }
         Logging.Log($"Starting round {combatInstance.round} with {combatInstance.turnlist.Count} actions in the queue.", Logging.LogLevel.INFO);
@@ -347,6 +352,7 @@ public static class CombatManager {
 
     private static void ResolveClash(){
         int i = 0;      // There should never be more than 100 iterations but if somehow there were an infinite Cycle loop, this should break that.
+        Logging.Log($"Clash between {combatInstance.activeAbility.NAME} and {combatInstance.reactAbility.NAME}!", Logging.LogLevel.ESSENTIAL);
         while (combatInstance.activeAbilityDice.Count > 0 && combatInstance.reactAbilityDice.Count > 0 && i < 100){
             Die atkDie = combatInstance.activeAbilityDice[0], reactDie = combatInstance.reactAbilityDice[0];
             int natAtkRoll = atkDie.Roll(), natReactRoll = reactDie.Roll();
@@ -416,7 +422,7 @@ public static class CombatManager {
         int defLane = defender.Position;
         List<AbstractAbility> availableReactionAbilties = new List<AbstractAbility>();
         foreach (AbstractAbility ability in defender.abilities){ 
-            if (!ability.IsAvailable || ability.HasTag(AbilityTag.AOE) || ability.HasTag(AbilityTag.CANNOT_REACT) || (ability.TYPE != AbilityType.ATTACK && ability.TYPE != AbilityType.REACTION)){
+            if (!ability.IsActivatable || ability.HasTag(AbilityTag.AOE) || ability.HasTag(AbilityTag.CANNOT_REACT) || (ability.TYPE != AbilityType.ATTACK && ability.TYPE != AbilityType.REACTION)){
                 continue;
             }
             // Available reactions are always eligible for reactions.

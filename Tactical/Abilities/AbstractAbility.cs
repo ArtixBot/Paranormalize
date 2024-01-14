@@ -78,8 +78,13 @@ public abstract class AbstractAbility : IEventSubscriber, IEventHandler<CombatEv
         set {_BASE_DICE = value;}}
     public List<AbilityTag> TAGS = new List<AbilityTag>();
 
+    // An ability is always considered "available" if its current cooldown is at zero.
     public bool IsAvailable {
         get { return curCooldown == 0; }
+    }
+    // Some abilities have additional conditions in order to be activated. IsActivatable can be overridden for those conditions, but in general just is a wrapper for IsAvailable.
+    public virtual bool IsActivatable {
+        get { return IsAvailable; }
     }
     
     public AbstractAbility(string ID, Localization.AbilityStrings ABILITY_STRINGS, AbilityType TYPE, int BASE_CD, int MIN_RANGE, int MAX_RANGE, bool useLaneTargeting, bool requiresUnit, HashSet<TargetingModifiers> targetingModifiers = null){

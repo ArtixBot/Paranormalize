@@ -13,6 +13,9 @@ public partial class AbstractCharacter : IEventSubscriber, IEventHandler<CombatE
     public List<AbstractAbility> AvailableAbilities {
         get {return abilities.Where(ability => ability.IsAvailable).ToList();}
     }
+    public List<AbstractAbility> ActivatableAbilities {
+        get {return abilities.Where(ability => ability.IsActivatable).ToList();}
+    }
     public List<AbstractStatusEffect> statusEffects = new();
 
     private int _CurHP, _MaxHP, _CurPoise, _MaxPoise;

@@ -32,14 +32,15 @@ public class TestScenario : ScenarioInfo {
         characterA.EquipAbility(new TestAttack());
         characterA.EquipAbility(new Discharge());
         characterA.EquipAbility(new Thwack());
-        characterA.MinSpd = -1;
-        characterA.MaxSpd = -1;
+        characterA.MinSpd = 10;
+        characterA.MaxSpd = 10;
 
         characterB.ActionsPerTurn = 1;
         characterB.MaxHP = 100;
         characterB.CurHP = 100;
         characterB.MaxPoise = 10;
         characterB.EquipAbility(new Thwack());
+        characterB.EquipAbility(new Discharge());
         characterB.Behavior = new AiBehaviorPureRandom(characterB);
         characterC.ActionsPerTurn = 0;
         characterD.ActionsPerTurn = 0;

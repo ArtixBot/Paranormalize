@@ -6,6 +6,7 @@ using Godot;
 
 public abstract class AiBehavior {
     public readonly AbstractCharacter OWNER;
+    public List<AbstractAbility> reactions = new();
 
     public AiBehavior(AbstractCharacter OWNER){
         this.OWNER = OWNER;
@@ -22,7 +23,9 @@ public abstract class AiBehavior {
 }
 
 /// <summary>
-/// Units with this behavior will pick a random ability on their turn, and also pick a random target for that ability.
+/// Units with this behavior:<br/>
+/// - Pick random abilities on their turn, targeting a random eligible unit/lane.<br/>
+/// - Pick random reactions on round start. They will avoid picking the same reaction multiple times in a round if it has a cooldown greater than zero.
 /// </summary>
 public class AiBehaviorPureRandom : AiBehavior {
 
@@ -32,8 +35,8 @@ public class AiBehaviorPureRandom : AiBehavior {
         List<AbstractAbility> usableAbilities = new();
 
         Dictionary<AbstractAbility, List<(int lane, HashSet<AbstractCharacter> targets)>> cache = new();
-        // Go through all non-REACTION available abilities and determine whether we can use each one at the user's current position.
-        foreach (AbstractAbility ability in this.OWNER.AvailableAbilities.Where(ability => ability.TYPE != AbilityType.REACTION && ability.TYPE != AbilityType.SPECIAL)){
+        // Go through all non-REACTION activatable abilities and determine whether we can use each one at the user's current position.
+        foreach (AbstractAbility ability in this.OWNER.ActivatableAbilities.Where(ability => ability.TYPE != AbilityType.REACTION && ability.TYPE != AbilityType.SPECIAL)){
             List<(int lane, HashSet<AbstractCharacter> targets)> targets = ability.GetValidTargets();
             if (targets.Count == 0) {continue;}
 
@@ -64,7 +67,25 @@ public class AiBehaviorPureRandom : AiBehavior {
     }
 
     public override void DecideReactions() {
-        throw new NotImplementedException();
+        List<AbstractAbility> plannedReactions = new();
+
+        // If an ability is chosen for a reaction, add it here so that the ability is not chosen for a subsequent reaction. This does not apply to abilities with an inherent zero cooldown.
+        HashSet<AbstractAbility> doNotPlanSameReaction = new();
+
+        for (int i = 0; i < this.OWNER.ActionsPerTurn; i++){
+            // Choose random ATTACK-class and REACTION-class abilities for reaction abilities.
+            List<AbstractAbility> activatableReactions = this.OWNER.ActivatableAbilities.Where(ability => ability.TYPE != AbilityType.UTILITY 
+                                                                                                        && ability.TYPE != AbilityType.SPECIAL
+                                                                                                        && !doNotPlanSameReaction.Contains(ability)).ToList();
+            AbstractAbility abilityToReact = activatableReactions[Rng.RandiRange(0, activatableReactions.Count - 1)];
+
+            plannedReactions.Add(abilityToReact);
+            if (abilityToReact.BASE_CD != 0) {
+                doNotPlanSameReaction.Add(abilityToReact);
+            }
+        }
+
+        this.reactions = plannedReactions;
     }
 }
 
