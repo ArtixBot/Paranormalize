@@ -34,8 +34,8 @@ public class TestScenario : ScenarioInfo {
         playerA.EquipAbility(new TestAttack());
         playerA.EquipAbility(new Discharge());
         playerA.EquipAbility(new Thwack());
-        playerA.MinSpd = 10;
-        playerA.MaxSpd = 30;
+        playerA.MinSpd = 0;
+        playerA.MaxSpd = 0;
 
         playerB.EquipAbility(new Discharge());
         playerB.EquipAbility(new Repartee());
