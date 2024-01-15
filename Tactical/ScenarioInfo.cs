@@ -34,8 +34,8 @@ public class TestScenario : ScenarioInfo {
         playerA.EquipAbility(new TestAttack());
         playerA.EquipAbility(new Discharge());
         playerA.EquipAbility(new Thwack());
-        playerA.MinSpd = 0;
-        playerA.MaxSpd = 0;
+        playerA.MinSpd = 10;
+        playerA.MaxSpd = 10;
 
         playerB.EquipAbility(new Discharge());
         playerB.EquipAbility(new Repartee());
@@ -47,6 +47,7 @@ public class TestScenario : ScenarioInfo {
         characterB.MaxPoise = 10;
         characterB.EquipAbility(new Thwack());
         characterB.EquipAbility(new Discharge());
+        characterB.ActionsPerTurn = 1;
         characterB.Behavior = new AiBehaviorPureRandom(characterB);
         characterC.ActionsPerTurn = 0;
         characterD.ActionsPerTurn = 0;

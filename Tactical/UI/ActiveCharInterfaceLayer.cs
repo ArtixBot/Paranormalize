@@ -25,6 +25,7 @@ public partial class ActiveCharInterfaceLayer : Control, IEventSubscriber, IEven
 		InitSubscriptions();
 	}
 	
+	public bool stickyAbilityDetailPanel = false;		// If true, the created ability detail panel is "sticky" and will not be deleted if the mouse exits the ability button.
 	private AbilityDetailPanel abilityDetailPanelInstance = new();
 	private AbilityDetailPanel opposingAbilityDetailPanelInstance = new();
 	private List<AbilityButton> abilityButtonInstances = new();
@@ -59,6 +60,7 @@ public partial class ActiveCharInterfaceLayer : Control, IEventSubscriber, IEven
 			}
 
 			instance.MouseEntered += () => CreateAbilityDetailPanel(ability, false);
+			instance.Pressed += () => stickyAbilityDetailPanel = true;
 			instance.MouseExited += () => DeleteAbilityDetailPanel(false);
 		}
 	}
@@ -66,7 +68,7 @@ public partial class ActiveCharInterfaceLayer : Control, IEventSubscriber, IEven
 	public void CreateAbilityDetailPanel(AbstractAbility ability, bool isOpposingAbility){
 		if (isOpposingAbility && IsInstanceValid(opposingAbilityDetailPanelInstance)){
 			opposingAbilityDetailPanelInstance.QueueFree();
-		} else if (IsInstanceValid(abilityDetailPanelInstance)) {
+		} else if (!isOpposingAbility && IsInstanceValid(abilityDetailPanelInstance)) {
 			abilityDetailPanelInstance.QueueFree();
 		}
 
@@ -83,9 +85,10 @@ public partial class ActiveCharInterfaceLayer : Control, IEventSubscriber, IEven
 	}
 
 	public void DeleteAbilityDetailPanel(bool isOpposingAbility){
-		if (!isOpposingAbility && IsInstanceValid(abilityDetailPanelInstance)){
+		if (!stickyAbilityDetailPanel && !isOpposingAbility && IsInstanceValid(abilityDetailPanelInstance)){
 			abilityDetailPanelInstance.QueueFree();
-		} else if (IsInstanceValid(opposingAbilityDetailPanelInstance)){
+		} else if (isOpposingAbility && IsInstanceValid(opposingAbilityDetailPanelInstance)){
+			// sticky panel never has to apply for enemy's panel since it doesn't get deleted by ability button exit.
 			opposingAbilityDetailPanelInstance.QueueFree();
 		}
 	}
@@ -102,9 +105,10 @@ public partial class ActiveCharInterfaceLayer : Control, IEventSubscriber, IEven
     }
 
     public void HandleEvent(CombatEventTurnStart data){
-		this.ActiveChar = data.character;
+		stickyAbilityDetailPanel = false;
 		DeleteAbilityDetailPanel(false);			// TODO: This deletes the ability panel if a clash occurs (since MouseExited doesn't apply). Find a better way to do this.
 		DeleteAbilityDetailPanel(true);			// TODO: This deletes the ability panel if a clash occurs (since MouseExited doesn't apply). Find a better way to do this.
+		this.ActiveChar = data.character;
 	}
 
 	public void HandleEvent(CombatEventClashEligible data){
