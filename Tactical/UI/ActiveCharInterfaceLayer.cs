@@ -26,6 +26,7 @@ public partial class ActiveCharInterfaceLayer : Control, IEventSubscriber, IEven
 	}
 	
 	private AbilityDetailPanel abilityDetailPanelInstance = new();
+	private AbilityDetailPanel opposingAbilityDetailPanelInstance = new();
 	private List<AbilityButton> abilityButtonInstances = new();
 	private List<AbstractAbility> reactionAbilities = new();
 	private void UpdateAvailableAbilities(){
@@ -57,23 +58,35 @@ public partial class ActiveCharInterfaceLayer : Control, IEventSubscriber, IEven
 				instance.AbilitySelected += (instance) => parent._on_child_ability_selection(instance.Ability);
 			}
 
-			instance.MouseEntered += () => CreateAbilityDetailPanel(ability);
-			instance.MouseExited += () => DeleteAbilityDetailPanel();
+			instance.MouseEntered += () => CreateAbilityDetailPanel(ability, false);
+			instance.MouseExited += () => DeleteAbilityDetailPanel(false);
 		}
 	}
 
-	private void CreateAbilityDetailPanel(AbstractAbility ability){
+	public void CreateAbilityDetailPanel(AbstractAbility ability, bool isOpposingAbility){
+		if (isOpposingAbility && IsInstanceValid(opposingAbilityDetailPanelInstance)){
+			opposingAbilityDetailPanelInstance.QueueFree();
+		} else if (IsInstanceValid(abilityDetailPanelInstance)) {
+			abilityDetailPanelInstance.QueueFree();
+		}
+
 		AbilityDetailPanel node = (AbilityDetailPanel) abilityDetailPanel.Instantiate();
 		AddChild(node);
 		node.Ability = ability;
-		node.SetPosition(new Vector2(300, 750));
+		node.SetPosition((!isOpposingAbility) ? new Vector2(300, 750) : new Vector2(1000, 750));
 
-		abilityDetailPanelInstance = node;
+		if (!isOpposingAbility){
+			abilityDetailPanelInstance = node;
+		} else {
+			opposingAbilityDetailPanelInstance = node;
+		}
 	}
 
-	private void DeleteAbilityDetailPanel(){
-		if (IsInstanceValid(abilityDetailPanelInstance)){
+	public void DeleteAbilityDetailPanel(bool isOpposingAbility){
+		if (!isOpposingAbility && IsInstanceValid(abilityDetailPanelInstance)){
 			abilityDetailPanelInstance.QueueFree();
+		} else if (IsInstanceValid(opposingAbilityDetailPanelInstance)){
+			opposingAbilityDetailPanelInstance.QueueFree();
 		}
 	}
 
@@ -90,11 +103,14 @@ public partial class ActiveCharInterfaceLayer : Control, IEventSubscriber, IEven
 
     public void HandleEvent(CombatEventTurnStart data){
 		this.ActiveChar = data.character;
-		DeleteAbilityDetailPanel();			// TODO: This deletes the ability panel if a clash occurs (since MouseExited doesn't apply). Find a better way to do this.
+		DeleteAbilityDetailPanel(false);			// TODO: This deletes the ability panel if a clash occurs (since MouseExited doesn't apply). Find a better way to do this.
+		DeleteAbilityDetailPanel(true);			// TODO: This deletes the ability panel if a clash occurs (since MouseExited doesn't apply). Find a better way to do this.
 	}
 
 	public void HandleEvent(CombatEventClashEligible data){
 		this.reactionAbilities = data.reactableAbilities;		// This should be set first since setting ActiveChar will force an update of abilities.
 		this.ActiveChar = data.defender;
+
+		CreateAbilityDetailPanel(data.attackerAbility, true);
 	}
 }

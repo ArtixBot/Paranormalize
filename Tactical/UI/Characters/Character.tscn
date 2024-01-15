@@ -40,4 +40,6 @@ text = "Status Effects: None"
 horizontal_alignment = 1
 
 [connection signal="input_event" from="Area2D" to="." method="_on_area_2d_input_event"]
+[connection signal="mouse_entered" from="Area2D" to="." method="_on_area_2d_mouse_entered"]
+[connection signal="mouse_exited" from="Area2D" to="." method="_on_area_2d_mouse_exited"]
 [connection signal="tree_exited" from="Area2D/Sprite2D/Label" to="." method="_on_label_tree_exited"]

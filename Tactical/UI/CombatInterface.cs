@@ -74,7 +74,7 @@ public partial class CombatInterface : Control, IEventSubscriber, IEventHandler<
 	}
 
     public void HandleEvent(CombatEventRoundStart data){
-		roundCounter.Text = $"Round {data.roundStartNum}";
+		roundCounter.Text = $"Round\n{data.roundStartNum}";
 	}
 
 	public void HandleEvent(CombatEventTurnStart data){

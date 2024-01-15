@@ -456,4 +456,14 @@ public static class CombatManager {
             combatInstance.reactAbilityDice.Insert(0, dieToCycle);
         }
     }
+
+    public static List<Die> GetDieQueueFromCharacter(AbstractCharacter character){
+        if (character == combatInstance.activeChar){
+            return combatInstance.activeAbilityDice;
+        } else if (combatInstance.reactAbilityDice != null && combatInstance.activeAbilityTargets.Contains(character)){
+            return combatInstance.reactAbilityDice;
+        } else {
+            return new();
+        }
+    }
 }

@@ -21,6 +21,12 @@
             "LETHAL_HIT_CYCLING": "On lethal hit: Cycle this die (up to 2 times)."
         }
     },
+    "REPARTEE": {
+        "NAME": "Repartee",
+        "STRINGS": {
+            "CLASH_LOSS_DIE": "On clash lose: Discard all remaining dice on this ability."
+        }
+    },
     "PASS": {
         "NAME": "Pass",
         "STRINGS": {

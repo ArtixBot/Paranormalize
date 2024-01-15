@@ -27,7 +27,8 @@ public partial class AbilityDetailPanel : Control
 	}
 
 	private void UpdateDescriptions(){
-		abilityType.Text = $"{_ability.TYPE} | Range: {_ability.MIN_RANGE} - {_ability.MAX_RANGE} | Cooldown: {_ability.BASE_CD}";
+		string rangeText = (_ability.TYPE == AbilityType.REACTION) ? "" : $"| Range: {_ability.MIN_RANGE} - {_ability.MAX_RANGE} ";
+		abilityType.Text = $"{_ability.TYPE} " + rangeText + $"| Cooldown: {_ability.BASE_CD}";
 		_abilityDesc.Text = _ability.STRINGS.GetValueOrDefault("GENERIC", "");
 
 		for (int i = 0; i < _ability.BASE_DICE.Count; i++){

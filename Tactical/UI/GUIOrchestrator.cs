@@ -80,6 +80,13 @@ public partial class GUIOrchestrator : Control, IEventSubscriber, IEventHandler<
 		// TODO - This doesn't work with AoE attacks, figure out how to get *that* to work. Maybe we still just do this and have CombatEventManager.AbilityActivated modify the list of fighters post-hoc?
 		CombatManager.InputAbility(clickedAbility, new List<AbstractCharacter>{character});
 		clickedAbility = null;
+
+		foreach (Lane laneUI in combatInterfaceNode.laneToNodeMap.Values){
+			laneUI.IsClickable = false;
+		}
+		foreach (CharacterUI characterUI in combatInterfaceNode.characterToNodeMap.Values){
+			characterUI.IsClickable = false;
+		}
 	}
 
 	public void _on_child_lane_selection(int lane){
@@ -87,6 +94,13 @@ public partial class GUIOrchestrator : Control, IEventSubscriber, IEventHandler<
 		// TODO - This doesn't work with AoE attacks, figure out how to get *that* to work. Maybe we still just do this and have CombatEventManager.AbilityActivated modify the list of fighters post-hoc?
 		CombatManager.InputAbility(clickedAbility, new List<int>{lane});
 		clickedAbility = null;
+
+		foreach (Lane laneUI in combatInterfaceNode.laneToNodeMap.Values){
+			laneUI.IsClickable = false;
+		}
+		foreach (CharacterUI characterUI in combatInterfaceNode.characterToNodeMap.Values){
+			characterUI.IsClickable = false;
+		}
 	}
 
     public void InitSubscriptions(){

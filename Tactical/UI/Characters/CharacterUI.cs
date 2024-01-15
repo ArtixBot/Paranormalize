@@ -43,6 +43,20 @@ public partial class CharacterUI : Control, IEventSubscriber, IEventHandler<Comb
 		}
     }
 
+	public void _on_area_2d_mouse_entered(){
+		ActiveCharInterfaceLayer activeCharNode = GetNode<ActiveCharInterfaceLayer>("../../Active Character");
+		if (IsClickable && IsInstanceValid(activeCharNode) && _character.Behavior?.reactions.Count > 0){
+			activeCharNode.CreateAbilityDetailPanel(_character.Behavior.reactions.First(), true);
+		}
+	}
+
+	public void _on_area_2d_mouse_exited(){
+		ActiveCharInterfaceLayer activeCharNode = GetNode<ActiveCharInterfaceLayer>("../../Active Character");
+		if (IsInstanceValid(activeCharNode)){
+			activeCharNode.DeleteAbilityDetailPanel(true);
+		}
+	}
+
 	public void _on_label_tree_exited(){
 		CombatManager.eventManager?.UnsubscribeAll(this);
 	}

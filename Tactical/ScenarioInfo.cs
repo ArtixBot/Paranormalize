@@ -15,25 +15,32 @@ public partial class ScenarioInfo {
 
 public class TestScenario : ScenarioInfo {
 
-    private static readonly AbstractCharacter characterA = new AbstractCharacter("Player", CharacterFaction.PLAYER);
+    private static readonly AbstractCharacter playerA = new AbstractCharacter("Quill", CharacterFaction.PLAYER);
+    private static readonly AbstractCharacter playerB = new AbstractCharacter("Cinq", CharacterFaction.PLAYER);
     private static readonly AbstractCharacter characterB = new AbstractCharacter("Test Dummy A", CharacterFaction.ENEMY);
     private static readonly AbstractCharacter characterC = new AbstractCharacter("Test Dummy B", CharacterFaction.ENEMY);
     private static readonly AbstractCharacter characterD = new AbstractCharacter("Test Dummy C", CharacterFaction.ENEMY);
     private static List<(AbstractCharacter character, int position)> scenarioFighters = new(){
-        (characterA, 3),
+        (playerA, 3),
+        // (playerB, 2),
         (characterB, 4),
         (characterC, 5),
         (characterD, 6),
     };
 
     public TestScenario() : base(scenarioFighters){
-        characterA.EquipAbility(new TestReact());
-        characterA.EquipAbility(new RelentlessStabbing());
-        characterA.EquipAbility(new TestAttack());
-        characterA.EquipAbility(new Discharge());
-        characterA.EquipAbility(new Thwack());
-        characterA.MinSpd = 1;
-        characterA.MaxSpd = 5;
+        playerA.EquipAbility(new TestReact());
+        playerA.EquipAbility(new RelentlessStabbing());
+        playerA.EquipAbility(new TestAttack());
+        playerA.EquipAbility(new Discharge());
+        playerA.EquipAbility(new Thwack());
+        playerA.MinSpd = 10;
+        playerA.MaxSpd = 30;
+
+        playerB.EquipAbility(new Discharge());
+        playerB.EquipAbility(new Repartee());
+        playerB.MinSpd = 10;
+        playerB.MaxSpd = 30;
 
         characterB.MaxHP = 100;
         characterB.CurHP = 100;
