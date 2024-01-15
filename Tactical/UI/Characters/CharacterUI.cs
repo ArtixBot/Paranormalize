@@ -22,7 +22,12 @@ public partial class CharacterUI : Control, IEventSubscriber, IEventHandler<Comb
 	private bool _IsClickable;
 	public bool IsClickable {
 		get {return _IsClickable;}
-		set {_IsClickable = value; ClickableArea.InputPickable = IsClickable;}		// LINK - Tactical\UI\GUIOrchestrator.cs:59
+		set {
+			_IsClickable = value; 
+			ClickableArea.InputPickable = IsClickable;				// LINK - Tactical\UI\GUIOrchestrator.cs:59
+			// TODO - Don't invoke GD.Load on every reassignment to IsClickable, should preload resource instead.
+			Sprite.Material = IsClickable ? GD.Load<Material>("res://Tactical/UI/Shaders/CharacterTargetable.tres") : null;
+		}
 	}
 
 	// Called when the node enters the scene tree for the first time.

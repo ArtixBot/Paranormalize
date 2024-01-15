@@ -1,6 +1,7 @@
-[gd_scene load_steps=4 format=3 uid="uid://cjjgiqf177w3q"]
+[gd_scene load_steps=5 format=3 uid="uid://cjjgiqf177w3q"]
 
 [ext_resource type="Script" path="res://Tactical/UI/Characters/CharacterUI.cs" id="1_rw5qx"]
+[ext_resource type="Material" uid="uid://bmjyff6utlk6r" path="res://Tactical/UI/Shaders/CharacterTargetable.tres" id="2_1jib3"]
 [ext_resource type="Texture2D" uid="uid://hjip720kdtvv" path="res://Sprites/character.png" id="2_5b7ny"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_d4mqg"]
@@ -19,6 +20,7 @@ position = Vector2(71, 100)
 shape = SubResource("RectangleShape2D_d4mqg")
 
 [node name="Sprite2D" type="Sprite2D" parent="Area2D"]
+material = ExtResource("2_1jib3")
 position = Vector2(71, 100)
 texture = ExtResource("2_5b7ny")
 

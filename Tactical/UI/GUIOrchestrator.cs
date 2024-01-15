@@ -30,30 +30,23 @@ public partial class GUIOrchestrator : Control, IEventSubscriber, IEventHandler<
 	// Connected to in ActiveCharInterfaceLayer.
 	// LINK - Tactical\UI\ActiveCharInterfaceLayer.cs:51
 	private AbstractAbility clickedAbility;
-	private List<Lane> clickableLanes = new();
-	private List<CharacterUI> clickableChars = new();
 	public void _on_child_ability_selection(AbstractAbility ability){
 		promptTextNode.Text = ability.useLaneTargeting ? $"Select a lane for {ability.NAME}" : $"Select a unit for {ability.NAME}";
 
 		// Clear out old clickable elements for cases where a character switches abilities.
-		foreach(Lane lane in clickableLanes){
+		foreach(Lane lane in combatInterfaceNode.laneToNodeMap.Values){
 			lane.IsClickable = false;
 		}
-		foreach(CharacterUI clickableElement in clickableChars){
+		foreach(CharacterUI clickableElement in combatInterfaceNode.characterToNodeMap.Values){
 			clickableElement.IsClickable = false;
 		}
 		clickedAbility = ability;
-		clickableLanes.Clear();
-		clickableChars.Clear();
 
 		// Make lanes or character UI elements selectable.
 		if (ability.useLaneTargeting){
 			foreach ((int lane, HashSet<AbstractCharacter> _) in ability.GetValidTargets()){
 				Lane laneUI = combatInterfaceNode.laneToNodeMap.GetValueOrDefault(lane);
 				if (laneUI == null) continue;
-
-				clickableLanes.Add(laneUI);
-				// TODO - Make it more obvious when something is clickable.
 				laneUI.IsClickable = true;			// NOTE - This will automatically set the Area2D collision space as clickable as well.
 			}
 		} else {
@@ -61,9 +54,6 @@ public partial class GUIOrchestrator : Control, IEventSubscriber, IEventHandler<
 				foreach (AbstractCharacter character in targetsInLane){
 					CharacterUI charUI = combatInterfaceNode.characterToNodeMap.GetValueOrDefault(character);
 					if (charUI == null) continue;
-					clickableChars.Add(charUI);
-	
-					// TODO - Make it more obvious when something is clickable.
 					charUI.IsClickable = true;		// NOTE - This will automatically set the Area2D collision space as clickable as well.
 				}
 			}
