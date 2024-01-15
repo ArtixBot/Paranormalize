@@ -1,49 +1,49 @@
 {
-    "BALESTRA_FENTE": {
-        "NAME": "Balestra Fente",
-        "STRINGS": {
-            "GENERIC": "On activate: Forward 3.",
-            "CRIT_DIE": "[color=#4cf]On [shake]critical hit[/shake][/color]: Consume all Critical to deal +50% damage per Critical consumed."
-        }
-    },
-    "DISCHARGE": {
-        "NAME": "Discharge"
-    },
-    "TEST_REACT": {
-        "NAME": "Test Reaction"
-    },
-    "TEST_ATTACK": {
-        "NAME": "Test Attack",
-        "STRINGS": {
-            "GENERIC": "On activate: Test description!",
-            "FIRST_DIE": "[wave]This is a description[/wave]. On hit: Apply [hint=This displays a hint.]Vulnerable[/hint] and gain 2 Haste."
-        }
-    },
-    "THWACK": {
-        "NAME": "Thwack"
-    },
-    "RELENTLESS_STABBING": {
-        "NAME": "Relentless Stabbing",
-        "STRINGS": {
-            "LETHAL_HIT_CYCLING": "[color=#4cf]On [shake]critical hit[/shake][/color]: Cycle this die (up to 2 times)."
-        }
-    },
-    "REPARTEE": {
-        "NAME": "Repartee",
-        "STRINGS": {
-            "CLASH_LOSS_DIE": "On clash lose: Discard all remaining dice on this ability."
-        }
-    },
-    "PASS": {
-        "NAME": "Pass",
-        "STRINGS": {
-            "GENERIC": "Pass your turn."
-        }
-    },
-    "MOVE": {
-        "NAME": "Move",
-        "STRINGS": {
-            "GENERIC": "Change lanes."
-        }
-    }
+	"BALESTRA_FENTE": {
+		"NAME": "Balestra Fente",
+		"STRINGS": {
+			"GENERIC": "On activate: Forward 3.",
+			"CRIT_DIE": "[color=#4cf]On [shake]critical[/shake] hit[/color]: Consume all Critical to deal +50% damage per Critical consumed."
+		}
+	},
+	"DISCHARGE": {
+		"NAME": "Discharge"
+	},
+	"TEST_REACT": {
+		"NAME": "Test Reaction"
+	},
+	"TEST_ATTACK": {
+		"NAME": "Test Attack",
+		"STRINGS": {
+			"GENERIC": "On activate: Test description!",
+			"FIRST_DIE": "[wave]This is a description[/wave]. On hit: Apply [hint=This displays a hint.]Vulnerable[/hint] and gain 2 Haste."
+		}
+	},
+	"THWACK": {
+		"NAME": "Thwack"
+	},
+	"RELENTLESS_STABBING": {
+		"NAME": "Relentless Stabbing",
+		"STRINGS": {
+			"LETHAL_HIT_CYCLING": "[color=#4cf]On [shake]critical[/shake] hit[/color]: Cycle this die (up to 2 times)."
+		}
+	},
+	"REPARTEE": {
+		"NAME": "Repartee",
+		"STRINGS": {
+			"CLASH_LOSS_DIE": "On clash lose: Discard all remaining dice on this ability."
+		}
+	},
+	"PASS": {
+		"NAME": "Pass",
+		"STRINGS": {
+			"GENERIC": "Pass your turn."
+		}
+	},
+	"MOVE": {
+		"NAME": "Move",
+		"STRINGS": {
+			"GENERIC": "Change lanes."
+		}
+	}
 }
