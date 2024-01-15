@@ -298,7 +298,7 @@ public static class CombatManager {
             int modifiedRoll = eventManager.BroadcastEvent(new CombatEventDieRolled(die, dieRoll)).rolledValue;
 
             foreach (AbstractCharacter target in combatInstance.activeAbilityTargets.ToList()){
-                ResolveDieRoll(combatInstance.activeAbility.OWNER, target, die, dieRoll, modifiedRoll, rolledDuringClash: false);
+                ResolveDieRoll(combatInstance.activeAbility.OWNER, target, die, dieRoll, modifiedRoll, rolledDuringClash: false, losingDieWasAttack: false);
             }
 
             try {
@@ -318,7 +318,7 @@ public static class CombatManager {
             int modifiedRoll = eventManager.BroadcastEvent(new CombatEventDieRolled(die, dieRoll)).rolledValue;
 
             GD.Print($"{combatInstance.reactAbility.OWNER.CHAR_NAME} targets {combatInstance.activeChar.CHAR_NAME}");
-            ResolveDieRoll(combatInstance.reactAbility.OWNER, combatInstance.activeChar, die, dieRoll, modifiedRoll, rolledDuringClash: false);
+            ResolveDieRoll(combatInstance.reactAbility.OWNER, combatInstance.activeChar, die, dieRoll, modifiedRoll, rolledDuringClash: false, losingDieWasAttack: false);
 
             try {
                 // An exception can occur if the attacker is killed during unopposed ability resolution, as this will preemptively remove all dice from reactAbilityDice.
@@ -330,7 +330,7 @@ public static class CombatManager {
         }
     }
 
-    private static void ResolveDieRoll(AbstractCharacter roller, AbstractCharacter target, Die die, int naturalRoll, int actualRoll, bool rolledDuringClash){
+    private static void ResolveDieRoll(AbstractCharacter roller, AbstractCharacter target, Die die, int naturalRoll, int actualRoll, bool rolledDuringClash, bool losingDieWasAttack){
         switch (die.DieType){
             case DieType.SLASH:
             case DieType.PIERCE:
@@ -347,6 +347,7 @@ public static class CombatManager {
             case DieType.EVADE:
                 if (!rolledDuringClash) break;
                 CombatManager.ExecuteAction(new RecoverPoiseAction(roller, actualRoll));
+                if (losingDieWasAttack) CombatManager.CycleDie(roller, die);
                 break;
             case DieType.UNIQUE:
             default:
@@ -404,7 +405,7 @@ public static class CombatManager {
             eventManager.BroadcastEvent(new CombatEventClashWin(winningDie, winningRoll));
             eventManager.BroadcastEvent(new CombatEventClashLose(losingDie, losingRoll));
 
-            ResolveDieRoll(winningChar, losingChar, winningDie, winningNatRoll, winningRoll, rolledDuringClash: true);
+            ResolveDieRoll(winningChar, losingChar, winningDie, winningNatRoll, winningRoll, rolledDuringClash: true, losingDieWasAttack: losingDie.IsAttackDie);
             try {
                 combatInstance.activeAbilityDice.RemoveAt(0);
             } catch (ArgumentOutOfRangeException){

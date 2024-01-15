@@ -10,7 +10,7 @@ public partial class AbilityDie : Control
 		set {_die = value; UpdateImage(); UpdateRollRange();}
 	}
 
-	private Label _dieDesc;
+	private RichTextLabel _dieDesc;
 	public string DieDesc {
 		get {return _dieDesc?.Text;}
 		set {_dieDesc.Text = value;}
@@ -23,7 +23,7 @@ public partial class AbilityDie : Control
 		// Note: Children _Ready() callbacks are always triggered first, see https://docs.godotengine.org/en/3.2/classes/class_node.html#class-node-method-ready
 		DieImage = (TextureRect) GetNode("TextureRect");
 		DieRange = (Label) GetNode("Roll Range");
-		_dieDesc = (Label) GetNode("Description");
+		_dieDesc = (RichTextLabel) GetNode("Description");
 	}
 
 	private void UpdateImage(){

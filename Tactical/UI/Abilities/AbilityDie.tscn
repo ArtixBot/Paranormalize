@@ -1,8 +1,7 @@
-[gd_scene load_steps=7 format=3 uid="uid://bu0br31a5wwlu"]
+[gd_scene load_steps=5 format=3 uid="uid://bu0br31a5wwlu"]
 
 [ext_resource type="Texture2D" uid="uid://be2dx8wnx2c1" path="res://Sprites/die - evade.png" id="1_1kbt0"]
 [ext_resource type="Script" path="res://Tactical/UI/Abilities/AbilityDie.cs" id="1_xf6p5"]
-[ext_resource type="FontFile" uid="uid://bwboh1vdh8npd" path="res://Assets/AlegreyaSans-Regular.ttf" id="2_ygdr6"]
 [ext_resource type="FontFile" uid="uid://bbbh26n3nsxrr" path="res://Assets/Jost-Medium.ttf" id="3_pjtgi"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_vivry"]
@@ -10,9 +9,6 @@ font = ExtResource("3_pjtgi")
 font_size = 18
 shadow_color = Color(0, 0, 0, 1)
 shadow_offset = Vector2(0, 1)
-
-[sub_resource type="LabelSettings" id="LabelSettings_lpyuw"]
-font = ExtResource("2_ygdr6")
 
 [node name="Die" type="Control"]
 layout_mode = 3
@@ -35,11 +31,10 @@ text = "99 - 99"
 label_settings = SubResource("LabelSettings_vivry")
 vertical_alignment = 1
 
-[node name="Description" type="Label" parent="."]
+[node name="Description" type="RichTextLabel" parent="."]
 layout_mode = 0
 offset_left = 107.0
-offset_top = 4.0
-offset_right = 766.0
-offset_bottom = 43.0
-text = "Description goes here."
-label_settings = SubResource("LabelSettings_lpyuw")
+offset_right = 532.0
+offset_bottom = 53.0
+bbcode_enabled = true
+text = "[font s=18][i]On critical hit[/i]: Consume all Critical. Add +50% damage per Critical consumed.[/font]"

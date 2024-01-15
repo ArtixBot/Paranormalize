@@ -37,7 +37,7 @@ public partial class AbilityDetailPanel : Control
 			node.SetPosition(new Vector2(10, 50 + (i * 50)));		// TODO: Reevaluate use of constant values.
 
 			node.Die = _ability.BASE_DICE[i];
-			node.DieDesc = _ability.STRINGS.GetValueOrDefault(node.Die.DieId, "");
+			node.DieDesc = "[font n='res://Assets/AlegreyaSans-Regular.ttf' s=18]" + _ability.STRINGS.GetValueOrDefault(node.Die.DieId, "") + "[/font]";
 		}
 	}
 }

@@ -1,4 +1,11 @@
 {
+    "BALESTRA_FENTE": {
+        "NAME": "Balestra Fente",
+        "STRINGS": {
+            "GENERIC": "On activate: Forward 3.",
+            "CRIT_DIE": "[color=#4cf]On [shake]critical hit[/shake][/color]: Consume all Critical to deal +50% damage per Critical consumed."
+        }
+    },
     "DISCHARGE": {
         "NAME": "Discharge"
     },
@@ -9,7 +16,7 @@
         "NAME": "Test Attack",
         "STRINGS": {
             "GENERIC": "On activate: Test description!",
-            "FIRST_DIE": "This is a description. On hit: Apply Vulnerable and gain 2 Haste."
+            "FIRST_DIE": "[wave]This is a description[/wave]. On hit: Apply [hint=This displays a hint.]Vulnerable[/hint] and gain 2 Haste."
         }
     },
     "THWACK": {
@@ -18,7 +25,7 @@
     "RELENTLESS_STABBING": {
         "NAME": "Relentless Stabbing",
         "STRINGS": {
-            "LETHAL_HIT_CYCLING": "On lethal hit: Cycle this die (up to 2 times)."
+            "LETHAL_HIT_CYCLING": "[color=#4cf]On [shake]critical hit[/shake][/color]: Cycle this die (up to 2 times)."
         }
     },
     "REPARTEE": {

@@ -1,6 +1,7 @@
 using Godot;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 public interface IEventHandler<T> where T : ICombatEvent {
     public abstract void HandleEvent(T eventData);
@@ -237,6 +238,9 @@ public class CombatEventAbilityActivated : ICombatEvent {
         this.abilityDice = abilityDice;
         this.caster = caster;
         this.targets = targets;
+        if (this.targets.Count == 1){
+            this.target = targets.First();
+        }
     }
 
     public CombatEventAbilityActivated(AbstractCharacter caster, AbstractAbility abilityActivated, List<Die> abilityDice, List<int> lanes){
