@@ -119,7 +119,7 @@ public partial class ModdablePriorityQueue<T>{
         if (insteadMarkAsNull && elementToRemove != null){
             // Use for instead of LINQ's ForEach; https://stackoverflow.com/q/5034537
             for (int i = 0; i < this.queue.Count; i++){
-                if (this.queue[i].element.Equals(elementToRemove)){
+                if (this.queue[i].element != null && this.queue[i].element.Equals(elementToRemove)){
                     this.queue[i] = (default, this.queue[i].priority);
                 }
             }
