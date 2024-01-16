@@ -21,7 +21,6 @@ public class ForwardAction : AbstractAction {
         if (this.mover == null || this.targetToMoveTo == null) return;
         bool moveLeft = this.mover.Position > this.targetToMoveTo.Position;
 
-
         // Cannot move beyond the target's position.
         int maxFwdDistance = Math.Min(Math.Abs(mover.Position - targetToMoveTo.Position), this.forwardDistance);
 

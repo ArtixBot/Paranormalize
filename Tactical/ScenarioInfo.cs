@@ -33,10 +33,11 @@ public class TestScenario : ScenarioInfo {
         playerA.EquipAbility(new RelentlessStabbing());
         playerA.EquipAbility(new TestAttack());
         playerA.EquipAbility(new Discharge());
-        playerA.EquipAbility(new Thwack());
+        playerA.EquipAbility(new Retreat());
         playerA.EquipAbility(new BalestraFente());
-        playerA.MinSpd = 10;
-        playerA.MaxSpd = 10;
+        playerA.EquipAbility(new Thwack());
+        playerA.MinSpd = 0;
+        playerA.MaxSpd = 0;
 
         playerB.EquipAbility(new Discharge());
         playerB.EquipAbility(new Repartee());
