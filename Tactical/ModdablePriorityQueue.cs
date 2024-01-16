@@ -86,7 +86,7 @@ public partial class ModdablePriorityQueue<T>{
     /// <summary>Return true if the item is in the priority queue, false otherwise.</summary>
     public bool ContainsItem(T elementToFind){
         foreach((T element, int priority) pair in this.queue){
-            if (pair.element.Equals(elementToFind)){
+            if (pair.element != null && pair.element.Equals(elementToFind)){
                 return true;
             }
         }
