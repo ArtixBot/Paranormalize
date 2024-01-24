@@ -53,17 +53,18 @@ public partial class CombatInterface : Control, IEventSubscriber, IEventHandler<
 	public void HandleEvent(CombatEventCombatStart data){
 		for (int i = GameVariables.MIN_LANES; i <= GameVariables.MAX_LANES; i++){
 			Lane laneUI = (Lane) laneNode.Instantiate();
-			laneUI.position = i;
+			laneUI.laneNum = i;
 			laneToNodeMap[i] = laneUI;
 
-			laneUI.LaneSelected += (laneUI) => parent._on_child_lane_selection(laneUI.position);
-			laneUI.SetPosition(new Vector2((i - 1) * 275, 500));
+			laneUI.LaneSelected += (laneUI) => parent._on_child_lane_selection(laneUI.laneNum);
+			laneUI.Position = new Vector2((i - 1) * 275, 500);
 			this.AddChild(laneUI);
 		}
 		
 		HashSet<AbstractCharacter> fighters = CombatManager.combatInstance.fighters;
 		foreach (AbstractCharacter fighter in fighters){
 			CharacterUI charUI = (CharacterUI) characterNode.Instantiate();
+			charUI.Name = fighter.CHAR_NAME;
 			charUI.Character = fighter;
 			characterToNodeMap[fighter] = charUI;
 

@@ -4,4 +4,8 @@
 
 [node name="TacticalScene" type="Node2D"]
 
-[node name="GUI" parent="." instance=ExtResource("3_m5w6t")]
+[node name="Camera2D" type="Camera2D" parent="."]
+
+[node name="HUD" type="CanvasLayer" parent="."]
+
+[node name="GUI" parent="HUD" instance=ExtResource("3_m5w6t")]

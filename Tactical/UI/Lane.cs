@@ -1,13 +1,13 @@
 using Godot;
 using System;
 
-public partial class Lane : Control
+public partial class Lane : Area2D
 {
 	[Signal]
 	public delegate void LaneSelectedEventHandler(Lane lane);
 
 	[Export]
-	public int position;
+	public int laneNum;
 
 	private bool _IsClickable;
 	public bool IsClickable {
@@ -17,11 +17,11 @@ public partial class Lane : Control
 
 	public Area2D ClickableArea;
 	public override void _Ready() {
-		ClickableArea = GetNode<Area2D>("Area2D");
+		ClickableArea = this;
 		IsClickable = false;
 	}
 
-    public void _on_area_2d_input_event(Viewport viewport, InputEvent @event, int shape_idx){
+    public void _on_input_event(Viewport viewport, InputEvent @event, int shape_idx){
         if (IsClickable && @event is InputEventMouseButton && @event.IsPressed() == false){
 			EmitSignal(nameof(LaneSelected), this);
 		}
