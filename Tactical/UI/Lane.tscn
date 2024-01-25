@@ -7,9 +7,7 @@
 size = Vector2(284, 233.5)
 
 [node name="Lane" type="Area2D"]
-position = 1
 script = ExtResource("1_uijvs")
-position = 1
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 position = Vector2(150, 118.25)

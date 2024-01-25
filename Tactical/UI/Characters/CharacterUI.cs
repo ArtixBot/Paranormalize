@@ -4,7 +4,7 @@ using System.Reflection.Metadata;
 
 namespace UI;
 
-public partial class CharacterUI : Control, IEventSubscriber, IEventHandler<CombatEventTurnEnd>, IEventHandler<CombatEventRoundStart>
+public partial class CharacterUI : Area2D, IEventSubscriber, IEventHandler<CombatEventTurnEnd>, IEventHandler<CombatEventRoundStart>
 {
 	[Signal]
 	public delegate void CharacterSelectedEventHandler(CharacterUI character);
@@ -15,7 +15,6 @@ public partial class CharacterUI : Control, IEventSubscriber, IEventHandler<Comb
 		set {_character = value; UpdateStatsText(); UpdateSprite();}
 	}
 
-	public Area2D ClickableArea;
 	public Sprite2D Sprite;
 	private Label Stats;
 
@@ -24,7 +23,7 @@ public partial class CharacterUI : Control, IEventSubscriber, IEventHandler<Comb
 		get {return _IsClickable;}
 		set {
 			_IsClickable = value; 
-			ClickableArea.InputPickable = IsClickable;				// LINK - Tactical\UI\GUIOrchestrator.cs:59
+			this.InputPickable = IsClickable;				// LINK - Tactical\UI\GUIOrchestrator.cs:59
 			// TODO - Don't invoke GD.Load on every reassignment to IsClickable, should preload resource instead.
 			Sprite.Material = IsClickable ? GD.Load<Material>("res://Tactical/UI/Shaders/CharacterTargetable.tres") : null;
 		}
@@ -32,9 +31,8 @@ public partial class CharacterUI : Control, IEventSubscriber, IEventHandler<Comb
 
 	// Called when the node enters the scene tree for the first time.
 	public override void _Ready() {
-		Sprite = GetNode<Sprite2D>("Area2D/Sprite2D");
-		Stats = GetNode<Label>("Area2D/Sprite2D/Label");
-		ClickableArea = GetNode<Area2D>("Area2D");
+		Sprite = GetNode<Sprite2D>("Sprite2D");
+		Stats = GetNode<Label>("Sprite2D/Label");
 		IsClickable = false;
 
 		UpdateStatsText();
@@ -42,13 +40,13 @@ public partial class CharacterUI : Control, IEventSubscriber, IEventHandler<Comb
 		InitSubscriptions();
 	}
 
-    public void _on_area_2d_input_event(Viewport viewport, InputEvent @event, int shape_idx){
+    public void _on_input_event(Viewport viewport, InputEvent @event, int shape_idx){
         if (IsClickable && @event is InputEventMouseButton && @event.IsPressed() == false){
 			EmitSignal(nameof(CharacterSelected), this);
 		}
     }
 
-	public void _on_area_2d_mouse_entered(){
+	public void _on_mouse_entered(){
 		ActiveCharInterfaceLayer activeCharNode = GetNode<ActiveCharInterfaceLayer>("../../Active Character");
 		// TODO: Handle case when the unit is staggered (see second condition) more artfully.
 		if (IsClickable && CombatManager.combatInstance.turnlist.ContainsItem(_character) && IsInstanceValid(activeCharNode) && _character.Behavior?.reactions.Count > 0){
@@ -56,7 +54,7 @@ public partial class CharacterUI : Control, IEventSubscriber, IEventHandler<Comb
 		}
 	}
 
-	public void _on_area_2d_mouse_exited(){
+	public void _on_mouse_exited(){
 		ActiveCharInterfaceLayer activeCharNode = GetNode<ActiveCharInterfaceLayer>("../../Active Character");
 		if (IsInstanceValid(activeCharNode)){
 			activeCharNode.DeleteAbilityDetailPanel(true);

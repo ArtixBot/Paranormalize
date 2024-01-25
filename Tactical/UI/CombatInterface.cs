@@ -38,7 +38,7 @@ public partial class CombatInterface : Control, IEventSubscriber, IEventHandler<
 
 	private void UpdateCharPositions(){
 		foreach (CharacterUI charUI in characterToNodeMap.Values){
-			charUI.SetPosition(new Vector2((charUI.Character.Position - 1) * 300, 500));
+			charUI.Position = new Vector2((charUI.Character.Position - 1) * 300, 500);
 		}
 	}
 
@@ -53,6 +53,7 @@ public partial class CombatInterface : Control, IEventSubscriber, IEventHandler<
 	public void HandleEvent(CombatEventCombatStart data){
 		for (int i = GameVariables.MIN_LANES; i <= GameVariables.MAX_LANES; i++){
 			Lane laneUI = (Lane) laneNode.Instantiate();
+			laneUI.Name = $"Lane {i}";
 			laneUI.laneNum = i;
 			laneToNodeMap[i] = laneUI;
 
@@ -69,7 +70,7 @@ public partial class CombatInterface : Control, IEventSubscriber, IEventHandler<
 			characterToNodeMap[fighter] = charUI;
 
 			charUI.CharacterSelected += (charUI) => parent._on_child_character_selection(charUI.Character);
-			charUI.SetPosition(new Vector2((fighter.Position - 1) * 400, 500));
+			charUI.Position = new Vector2((fighter.Position - 1) * 400, 500);
 			this.AddChild(charUI);
 		}
 	}
