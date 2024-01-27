@@ -28,7 +28,6 @@ public partial class TacticalScene : Node2D, IEventSubscriber, IEventHandler<Com
 	}
 
 	public virtual void InitSubscriptions(){
-		GD.Print("DASDASD");
 		CombatManager.eventManager.Subscribe(CombatEventType.ON_COMBAT_START, this, CombatEventPriority.UI);
 		CombatManager.eventManager.Subscribe(CombatEventType.ON_CHARACTER_DEATH, this, CombatEventPriority.UI);
 		CombatManager.eventManager.Subscribe(CombatEventType.ON_ROUND_START, this, CombatEventPriority.UI);
