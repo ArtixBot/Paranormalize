@@ -3,28 +3,25 @@ using System.Collections.Generic;
 using Godot;
 using UI;
 
-public partial class GUIOrchestrator : Control, IEventSubscriber, IEventHandler<CombatEventTurnStart>, IEventHandler<CombatEventClashEligible>
+public partial class GUIOrchestrator : Control, IEventSubscriber, IEventHandler<CombatEventRoundStart>, IEventHandler<CombatEventTurnStart>, IEventHandler<CombatEventClashEligible>
 {	
-	public readonly CombatInstance combatData;
-
-	private Label promptTextNode;
+	private TacticalScene tacticalSceneNode;
 	private ActiveCharInterfaceLayer activeCharNode;
-	private CombatInterface combatInterfaceNode;
-
-	public GUIOrchestrator(){
-		// TODO: Remove, this is for debugging. Should be done on game end before loading into the scene.
-		CombatManager.combatInstance = new CombatInstance(new TestScenario());
-		combatData = CombatManager.combatInstance;
-	}
+	private Label promptTextNode;
+	private Label roundCounter;
+	private Label turnList;
 
 	// Called when the node enters the scene tree for the first time.
 	public override void _Ready(){
-		promptTextNode = GetNode<Label>("Prompt Text");
+		tacticalSceneNode = GetNode<TacticalScene>("../../");
 		activeCharNode = GetNode<ActiveCharInterfaceLayer>("Active Character");
-		combatInterfaceNode = GetNode<CombatInterface>("Combat Interface");
-		InitSubscriptions();
+		promptTextNode = GetNode<Label>("Prompt Text");
+		roundCounter = GetNode<Label>("Round");
+		turnList = GetNode<Label>("Turn List");
 
-		CombatManager.ChangeCombatState(CombatState.COMBAT_START);
+		UpdateTurnlistText();
+
+		InitSubscriptions();
 	}
 
 	// Connected to in ActiveCharInterfaceLayer.
@@ -34,10 +31,10 @@ public partial class GUIOrchestrator : Control, IEventSubscriber, IEventHandler<
 		promptTextNode.Text = ability.useLaneTargeting ? $"Select a lane for {ability.NAME}" : $"Select a unit for {ability.NAME}";
 
 		// Clear out old clickable elements for cases where a character switches abilities.
-		foreach(Lane lane in combatInterfaceNode.laneToNodeMap.Values){
+		foreach(Lane lane in tacticalSceneNode.laneToNodeMap.Values){
 			lane.IsClickable = false;
 		}
-		foreach(CharacterUI clickableElement in combatInterfaceNode.characterToNodeMap.Values){
+		foreach(CharacterUI clickableElement in tacticalSceneNode.characterToNodeMap.Values){
 			clickableElement.IsClickable = false;
 		}
 		clickedAbility = ability;
@@ -45,14 +42,14 @@ public partial class GUIOrchestrator : Control, IEventSubscriber, IEventHandler<
 		// Make lanes or character UI elements selectable.
 		if (ability.useLaneTargeting){
 			foreach ((int lane, HashSet<AbstractCharacter> _) in ability.GetValidTargets()){
-				Lane laneUI = combatInterfaceNode.laneToNodeMap.GetValueOrDefault(lane);
+				Lane laneUI = tacticalSceneNode.laneToNodeMap.GetValueOrDefault(lane);
 				if (laneUI == null) continue;
 				laneUI.IsClickable = true;			// NOTE - This will automatically set the Area2D collision space as clickable as well.
 			}
 		} else {
 			foreach ((int _, HashSet<AbstractCharacter> targetsInLane) in ability.GetValidTargets()){
 				foreach (AbstractCharacter character in targetsInLane){
-					CharacterUI charUI = combatInterfaceNode.characterToNodeMap.GetValueOrDefault(character);
+					CharacterUI charUI = tacticalSceneNode.characterToNodeMap.GetValueOrDefault(character);
 					if (charUI == null) continue;
 					charUI.IsClickable = true;		// NOTE - This will automatically set the Area2D collision space as clickable as well.
 				}
@@ -71,10 +68,10 @@ public partial class GUIOrchestrator : Control, IEventSubscriber, IEventHandler<
 		CombatManager.InputAbility(clickedAbility, new List<AbstractCharacter>{character});
 		clickedAbility = null;
 
-		foreach (Lane laneUI in combatInterfaceNode.laneToNodeMap.Values){
+		foreach (Lane laneUI in tacticalSceneNode.laneToNodeMap.Values){
 			laneUI.IsClickable = false;
 		}
-		foreach (CharacterUI characterUI in combatInterfaceNode.characterToNodeMap.Values){
+		foreach (CharacterUI characterUI in tacticalSceneNode.characterToNodeMap.Values){
 			characterUI.IsClickable = false;
 		}
 	}
@@ -85,21 +82,38 @@ public partial class GUIOrchestrator : Control, IEventSubscriber, IEventHandler<
 		CombatManager.InputAbility(clickedAbility, new List<int>{lane});
 		clickedAbility = null;
 
-		foreach (Lane laneUI in combatInterfaceNode.laneToNodeMap.Values){
+		foreach (Lane laneUI in tacticalSceneNode.laneToNodeMap.Values){
 			laneUI.IsClickable = false;
 		}
-		foreach (CharacterUI characterUI in combatInterfaceNode.characterToNodeMap.Values){
+		foreach (CharacterUI characterUI in tacticalSceneNode.characterToNodeMap.Values){
 			characterUI.IsClickable = false;
 		}
 	}
 
+	
+	private void UpdateTurnlistText(){
+		CombatInstance combatInstance = CombatManager.combatInstance;
+		if (combatInstance == null) return;
+		string turnlistText = $"Remaining turns: ";
+		foreach ((AbstractCharacter info, int spd) in combatInstance.turnlist.GetQueue()){
+			turnlistText += $"{info.CHAR_NAME} ({spd}), ";
+		}
+		turnList.Text = turnlistText;
+	}
+
     public void InitSubscriptions(){
+		CombatManager.eventManager.Subscribe(CombatEventType.ON_ROUND_START, this, CombatEventPriority.UI);
         CombatManager.eventManager.Subscribe(CombatEventType.ON_TURN_START, this, CombatEventPriority.UI);
 		CombatManager.eventManager.Subscribe(CombatEventType.ON_CLASH_ELIGIBLE, this, CombatEventPriority.UI);
     }
 
+	public void HandleEvent(CombatEventRoundStart eventData){
+		roundCounter.Text = $"Round\n{eventData.roundStartNum}";
+	}
+
     public void HandleEvent(CombatEventTurnStart eventData){
         promptTextNode.Text = "";
+		UpdateTurnlistText();
     }
 
 	public void HandleEvent(CombatEventClashEligible eventData){
