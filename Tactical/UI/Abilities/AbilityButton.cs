@@ -23,7 +23,8 @@ public partial class AbilityButton : Button
 
     public override void _Pressed(){
         base._Pressed();
-		EmitSignal(nameof(AbilitySelected), this);		// LINK - Tactical\UI\ActiveCharInterfaceLayer.cs:51
+		// ANCHOR[id=emit-ability-selected]
+		EmitSignal(nameof(AbilitySelected), this);
     }
 
     private void UpdateDisplay(){

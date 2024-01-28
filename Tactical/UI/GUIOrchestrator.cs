@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Godot;
 using UI;
 
@@ -7,6 +8,7 @@ public partial class GUIOrchestrator : Control, IEventSubscriber, IEventHandler<
 {	
 	private TacticalScene tacticalSceneNode;
 	private ActiveCharInterfaceLayer activeCharNode;
+	private CameraController cameraNode;
 	private Label promptTextNode;
 	private Label roundCounter;
 	private Label turnList;
@@ -15,6 +17,8 @@ public partial class GUIOrchestrator : Control, IEventSubscriber, IEventHandler<
 	public override void _Ready(){
 		tacticalSceneNode = GetNode<TacticalScene>("../../");
 		activeCharNode = GetNode<ActiveCharInterfaceLayer>("Active Character");
+
+		cameraNode = GetNode<CameraController>("../../Camera2D");
 		promptTextNode = GetNode<Label>("Prompt Text");
 		roundCounter = GetNode<Label>("Round");
 		turnList = GetNode<Label>("Turn List");
@@ -27,7 +31,7 @@ public partial class GUIOrchestrator : Control, IEventSubscriber, IEventHandler<
 	// Connected to in ActiveCharInterfaceLayer.
 	// LINK - Tactical\UI\ActiveCharInterfaceLayer.cs:51
 	private AbstractAbility clickedAbility;
-	public void _on_child_ability_selection(AbstractAbility ability){
+	public async void _on_child_ability_selection(AbstractAbility ability){
 		promptTextNode.Text = ability.useLaneTargeting ? $"Select a lane for {ability.NAME}" : $"Select a unit for {ability.NAME}";
 
 		// Clear out old clickable elements for cases where a character switches abilities.
@@ -55,6 +59,7 @@ public partial class GUIOrchestrator : Control, IEventSubscriber, IEventHandler<
 				}
 			}
 		}
+		await cameraNode.CinematicZoom(0.05f, 0.25f);
 	}
 
 	public void _on_child_clash_selection(AbstractAbility ability){
@@ -62,7 +67,7 @@ public partial class GUIOrchestrator : Control, IEventSubscriber, IEventHandler<
 		CombatManager.InputAbility(clickedAbility, new List<AbstractCharacter>{CombatManager.combatInstance?.activeChar});
 	}
 
-	public void _on_child_character_selection(AbstractCharacter character){
+	public async void _on_child_character_selection(AbstractCharacter character){
 		if (clickedAbility == null || character == null) return;
 		// TODO - This doesn't work with AoE attacks, figure out how to get *that* to work. Maybe we still just do this and have CombatEventManager.AbilityActivated modify the list of fighters post-hoc?
 		CombatManager.InputAbility(clickedAbility, new List<AbstractCharacter>{character});
@@ -74,9 +79,10 @@ public partial class GUIOrchestrator : Control, IEventSubscriber, IEventHandler<
 		foreach (CharacterUI characterUI in tacticalSceneNode.characterToNodeMap.Values){
 			characterUI.IsClickable = false;
 		}
+		await cameraNode.ResetZoom(0.25f);
 	}
 
-	public void _on_child_lane_selection(int lane){
+	public async void _on_child_lane_selection(int lane){
 		if (clickedAbility == null) return;
 		// TODO - This doesn't work with AoE attacks, figure out how to get *that* to work. Maybe we still just do this and have CombatEventManager.AbilityActivated modify the list of fighters post-hoc?
 		CombatManager.InputAbility(clickedAbility, new List<int>{lane});
@@ -88,6 +94,7 @@ public partial class GUIOrchestrator : Control, IEventSubscriber, IEventHandler<
 		foreach (CharacterUI characterUI in tacticalSceneNode.characterToNodeMap.Values){
 			characterUI.IsClickable = false;
 		}
+		await cameraNode.ResetZoom(0.25f);
 	}
 
 	

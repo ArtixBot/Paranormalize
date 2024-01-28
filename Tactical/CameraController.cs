@@ -20,7 +20,10 @@ public partial class CameraController : Camera2D
 		}
 	}
 
+	private bool isCinematic = false;
+
     public async Task<bool> CinematicZoom(float zoomAmount, float duration){
+		if (isCinematic) return false;
 		Vector2 oldZoom = this.Zoom;
 		Vector2 newZoom = this.Zoom + new Vector2(zoomAmount, zoomAmount);
 
@@ -32,11 +35,24 @@ public partial class CameraController : Camera2D
 			await Task.Delay(1);
             currentTime += (float)GetProcessDeltaTime();		// Not using PhysicsProcess since this is graphical effect only.
         }
+		isCinematic = true;
 		return true;
 	}
 
-	public void ResetZoom(){
-		this.Zoom = new Vector2(1.0f, 1.0f);
+	public async Task<bool> ResetZoom(float duration){
+		Vector2 oldZoom = this.Zoom;
+		Vector2 newZoom = new Vector2(1.0f, 1.0f);
+
+		float currentTime = 0f;
+		while (currentTime <= duration){
+            float normalized = Math.Min((float)(currentTime / duration), 1.0f);
+			this.Zoom = oldZoom.Lerp(newZoom, EaseOut(normalized));
+
+			await Task.Delay(1);
+            currentTime += (float)GetProcessDeltaTime();		// Not using PhysicsProcess since this is graphical effect only.
+        }
+		isCinematic = false;
+		return true;
 	}
 
 	// Credit to https://www.febucci.com/2018/08/easing-functions/
