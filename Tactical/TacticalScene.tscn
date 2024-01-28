@@ -11,6 +11,18 @@ script = ExtResource("1_ijhlc")
 position = Vector2(960, 540)
 script = ExtResource("2_p2be7")
 
+[node name="ColorRect" type="ColorRect" parent="Camera2D"]
+anchors_preset = -1
+anchor_bottom = 1.0
+offset_left = -960.0
+offset_top = -540.0
+offset_right = 960.0
+offset_bottom = 540.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(1, 1, 1, 0)
+
 [node name="HUD" type="CanvasLayer" parent="."]
 
 [node name="GUI" parent="HUD" instance=ExtResource("3_m5w6t")]
