@@ -32,7 +32,7 @@ public partial class AbilityDetailPanel : Control
 		abilityName.Text = _ability.NAME;
 		string rangeText = (_ability.TYPE == AbilityType.REACTION) ? "" : $"\t\t[img=24]res://Sprites/range.png[/img] {_ability.MIN_RANGE} - {_ability.MAX_RANGE}";
 		abilityInfo.Text = $"[font n='res://Assets/Jost-Medium.ttf' s=16]{_ability.TYPE}"  + $"\t\t[img=24]res://Sprites/cooldown.png[/img] {_ability.BASE_CD}" + rangeText;
-		AbilityDesc = "[font n='res://Assets/AlegreyaSans-Regular.ttf' s=18]" + _ability.STRINGS.GetValueOrDefault("GENERIC", "") + "[/font]";
+		AbilityDesc = "[font n='res://Assets/Inter-Regular.ttf' s=16]" + _ability.STRINGS.GetValueOrDefault("GENERIC", "") + "[/font]";
 
 		// TODO: Reevaluate use of constant values.
 		int startingDieYPos = _ability.STRINGS.GetValueOrDefault("GENERIC", "") == "" ? 100 : 120;
@@ -43,7 +43,7 @@ public partial class AbilityDetailPanel : Control
 			node.SetPosition(new Vector2(10, startingDieYPos + (i * 50)));
 
 			node.Die = _ability.BASE_DICE[i];
-			node.DieDesc = "[font n='res://Assets/AlegreyaSans-Regular.ttf' s=18]" + _ability.STRINGS.GetValueOrDefault(node.Die.DieId, "") + "[/font]";
+			node.DieDesc = "[font n='res://Assets/Inter-Regular.ttf' s=16]" + _ability.STRINGS.GetValueOrDefault(node.Die.DieId, "") + "[/font]";
 		}
 	}
 }

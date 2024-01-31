@@ -12,7 +12,7 @@ position = Vector2(960, 540)
 script = ExtResource("2_p2be7")
 
 [node name="ColorRect" type="ColorRect" parent="Camera2D"]
-anchors_preset = -1
+anchors_preset = 9
 anchor_bottom = 1.0
 offset_left = -960.0
 offset_top = -540.0

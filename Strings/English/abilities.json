@@ -9,6 +9,12 @@
 	"DISCHARGE": {
 		"NAME": "Discharge"
 	},
+	"IRON_SWAN": {
+		"NAME": "Iron Swan",
+		"STRINGS": {
+			"PULL_DIE": "[color=#4cf]On hit:[/color] Pull 2."
+		}
+	},
 	"TEST_REACT": {
 		"NAME": "Test Reaction"
 	},

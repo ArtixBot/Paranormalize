@@ -17,6 +17,9 @@ public partial class AbstractCharacter : IEventSubscriber, IEventHandler<CombatE
         get {return abilities.Where(ability => ability.IsActivatable).ToList();}
     }
     public List<AbstractStatusEffect> statusEffects = new();
+    public bool HasBuff { get {return statusEffects.Where(effect => effect.TYPE == StatusEffectType.BUFF).ToList().Count > 0;} }
+    public bool HasCondition { get {return statusEffects.Where(effect => effect.TYPE == StatusEffectType.CONDITION).ToList().Count > 0;} }
+    public bool HasDebuff { get {return statusEffects.Where(effect => effect.TYPE == StatusEffectType.DEBUFF).ToList().Count > 0;} }
 
     private int _CurHP, _MaxHP, _CurPoise, _MaxPoise;
     public int CurHP {

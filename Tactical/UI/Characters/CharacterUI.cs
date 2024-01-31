@@ -4,7 +4,7 @@ using System.Reflection.Metadata;
 
 namespace UI;
 
-public partial class CharacterUI : Area2D, IEventSubscriber, IEventHandler<CombatEventTurnEnd>, IEventHandler<CombatEventRoundStart>
+public partial class CharacterUI : Area2D, IEventSubscriber, IEventHandler<CombatEventTurnEnd>, IEventHandler<CombatEventCombatStateChanged>
 {
 	[Signal]
 	public delegate void CharacterSelectedEventHandler(CharacterUI character);
@@ -12,11 +12,15 @@ public partial class CharacterUI : Area2D, IEventSubscriber, IEventHandler<Comba
 	private AbstractCharacter _character;
 	public AbstractCharacter Character {
 		get {return _character;}
-		set {_character = value; UpdateStatsText(); UpdateSprite();}
+		set {_character = value; UpdateSprite();}
 	}
 
 	public Sprite2D Sprite;
-	private Label Stats;
+	private Label HPStat;
+	private RichTextLabel PoiseStat;
+	private TextureRect activeBuffs;
+	private TextureRect activeConditions;
+	private TextureRect activeDebuffs;
 
 	private bool _IsClickable;
 	public bool IsClickable {
@@ -32,10 +36,15 @@ public partial class CharacterUI : Area2D, IEventSubscriber, IEventHandler<Comba
 	// Called when the node enters the scene tree for the first time.
 	public override void _Ready() {
 		Sprite = GetNode<Sprite2D>("Sprite2D");
-		Stats = GetNode<Label>("Sprite2D/Label");
+		HPStat = GetNode<Label>("Sprite2D/HP/Label");
+		PoiseStat = GetNode<RichTextLabel>("Sprite2D/Poise/Label");
+
+		activeBuffs = GetNode<TextureRect>("Sprite2D/Active Buffs");
+		activeConditions = GetNode<TextureRect>("Sprite2D/Active Conditions");
+		activeDebuffs = GetNode<TextureRect>("Sprite2D/Active Debuffs");
+
 		IsClickable = false;
 
-		UpdateStatsText();
 		UpdateSprite();
 		InitSubscriptions();
 	}
@@ -61,17 +70,17 @@ public partial class CharacterUI : Area2D, IEventSubscriber, IEventHandler<Comba
 		}
 	}
 
-	public void _on_label_tree_exited(){
+	public void _on_hp_tree_exited(){
 		CombatManager.eventManager?.UnsubscribeAll(this);
 	}
 
 	private void UpdateStatsText(){
-		if (Character == null || Stats == null) {return;}
-		string poise = $"Poise: {Character.CurPoise} / {Character.MaxPoise}";
-		if (Character.statusEffects.Where(status => status.ID == "STAGGERED").Count() > 0){
-			poise = "Staggered!";
+		if (Character == null || HPStat == null || PoiseStat == null) {return;}
+		HPStat.Text = $"{Character.CurHP}";
+		PoiseStat.Text = $"[font n='res://Assets/Jost-Medium.ttf' s=24]{Character.CurPoise}[/font]";
+		if (Character.CurPoise == 0) {
+			PoiseStat.Text = "[shake]" + PoiseStat.Text + "[/shake]";
 		}
-		Stats.Text = $"HP: {Character.CurHP} / {Character.MaxHP}\n{poise}";
 	}
 
 	private void UpdateSprite(){
@@ -84,17 +93,47 @@ public partial class CharacterUI : Area2D, IEventSubscriber, IEventHandler<Comba
 		}
 	}
 
+	private void UpdateBuffs(){
+		if (!Character.HasBuff) {
+			activeBuffs.Visible = false;
+			return;
+		}
+		activeBuffs.Visible = true;
+		// TODO: Add on-hover functionality.
+	}
+
+	private void UpdateDebuffs(){
+		if (!Character.HasDebuff) {
+			activeDebuffs.Visible = false;
+			return;
+		}
+		activeDebuffs.Visible = true;
+		// TODO: Add on-hover functionality.
+	}
+
+	private void UpdateConditions(){
+		if (!Character.HasCondition) {
+			activeConditions.Visible = false;
+			return;
+		}
+		activeConditions.Visible = true;
+		// TODO: Add on-hover functionality.
+	}
+
 	public virtual void InitSubscriptions(){
 		// TODO: Change this to something like ON_TAKE_DAMAGE or ON_HP_CHANGED instead.
 		CombatManager.eventManager?.Subscribe(CombatEventType.ON_TURN_END, this, CombatEventPriority.UI);
-		CombatManager.eventManager?.Subscribe(CombatEventType.ON_ROUND_START, this, CombatEventPriority.UI);
+		CombatManager.eventManager?.Subscribe(CombatEventType.ON_COMBAT_STATE_CHANGE, this, CombatEventPriority.UI);
     }
 
     public void HandleEvent(CombatEventTurnEnd eventData){
         UpdateStatsText();
     }
 
-	public void HandleEvent(CombatEventRoundStart eventData){
+	public void HandleEvent(CombatEventCombatStateChanged eventData){
         UpdateStatsText();
+		UpdateBuffs();
+		UpdateDebuffs();
+		UpdateConditions();
     }
 }
