@@ -1,0 +1,14 @@
+{
+	"HASTE": {
+		"NAME": "Haste",
+		"DESC": "On round start, consume all Haste to increase the Speed of {owner}'s actions by {stacks}."
+	},
+	"STAGGERED": {
+		"NAME": "Staggered",
+		"DESC": "Cannot take actions. All incoming damage is doubled.\nThis effect wears off at the start of round {round}."
+	},
+	"VULNERABLE": {
+		"NAME": "Vulnerable",
+		"DESC": "Incoming damage is increased by 50% until the end of this round."
+	}
+}

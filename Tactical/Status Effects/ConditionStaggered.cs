@@ -3,13 +3,18 @@ using System;
 using System.Collections.Generic;
 
 public class ConditionStaggered : AbstractStatusEffect, IEventHandler<CombatEventDamageTaken>, IEventHandler<CombatEventRoundEnd>{
+
+    public static string id = "STAGGERED";
+    private static Localization.EffectStrings strings = Localization.LocalizationLibrary.Instance.GetEffectStrings(id);
+
     private int oldActionsPerTurn;
 
-    public ConditionStaggered(){
-        this.ID = "STAGGERED";
-        this.TYPE = StatusEffectType.CONDITION;
-        this.CAN_GAIN_STACKS = false;
-    }
+    public ConditionStaggered() : base(
+        id,
+        strings,
+        StatusEffectType.CONDITION,
+        false
+    ){}
 
     public override void InitSubscriptions(){
         CombatManager.eventManager.Subscribe(CombatEventType.ON_TAKE_DAMAGE, this, CombatEventPriority.BASE_MULTIPLICATIVE);

@@ -3,10 +3,15 @@ using System;
 using System.Collections.Generic;
 
 public class DebuffSlow : AbstractStatusEffect, IEventHandler<CombatEventRoundStart>{
-    public DebuffSlow(){
-        this.ID = "SLOW";
-        this.TYPE = StatusEffectType.DEBUFF;
-    }
+    
+    public static string id = "SLOW";
+    private static Localization.EffectStrings strings = Localization.LocalizationLibrary.Instance.GetEffectStrings(id);
+
+    public DebuffSlow() : base(
+        id,
+        strings,
+        StatusEffectType.DEBUFF
+    ){}
 
     public override void InitSubscriptions(){
         CombatManager.eventManager.Subscribe(CombatEventType.ON_ROUND_START, this, CombatEventPriority.STANDARD);
