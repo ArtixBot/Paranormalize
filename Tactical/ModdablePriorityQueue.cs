@@ -86,7 +86,7 @@ public partial class ModdablePriorityQueue<T>{
     /// <summary>Return true if the item is in the priority queue, false otherwise.</summary>
     public bool ContainsItem(T elementToFind){
         foreach((T element, int priority) pair in this.queue){
-            if (pair.element.Equals(elementToFind)){
+            if (pair.element != null && pair.element.Equals(elementToFind)){
                 return true;
             }
         }
@@ -116,14 +116,20 @@ public partial class ModdablePriorityQueue<T>{
     /// to trigger.
     /// </param>
     public void RemoveAllInstancesOfItem(T elementToRemove, bool insteadMarkAsNull = false){
-        if (insteadMarkAsNull){
-            this.queue.ForEach(item => {
-                if (item.element.Equals(elementToRemove)){
-                    item.element = default;
+        if (insteadMarkAsNull && elementToRemove != null){
+            // Use for instead of LINQ's ForEach; https://stackoverflow.com/q/5034537
+            for (int i = 0; i < this.queue.Count; i++){
+                if (this.queue[i].element != null && this.queue[i].element.Equals(elementToRemove)){
+                    this.queue[i] = (default, this.queue[i].priority);
                 }
-            });
+            }
         } else {
-            this.queue.RemoveAll(item => item.element.Equals(elementToRemove));
+            // See https://stackoverflow.com/a/3459796.
+            if (elementToRemove != null){
+                this.queue.RemoveAll(item => item.element.Equals(elementToRemove));
+            } else {
+                this.queue.RemoveAll(item => item.element == null);
+            }
         }
     }
 

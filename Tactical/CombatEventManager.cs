@@ -86,7 +86,7 @@ public partial class CombatEventManager{
         int i = 0;
         List<(IEventSubscriber subscriber, int priority)> eventSubscribers = events[eventData.eventType].GetQueue();
         while (i < eventSubscribers.Count){
-            Logging.Log($"Handling subscriber #{eventSubscribers.Count}. This one is {eventSubscribers[i].subscriber}.", Logging.LogLevel.DEBUG);
+            Logging.Log($"Handling subscriber #{i}. This one is {eventSubscribers[i].subscriber}.", Logging.LogLevel.DEBUG);
             (eventSubscribers[i].subscriber as IEventHandler<T>)?.HandleEvent(eventData);
             i += 1;
         }

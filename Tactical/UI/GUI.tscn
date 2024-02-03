@@ -1,8 +1,7 @@
-[gd_scene load_steps=6 format=3 uid="uid://cdon4x8pubue0"]
+[gd_scene load_steps=5 format=3 uid="uid://cdon4x8pubue0"]
 
 [ext_resource type="PackedScene" uid="uid://yyhqttdpvpjw" path="res://Tactical/UI/ActiveCharInterfaceLayer.tscn" id="1_4hy55"]
 [ext_resource type="Script" path="res://Tactical/UI/GUIOrchestrator.cs" id="1_7ak4a"]
-[ext_resource type="Script" path="res://Tactical/UI/CombatInterface.cs" id="2_0ptl1"]
 [ext_resource type="FontFile" uid="uid://bwboh1vdh8npd" path="res://Assets/AlegreyaSans-Regular.ttf" id="6_xeyi2"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_a110w"]
@@ -27,23 +26,7 @@ text = "Prompt text goes here."
 label_settings = SubResource("LabelSettings_a110w")
 horizontal_alignment = 1
 
-[node name="Active Character" parent="." instance=ExtResource("1_4hy55")]
-layout_mode = 1
-offset_left = 1.0
-offset_top = 4.0
-offset_right = 1879.0
-offset_bottom = 1033.0
-mouse_filter = 2
-
-[node name="Combat Interface" type="Control" parent="."]
-layout_mode = 3
-anchors_preset = 0
-offset_right = 40.0
-offset_bottom = 40.0
-mouse_filter = 2
-script = ExtResource("2_0ptl1")
-
-[node name="Round" type="Label" parent="Combat Interface"]
+[node name="Round" type="Label" parent="."]
 layout_mode = 0
 offset_left = 36.0
 offset_top = 40.0
@@ -53,10 +36,18 @@ text = "Round
 X"
 horizontal_alignment = 1
 
-[node name="Turn List" type="Label" parent="Combat Interface"]
+[node name="Turn List" type="Label" parent="."]
 layout_mode = 0
 offset_left = 231.0
 offset_top = 37.0
 offset_right = 1906.0
 offset_bottom = 151.0
 text = "Turnlist: "
+
+[node name="Active Character" parent="." instance=ExtResource("1_4hy55")]
+layout_mode = 1
+offset_left = 1.0
+offset_top = 4.0
+offset_right = 1879.0
+offset_bottom = 1033.0
+mouse_filter = 2

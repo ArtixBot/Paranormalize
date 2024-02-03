@@ -4,14 +4,14 @@ using System.Collections.Generic;
 
 public class DebuffVulnerable : AbstractStatusEffect, IEventHandler<CombatEventDamageTaken>, IEventHandler<CombatEventRoundEnd>{
 
-    /// <summary>
-    /// A debuff that increases damage taken by +50%. Stacks have no additional effect.
-    /// </summary>
-    public DebuffVulnerable(){
-        this.ID = "VULNERABLE";
-        this.TYPE = StatusEffectType.DEBUFF;
-        this.CAN_GAIN_STACKS = false;
-    }
+    public static string id = "VULNERABLE";
+    private static Localization.EffectStrings strings = Localization.LocalizationLibrary.Instance.GetEffectStrings(id);
+
+    public DebuffVulnerable() : base(
+        id,
+        strings,
+        StatusEffectType.DEBUFF
+    ){}
 
     public override void InitSubscriptions(){
         CombatManager.eventManager.Subscribe(CombatEventType.ON_TAKE_DAMAGE, this, CombatEventPriority.BASE_MULTIPLICATIVE);

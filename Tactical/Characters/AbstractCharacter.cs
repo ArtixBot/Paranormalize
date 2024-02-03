@@ -17,6 +17,9 @@ public partial class AbstractCharacter : IEventSubscriber, IEventHandler<CombatE
         get {return abilities.Where(ability => ability.IsActivatable).ToList();}
     }
     public List<AbstractStatusEffect> statusEffects = new();
+    public bool HasBuff { get {return statusEffects.Where(effect => effect.TYPE == StatusEffectType.BUFF).ToList().Count > 0;} }
+    public bool HasCondition { get {return statusEffects.Where(effect => effect.TYPE == StatusEffectType.CONDITION).ToList().Count > 0;} }
+    public bool HasDebuff { get {return statusEffects.Where(effect => effect.TYPE == StatusEffectType.DEBUFF).ToList().Count > 0;} }
 
     private int _CurHP, _MaxHP, _CurPoise, _MaxPoise;
     public int CurHP {
@@ -68,9 +71,9 @@ public partial class AbstractCharacter : IEventSubscriber, IEventHandler<CombatE
 
     // Add an ability to the character's list of equipped abilities.
     // Returns true if successful, otherwise false.
-    // TODO: Move default character ability equip limits to UI logic instead? We might have in-combat granted abilities and this wouldn't work well with that.
     public bool EquipAbility(AbstractAbility ability){
-        if (this.abilities.Count >= 8) return false;
+        // TODO: Move default character ability equip limits to UI logic instead? We might have in-combat granted abilities and this wouldn't work well with that.
+        // if (this.abilities.Count >= 8) return false;
         // Cannot equip more than 4 generic abilities at any given time.
         if (this.abilities.FindAll(ability => ability.IS_GENERIC).Count >= 4) return false;
 

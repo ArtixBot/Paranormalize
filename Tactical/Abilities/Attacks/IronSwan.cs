@@ -1,19 +1,18 @@
 using System.Collections.Generic;
 
-public class TestAttack : AbstractAbility, IEventHandler<CombatEventDieHit> {
-    public static string id = "TEST_ATTACK";
+public class IronSwan : AbstractAbility, IEventHandler<CombatEventDieHit> {
+    public static string id = "IRON_SWAN";
     private static Localization.AbilityStrings strings = Localization.LocalizationLibrary.Instance.GetAbilityStrings(id);
 
-    private static int cd = 0;
-    private static int min_range = 0;
-    private static int max_range = 2;
+    private static int cd = 2;
+    private static int min_range = 2;
+    private static int max_range = 4;
     private static bool targetsLane = false;
     private static bool needsUnit = true;
 
-    private Die atkDieA = new Die(DieType.BLUNT, 3, 3, "FIRST_DIE");
-    private Die atkDieB = new Die(DieType.SLASH, 1, 5);
+    private Die atkDie = new Die(DieType.PIERCE, 12, 18, "PULL_DIE");
 
-    public TestAttack(): base(
+    public IronSwan(): base(
         id,
         strings,
         AbilityType.ATTACK,
@@ -24,7 +23,7 @@ public class TestAttack : AbstractAbility, IEventHandler<CombatEventDieHit> {
         needsUnit,
         new HashSet<TargetingModifiers>{TargetingModifiers.ENEMIES_ONLY}
     ){
-        this.BASE_DICE = new List<Die>{atkDieA, atkDieB};
+        this.BASE_DICE = new List<Die>{atkDie};
     }
 
     public override void InitSubscriptions(){
@@ -33,9 +32,8 @@ public class TestAttack : AbstractAbility, IEventHandler<CombatEventDieHit> {
     }
 
     public virtual void HandleEvent(CombatEventDieHit data){
-        if (data.die.Equals(atkDieA)){
-            CombatManager.ExecuteAction(new ApplyStatusAction(data.hitUnit, new DebuffVulnerable(), 1));
-            CombatManager.ExecuteAction(new ApplyStatusAction(this.OWNER, new BuffHaste(), 2));
+        if (data.die.Equals(atkDie)){
+            CombatManager.ExecuteAction(new PullAction(this.OWNER, data.hitUnit, 2));
         }
     }
 }

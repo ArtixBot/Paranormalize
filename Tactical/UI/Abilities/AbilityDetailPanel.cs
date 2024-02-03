@@ -11,7 +11,7 @@ public partial class AbilityDetailPanel : Control
 		set {_ability = value; UpdateDescriptions();}
 	}
 
-	private Label _abilityDesc;
+	private RichTextLabel _abilityDesc;
 	public string AbilityDesc {
 		get {return _abilityDesc?.Text;}
 		set {_abilityDesc.Text = value;}
@@ -19,25 +19,31 @@ public partial class AbilityDetailPanel : Control
 	
 	private readonly PackedScene abilityDie = GD.Load<PackedScene>("res://Tactical/UI/Abilities/AbilityDie.tscn");
 
-	private Label abilityType;
+	private RichTextLabel abilityInfo;
+	private Label abilityName;
 	// Called when the node enters the scene tree for the first time.
 	public override void _Ready(){
-		_abilityDesc = GetNode<Label>("Ability Desc");
-		abilityType = GetNode<Label>("Ability Type");
+		_abilityDesc = GetNode<RichTextLabel>("Ability Desc");
+		abilityInfo = GetNode<RichTextLabel>("Ability Info");
+		abilityName = GetNode<Label>("Ability Name");
 	}
 
 	private void UpdateDescriptions(){
-		string rangeText = (_ability.TYPE == AbilityType.REACTION) ? "" : $"| Range: {_ability.MIN_RANGE} - {_ability.MAX_RANGE} ";
-		abilityType.Text = $"{_ability.TYPE} " + rangeText + $"| Cooldown: {_ability.BASE_CD}";
-		_abilityDesc.Text = _ability.STRINGS.GetValueOrDefault("GENERIC", "");
+		abilityName.Text = _ability.NAME;
+		string rangeText = (_ability.TYPE == AbilityType.REACTION) ? "" : $"\t\t[img=24]res://Sprites/range.png[/img] {_ability.MIN_RANGE} - {_ability.MAX_RANGE}";
+		abilityInfo.Text = $"[font n='res://Assets/Jost-Medium.ttf' s=16]{_ability.TYPE}"  + $"\t\t[img=24]res://Sprites/cooldown.png[/img] {_ability.BASE_CD}" + rangeText;
+		AbilityDesc = "[font n='res://Assets/Inter-Regular.ttf' s=16]" + _ability.STRINGS.GetValueOrDefault("GENERIC", "") + "[/font]";
+
+		// TODO: Reevaluate use of constant values.
+		int startingDieYPos = _ability.STRINGS.GetValueOrDefault("GENERIC", "") == "" ? 100 : 120;
 
 		for (int i = 0; i < _ability.BASE_DICE.Count; i++){
             AbilityDie node = (AbilityDie) abilityDie.Instantiate();
 			AddChild(node);
-			node.SetPosition(new Vector2(10, 50 + (i * 50)));		// TODO: Reevaluate use of constant values.
+			node.SetPosition(new Vector2(10, startingDieYPos + (i * 50)));
 
 			node.Die = _ability.BASE_DICE[i];
-			node.DieDesc = "[font n='res://Assets/AlegreyaSans-Regular.ttf' s=18]" + _ability.STRINGS.GetValueOrDefault(node.Die.DieId, "") + "[/font]";
+			node.DieDesc = "[font n='res://Assets/Inter-Regular.ttf' s=16]" + _ability.STRINGS.GetValueOrDefault(node.Die.DieId, "") + "[/font]";
 		}
 	}
 }

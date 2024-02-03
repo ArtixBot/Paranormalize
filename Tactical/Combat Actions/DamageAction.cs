@@ -35,7 +35,7 @@ public class DamageAction : AbstractAction {
             this.defender.CurHP -= (int) damageData.damageTaken;
         }
 
-        Logging.Log($"{defender.CHAR_NAME} takes {damageData.damageTaken} {(isPoiseDamage ? "Poise " : "")}damage.", Logging.LogLevel.ESSENTIAL);
+        Logging.Log($"{defender.CHAR_NAME} takes {(int)damageData.damageTaken} {(isPoiseDamage ? "Poise " : "")}damage.", Logging.LogLevel.ESSENTIAL);
 
         if (this.defender.CurPoise <= 0){
             // Note that passives which prevent stagger for the first time in combat should listen to CombatEventDamageDealt.

@@ -1,45 +1,112 @@
-[gd_scene load_steps=4 format=3 uid="uid://cjjgiqf177w3q"]
+[gd_scene load_steps=12 format=3 uid="uid://cjjgiqf177w3q"]
 
 [ext_resource type="Script" path="res://Tactical/UI/Characters/CharacterUI.cs" id="1_rw5qx"]
+[ext_resource type="Material" uid="uid://bmjyff6utlk6r" path="res://Tactical/UI/Shaders/CharacterTargetable.tres" id="2_1jib3"]
 [ext_resource type="Texture2D" uid="uid://hjip720kdtvv" path="res://Sprites/character.png" id="2_5b7ny"]
+[ext_resource type="Texture2D" uid="uid://hyuxr3tkronx" path="res://Sprites/hp-icon.png" id="4_amh2p"]
+[ext_resource type="FontFile" uid="uid://bbbh26n3nsxrr" path="res://Assets/Jost-Medium.ttf" id="5_sb5mm"]
+[ext_resource type="Texture2D" uid="uid://c18usxa0wmir4" path="res://Sprites/poise-icon.png" id="6_inseb"]
+[ext_resource type="Texture2D" uid="uid://2oes3g44121k" path="res://Sprites/buff-icon.png" id="7_huj51"]
+[ext_resource type="Texture2D" uid="uid://p0tetgbis0m4" path="res://Sprites/condition-icon.png" id="8_8d0wf"]
+[ext_resource type="Texture2D" uid="uid://cecycdocqfraa" path="res://Sprites/debuff-icon.png" id="8_24fsp"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_d4mqg"]
 size = Vector2(160, 219)
 
-[node name="Character" type="Control"]
-layout_mode = 3
-anchors_preset = 0
-mouse_filter = 2
+[sub_resource type="LabelSettings" id="LabelSettings_xhe7v"]
+font = ExtResource("5_sb5mm")
+font_size = 24
+
+[node name="Character" type="Area2D"]
 script = ExtResource("1_rw5qx")
 
-[node name="Area2D" type="Area2D" parent="."]
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 position = Vector2(71, 100)
 shape = SubResource("RectangleShape2D_d4mqg")
 
-[node name="Sprite2D" type="Sprite2D" parent="Area2D"]
+[node name="Sprite2D" type="Sprite2D" parent="."]
+material = ExtResource("2_1jib3")
 position = Vector2(71, 100)
 texture = ExtResource("2_5b7ny")
 
-[node name="Label" type="Label" parent="Area2D/Sprite2D"]
-offset_left = -86.0
-offset_top = 97.0
-offset_right = 87.0
-offset_bottom = 152.0
-text = "HP: X/Y
-Poise: X/Y"
-horizontal_alignment = 1
+[node name="HP" type="ColorRect" parent="Sprite2D"]
+offset_left = -78.0
+offset_top = 139.0
+offset_right = -14.0
+offset_bottom = 143.0
+color = Color(1, 0.258824, 0.2, 1)
 
-[node name="Status Effects" type="Label" parent="Area2D/Sprite2D"]
-offset_left = -90.0
-offset_top = 149.0
-offset_right = 83.0
-offset_bottom = 204.0
-text = "Status Effects: None"
-horizontal_alignment = 1
+[node name="TextureRect" type="TextureRect" parent="Sprite2D/HP"]
+layout_mode = 0
+offset_left = -25.0
+offset_top = -23.0
+offset_right = 15.0
+offset_bottom = 17.0
+rotation = -0.193211
+texture = ExtResource("4_amh2p")
 
-[connection signal="input_event" from="Area2D" to="." method="_on_area_2d_input_event"]
-[connection signal="mouse_entered" from="Area2D" to="." method="_on_area_2d_mouse_entered"]
-[connection signal="mouse_exited" from="Area2D" to="." method="_on_area_2d_mouse_exited"]
-[connection signal="tree_exited" from="Area2D/Sprite2D/Label" to="." method="_on_label_tree_exited"]
+[node name="Label" type="Label" parent="Sprite2D/HP"]
+layout_mode = 0
+offset_left = 17.0
+offset_top = -35.0
+offset_right = 57.0
+offset_bottom = 3.0
+text = "32"
+label_settings = SubResource("LabelSettings_xhe7v")
+
+[node name="Poise" type="ColorRect" parent="Sprite2D"]
+offset_left = 15.0
+offset_top = 138.0
+offset_right = 79.0
+offset_bottom = 142.0
+color = Color(0.666667, 0.847059, 0.996078, 1)
+
+[node name="TextureRect" type="TextureRect" parent="Sprite2D/Poise"]
+layout_mode = 0
+offset_left = -25.0
+offset_top = -23.0
+offset_right = 15.0
+offset_bottom = 17.0
+rotation = -0.193211
+texture = ExtResource("6_inseb")
+
+[node name="Label" type="RichTextLabel" parent="Sprite2D/Poise"]
+layout_mode = 0
+offset_left = 18.0
+offset_top = -33.0
+offset_right = 58.0
+offset_bottom = 5.0
+bbcode_enabled = true
+text = "[font n='res://Assets/Jost-Medium.ttf' s=24]10[/font]"
+
+[node name="Active Buffs" type="TextureRect" parent="Sprite2D"]
+offset_left = -71.0
+offset_top = 147.0
+offset_right = -31.0
+offset_bottom = 187.0
+texture = ExtResource("7_huj51")
+
+[node name="Active Conditions" type="TextureRect" parent="Sprite2D"]
+offset_left = -23.0
+offset_top = 147.0
+offset_right = 25.0
+offset_bottom = 195.0
+texture = ExtResource("8_8d0wf")
+
+[node name="Active Debuffs" type="TextureRect" parent="Sprite2D"]
+offset_left = 25.0
+offset_top = 147.0
+offset_right = 73.0
+offset_bottom = 195.0
+texture = ExtResource("8_24fsp")
+
+[connection signal="input_event" from="." to="." method="_on_input_event"]
+[connection signal="mouse_entered" from="." to="." method="_on_mouse_entered"]
+[connection signal="mouse_exited" from="." to="." method="_on_mouse_exited"]
+[connection signal="tree_exited" from="." to="." method="_on_tree_exited"]
+[connection signal="mouse_entered" from="Sprite2D/Active Buffs" to="." method="_on_active_buffs_mouse_entered"]
+[connection signal="mouse_exited" from="Sprite2D/Active Buffs" to="." method="_on_active_buffs_mouse_exited"]
+[connection signal="mouse_entered" from="Sprite2D/Active Conditions" to="." method="_on_active_conditions_mouse_entered"]
+[connection signal="mouse_exited" from="Sprite2D/Active Conditions" to="." method="_on_active_conditions_mouse_exited"]
+[connection signal="mouse_entered" from="Sprite2D/Active Debuffs" to="." method="_on_active_debuffs_mouse_entered"]
+[connection signal="mouse_exited" from="Sprite2D/Active Debuffs" to="." method="_on_active_debuffs_mouse_exited"]

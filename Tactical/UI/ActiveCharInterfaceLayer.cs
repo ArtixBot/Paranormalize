@@ -54,6 +54,7 @@ public partial class ActiveCharInterfaceLayer : Control, IEventSubscriber, IEven
 			
 			GUIOrchestrator parent = (GUIOrchestrator) GetParent();
 			if (doClashProcessing){
+				// LINK - Tactical\UI\Abilities\AbilityButton.cs#emit-ability-selected
 				instance.AbilitySelected += (instance) => parent._on_child_clash_selection(instance.Ability);
 			} else {
 				instance.AbilitySelected += (instance) => parent._on_child_ability_selection(instance.Ability);

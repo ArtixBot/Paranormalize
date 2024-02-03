@@ -2,12 +2,18 @@
 	"BALESTRA_FENTE": {
 		"NAME": "Balestra Fente",
 		"STRINGS": {
-			"GENERIC": "On activate: Forward 3.",
-			"CRIT_DIE": "[color=#4cf]On [shake]critical[/shake] hit[/color]: Consume all Critical to deal +50% damage per Critical consumed."
+			"GENERIC": "[color=#4cf]On activate:[/color] Forward 3.",
+			"CRIT_DIE": "[color=#4cf]On [shake]critical[/shake] hit:[/color] Consume all Critical to deal +50% damage per Critical consumed."
 		}
 	},
 	"DISCHARGE": {
 		"NAME": "Discharge"
+	},
+	"IRON_SWAN": {
+		"NAME": "Iron Swan",
+		"STRINGS": {
+			"PULL_DIE": "[color=#4cf]On hit:[/color] Pull 2."
+		}
 	},
 	"TEST_REACT": {
 		"NAME": "Test Reaction"
@@ -32,6 +38,13 @@
 		"NAME": "Repartee",
 		"STRINGS": {
 			"CLASH_LOSS_DIE": "On clash lose: Discard all remaining dice on this ability."
+		}
+	},
+	"RETREAT": {
+		"NAME": "Retreat",
+		"STRINGS": {
+			"GENERIC": "[color=#4cf]On activate:[/color] Back 1.",
+			"EVADE_HASTE": "[color=#4cf]On [wave]evade[/wave]:[/color] Gain 1 Haste."
 		}
 	},
 	"PASS": {

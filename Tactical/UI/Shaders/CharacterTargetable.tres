@@ -1,0 +1,11 @@
+[gd_resource type="ShaderMaterial" load_steps=2 format=3 uid="uid://bmjyff6utlk6r"]
+
+[ext_resource type="Shader" path="res://Tactical/UI/Shaders/CharacterTargetable.gdshader" id="1_odtfs"]
+
+[resource]
+shader = ExtResource("1_odtfs")
+shader_parameter/color = Color(0.952941, 0.294118, 0, 1)
+shader_parameter/width = 5.0
+shader_parameter/pattern = 0
+shader_parameter/inside = false
+shader_parameter/add_margins = true
