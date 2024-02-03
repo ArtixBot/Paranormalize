@@ -7,6 +7,7 @@ public class ConditionStaggered : AbstractStatusEffect, IEventHandler<CombatEven
     public static string id = "STAGGERED";
     private static Localization.EffectStrings strings = Localization.LocalizationLibrary.Instance.GetEffectStrings(id);
 
+    public int UNSTAGGER_ROUND;        // Parsed in effects.json and StatusTooltip.cs.
     private int oldActionsPerTurn;
 
     public ConditionStaggered() : base(
@@ -19,6 +20,7 @@ public class ConditionStaggered : AbstractStatusEffect, IEventHandler<CombatEven
     public override void InitSubscriptions(){
         CombatManager.eventManager.Subscribe(CombatEventType.ON_TAKE_DAMAGE, this, CombatEventPriority.BASE_MULTIPLICATIVE);
         CombatManager.eventManager.Subscribe(CombatEventType.ON_ROUND_END, this, CombatEventPriority.STANDARD);
+        this.UNSTAGGER_ROUND = CombatManager.combatInstance.round + 2;
         this.oldActionsPerTurn = this.OWNER.ActionsPerTurn;
 
         this.OWNER.ActionsPerTurn = 0;

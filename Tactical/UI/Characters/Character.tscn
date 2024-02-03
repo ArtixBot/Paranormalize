@@ -80,7 +80,6 @@ bbcode_enabled = true
 text = "[font n='res://Assets/Jost-Medium.ttf' s=24]10[/font]"
 
 [node name="Active Buffs" type="TextureRect" parent="Sprite2D"]
-visible = false
 offset_left = -71.0
 offset_top = 147.0
 offset_right = -31.0
@@ -88,7 +87,6 @@ offset_bottom = 187.0
 texture = ExtResource("7_huj51")
 
 [node name="Active Conditions" type="TextureRect" parent="Sprite2D"]
-visible = false
 offset_left = -23.0
 offset_top = 147.0
 offset_right = 25.0
@@ -96,7 +94,6 @@ offset_bottom = 195.0
 texture = ExtResource("8_8d0wf")
 
 [node name="Active Debuffs" type="TextureRect" parent="Sprite2D"]
-visible = false
 offset_left = 25.0
 offset_top = 147.0
 offset_right = 73.0
@@ -106,4 +103,10 @@ texture = ExtResource("8_24fsp")
 [connection signal="input_event" from="." to="." method="_on_input_event"]
 [connection signal="mouse_entered" from="." to="." method="_on_mouse_entered"]
 [connection signal="mouse_exited" from="." to="." method="_on_mouse_exited"]
-[connection signal="tree_exited" from="Sprite2D/HP" to="." method="_on_hp_tree_exited"]
+[connection signal="tree_exited" from="." to="." method="_on_tree_exited"]
+[connection signal="mouse_entered" from="Sprite2D/Active Buffs" to="." method="_on_active_buffs_mouse_entered"]
+[connection signal="mouse_exited" from="Sprite2D/Active Buffs" to="." method="_on_active_buffs_mouse_exited"]
+[connection signal="mouse_entered" from="Sprite2D/Active Conditions" to="." method="_on_active_conditions_mouse_entered"]
+[connection signal="mouse_exited" from="Sprite2D/Active Conditions" to="." method="_on_active_conditions_mouse_exited"]
+[connection signal="mouse_entered" from="Sprite2D/Active Debuffs" to="." method="_on_active_debuffs_mouse_entered"]
+[connection signal="mouse_exited" from="Sprite2D/Active Debuffs" to="." method="_on_active_debuffs_mouse_exited"]

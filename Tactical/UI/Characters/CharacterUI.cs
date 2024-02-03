@@ -18,9 +18,13 @@ public partial class CharacterUI : Area2D, IEventSubscriber, IEventHandler<Comba
 	public Sprite2D Sprite;
 	private Label HPStat;
 	private RichTextLabel PoiseStat;
+	
 	private TextureRect activeBuffs;
 	private TextureRect activeConditions;
 	private TextureRect activeDebuffs;
+
+	private readonly PackedScene statusTooltip = GD.Load<PackedScene>("res://Tactical/UI/Tooltip.tscn");
+	private StatusTooltip statusTooltipInstance;
 
 	private bool _IsClickable;
 	public bool IsClickable {
@@ -70,8 +74,50 @@ public partial class CharacterUI : Area2D, IEventSubscriber, IEventHandler<Comba
 		}
 	}
 
-	public void _on_hp_tree_exited(){
+	public void _on_tree_exited(){
 		CombatManager.eventManager?.UnsubscribeAll(this);
+	}
+
+	public void _on_active_buffs_mouse_entered(){
+		StatusTooltip tooltipNode = (StatusTooltip) statusTooltip.Instantiate();
+		AddChild(tooltipNode);
+		tooltipNode.Effects = this.Character.statusEffects.Where(effect => effect.TYPE == StatusEffectType.BUFF).ToList();
+		tooltipNode.SetPosition(new Vector2(100, 300));
+
+		statusTooltipInstance = tooltipNode;
+	}
+
+	public void _on_active_conditions_mouse_entered(){
+		StatusTooltip tooltipNode = (StatusTooltip) statusTooltip.Instantiate();
+		AddChild(tooltipNode);
+		tooltipNode.Effects = this.Character.statusEffects.Where(effect => effect.TYPE == StatusEffectType.CONDITION).ToList();
+		tooltipNode.SetPosition(new Vector2(100, 300));
+
+		statusTooltipInstance = tooltipNode;
+	}
+
+	public void _on_active_debuffs_mouse_entered(){
+		StatusTooltip tooltipNode = (StatusTooltip) statusTooltip.Instantiate();
+		AddChild(tooltipNode);
+		tooltipNode.Effects = this.Character.statusEffects.Where(effect => effect.TYPE == StatusEffectType.DEBUFF).ToList();
+		tooltipNode.SetPosition(new Vector2(100, 300));
+
+		statusTooltipInstance = tooltipNode;
+	}
+
+	public void _on_active_buffs_mouse_exited(){
+		if (!IsInstanceValid(statusTooltipInstance)){ return; }
+		statusTooltipInstance.QueueFree();
+	}
+
+	public void _on_active_conditions_mouse_exited(){
+		if (!IsInstanceValid(statusTooltipInstance)){ return; }
+		statusTooltipInstance.QueueFree();
+	}
+
+	public void _on_active_debuffs_mouse_exited(){
+		if (!IsInstanceValid(statusTooltipInstance)){ return; }
+		statusTooltipInstance.QueueFree();
 	}
 
 	private void UpdateStatsText(){
