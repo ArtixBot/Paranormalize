@@ -3,6 +3,10 @@
 		"NAME": "Haste",
 		"DESC": "On round start, increase the Speed of {owner}'s actions by {stacks}, then remove all Haste."
 	},
+	"SLOW": {
+		"NAME": "Slow",
+		"DESC": "On round start, reduce the Speed of {owner}'s actions by {stacks}, then remove all Haste."
+	},
 	"STAGGERED": {
 		"NAME": "Staggered",
 		"DESC": "Cannot take actions. All incoming damage is doubled.\nThis effect wears off at the start of round {UNSTAGGER_ROUND}."
