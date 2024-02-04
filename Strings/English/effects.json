@@ -5,7 +5,7 @@
 	},
 	"SLOW": {
 		"NAME": "Slow",
-		"DESC": "On round start, reduce the Speed of {owner}'s actions by {stacks}, then remove all Haste."
+		"DESC": "On round start, reduce the Speed of {owner}'s actions by {stacks}, then remove all Slow."
 	},
 	"STAGGERED": {
 		"NAME": "Staggered",

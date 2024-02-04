@@ -1,4 +1,4 @@
-[gd_scene load_steps=5 format=3 uid="uid://cdon4x8pubue0"]
+[gd_scene load_steps=6 format=3 uid="uid://cdon4x8pubue0"]
 
 [ext_resource type="PackedScene" uid="uid://yyhqttdpvpjw" path="res://Tactical/UI/ActiveCharInterfaceLayer.tscn" id="1_4hy55"]
 [ext_resource type="Script" path="res://Tactical/UI/GUIOrchestrator.cs" id="1_7ak4a"]
@@ -7,6 +7,10 @@
 [sub_resource type="LabelSettings" id="LabelSettings_a110w"]
 font = ExtResource("6_xeyi2")
 font_size = 32
+
+[sub_resource type="LabelSettings" id="LabelSettings_b8ixw"]
+font = ExtResource("6_xeyi2")
+font_size = 46
 
 [node name="GUI" type="Control"]
 layout_mode = 3
@@ -34,6 +38,7 @@ offset_right = 193.0
 offset_bottom = 169.0
 text = "Round
 X"
+label_settings = SubResource("LabelSettings_b8ixw")
 horizontal_alignment = 1
 
 [node name="Turn List" type="Label" parent="."]
