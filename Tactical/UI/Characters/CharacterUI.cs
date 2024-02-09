@@ -132,10 +132,10 @@ public partial class CharacterUI : Area2D, IEventSubscriber, IEventHandler<Comba
 	private void UpdateSprite(){
 		if (Character == null || Sprite == null) {return;}
 		if (Character.CHAR_FACTION == CharacterFaction.PLAYER){
-			Sprite.Texture = ResourceLoader.Load<Texture2D>("res://Sprites/character.png");
+			Sprite.Texture = ResourceLoader.Load<Texture2D>("res://Sprites/Characters/character.png");
 		}
 		if (Character.CHAR_FACTION == CharacterFaction.ENEMY){
-			Sprite.Texture = ResourceLoader.Load<Texture2D>("res://Sprites/target dummy.png");
+			Sprite.Texture = ResourceLoader.Load<Texture2D>("res://Sprites/Characters/target dummy.png");
 		}
 	}
 

@@ -1,7 +1,6 @@
-[gd_scene load_steps=3 format=3 uid="uid://c3lqs0jnxwurh"]
+[gd_scene load_steps=2 format=3 uid="uid://c3lqs0jnxwurh"]
 
-[ext_resource type="Texture2D" uid="uid://hjip720kdtvv" path="res://Sprites/character.png" id="1_rrnrr"]
-[ext_resource type="Texture2D" uid="uid://cw8bqtm7wcp60" path="res://Sprites/target dummy.png" id="2_nnr7k"]
+[ext_resource type="Texture2D" uid="uid://hjip720kdtvv" path="res://Sprites/Characters/character.png" id="2_8oy02"]
 
 [node name="Clash Stage" type="Control"]
 layout_mode = 3
@@ -60,18 +59,7 @@ grow_vertical = 2
 mouse_filter = 2
 color = Color(0.407843, 0.407843, 0.407843, 0.337255)
 
-[node name="TextureRect" type="TextureRect" parent="."]
-layout_mode = 0
-offset_left = 246.0
-offset_top = 179.0
-offset_right = 766.0
-offset_bottom = 616.0
-texture = ExtResource("1_rrnrr")
-
-[node name="TextureRect2" type="TextureRect" parent="."]
-layout_mode = 0
-offset_left = 1095.0
-offset_top = 179.0
-offset_right = 1615.0
-offset_bottom = 616.0
-texture = ExtResource("2_nnr7k")
+[node name="Sprite2D" type="Sprite2D" parent="."]
+position = Vector2(510, 396)
+scale = Vector2(4.34286, 2.195)
+texture = ExtResource("2_8oy02")
