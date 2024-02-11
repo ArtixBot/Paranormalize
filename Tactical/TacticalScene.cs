@@ -9,14 +9,15 @@ public partial class TacticalScene : Node2D, IEventSubscriber, IEventHandler<Com
 	public readonly CombatInstance combatData;
 	private readonly PackedScene charScene = GD.Load<PackedScene>("res://Tactical/UI/Characters/Character.tscn");
 	private readonly PackedScene laneScene = GD.Load<PackedScene>("res://Tactical/UI/Lane.tscn");
+	private readonly PackedScene clashScene = GD.Load<PackedScene>("res://Tactical/UI/ClashStage.tscn");
 
 	public Dictionary<AbstractCharacter, CharacterUI> characterToNodeMap = new();
+	public Dictionary<AbstractCharacter, Dictionary<string, Texture2D>> characterToPoseMap = new();
 	public Dictionary<int, Lane> laneToNodeMap = new();
 
 	private GUIOrchestrator GUIOrchestratorNode;
 
 	private CanvasLayer animationStage;
-	private ClashStage clashStage;
 
 	public TacticalScene(){
 		// TODO: Remove, this is for debugging. Should be done on game end before loading into the scene.
@@ -27,7 +28,6 @@ public partial class TacticalScene : Node2D, IEventSubscriber, IEventHandler<Com
 	public override void _Ready(){
 		GUIOrchestratorNode = GetNode<GUIOrchestrator>("HUD/GUI");
 		animationStage = GetNode<CanvasLayer>("AnimationStage");
-		clashStage = GetNode<ClashStage>("AnimationStage/Clash Stage");
 
 		InitSubscriptions();
 		CombatManager.ChangeCombatState(CombatState.COMBAT_START);
@@ -63,6 +63,7 @@ public partial class TacticalScene : Node2D, IEventSubscriber, IEventHandler<Com
 			charNode.Name = fighter.CHAR_NAME;
 			charNode.Character = fighter;
 			characterToNodeMap[fighter] = charNode;
+			characterToPoseMap[fighter] = charNode.Poses;
 
 			charNode.CharacterSelected += (charNode) => GUIOrchestratorNode._on_child_character_selection(charNode.Character);
 			this.AddChild(charNode);
@@ -76,7 +77,11 @@ public partial class TacticalScene : Node2D, IEventSubscriber, IEventHandler<Com
 
 		if (data.newState == CombatState.RESOLVE_ABILITIES){
 			if (CombatManager.combatInstance?.activeAbility.TYPE == AbilityType.SPECIAL){ return; }
-			if (!IsInstanceValid(animationStage) || !IsInstanceValid(clashStage)){ return; }
+			if (!IsInstanceValid(animationStage)){ return; }
+
+			ClashStage clashStage = (ClashStage) clashScene.Instantiate();
+			clashStage.Name = "Clash Stage";
+			animationStage.AddChild(clashStage);
 
 			clashStage.initiatorData = CombatManager.combatInstance?.activeChar;
 			clashStage.targetData = CombatManager.combatInstance?.activeAbilityTargets;
@@ -103,6 +108,7 @@ public partial class TacticalScene : Node2D, IEventSubscriber, IEventHandler<Com
         }
 
 		animationStage.Visible = false;
+		animationStage.GetNode("Clash Stage").QueueFree();
 		return true;
 	}
 }
