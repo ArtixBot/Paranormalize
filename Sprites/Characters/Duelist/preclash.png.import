@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://ktsgu2qovyik"
-path="res://.godot/imported/test-dummy.png-4f2d0f1bf0e871c8654056af7c46afbe.ctex"
+uid="uid://buo3g2eppj3vc"
+path="res://.godot/imported/preclash.png-81513f590d406d7cbe32b397d691dd89.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Sprites/Characters/test-dummy.png"
-dest_files=["res://.godot/imported/test-dummy.png-4f2d0f1bf0e871c8654056af7c46afbe.ctex"]
+source_file="res://Sprites/Characters/Duelist/preclash.png"
+dest_files=["res://.godot/imported/preclash.png-81513f590d406d7cbe32b397d691dd89.ctex"]
 
 [params]
 

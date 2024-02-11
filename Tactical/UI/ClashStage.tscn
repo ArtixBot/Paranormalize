@@ -1,7 +1,7 @@
 [gd_scene load_steps=7 format=3 uid="uid://c3lqs0jnxwurh"]
 
 [ext_resource type="Script" path="res://Tactical/UI/ClashStage.cs" id="1_7vhj7"]
-[ext_resource type="Texture2D" uid="uid://buo3g2eppj3vc" path="res://Sprites/Characters/Duelist/duelist prepare clash.png" id="1_whqbb"]
+[ext_resource type="Texture2D" uid="uid://buo3g2eppj3vc" path="res://Sprites/Characters/Duelist/preclash.png" id="2_lwiga"]
 
 [sub_resource type="Animation" id="Animation_kph4i"]
 length = 0.001
@@ -118,7 +118,7 @@ color = Color(0.407843, 0.407843, 0.407843, 0.337255)
 [node name="Initiator" type="Sprite2D" parent="."]
 position = Vector2(510, 396)
 scale = Vector2(1.39185, 1.10219)
-texture = ExtResource("1_whqbb")
+texture = ExtResource("2_lwiga")
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="Initiator"]
 libraries = {

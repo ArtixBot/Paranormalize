@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://cgahqx7iimy2f"
-path="res://.godot/imported/duelist.png-6737b77f65bea1875e86b85402bf0296.ctex"
+path="res://.godot/imported/idle.png-2f66e5bfb3405bf4d65248242a910bc9.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Sprites/Characters/Duelist/duelist.png"
-dest_files=["res://.godot/imported/duelist.png-6737b77f65bea1875e86b85402bf0296.ctex"]
+source_file="res://Sprites/Characters/Duelist/idle.png"
+dest_files=["res://.godot/imported/idle.png-2f66e5bfb3405bf4d65248242a910bc9.ctex"]
 
 [params]
 

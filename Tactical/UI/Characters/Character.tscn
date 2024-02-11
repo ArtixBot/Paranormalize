@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" path="res://Tactical/UI/Characters/CharacterUI.cs" id="1_rw5qx"]
 [ext_resource type="Material" uid="uid://bmjyff6utlk6r" path="res://Tactical/UI/Shaders/CharacterTargetable.tres" id="2_1jib3"]
-[ext_resource type="Texture2D" uid="uid://cgahqx7iimy2f" path="res://Sprites/Characters/Duelist/duelist.png" id="3_qjqxq"]
+[ext_resource type="Texture2D" uid="uid://cgahqx7iimy2f" path="res://Sprites/Characters/Duelist/idle.png" id="3_qjqxq"]
 [ext_resource type="Texture2D" uid="uid://hyuxr3tkronx" path="res://Sprites/hp-icon.png" id="4_amh2p"]
 [ext_resource type="FontFile" uid="uid://bbbh26n3nsxrr" path="res://Assets/Jost-Medium.ttf" id="5_sb5mm"]
 [ext_resource type="Texture2D" uid="uid://c18usxa0wmir4" path="res://Sprites/poise-icon.png" id="6_inseb"]

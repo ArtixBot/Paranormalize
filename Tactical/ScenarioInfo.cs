@@ -25,7 +25,7 @@ public class TestScenario : ScenarioInfo {
         // (playerB, 2),
         (characterB, 4),
         (characterC, 5),
-        (characterD, 6),
+        (characterD, 1),
     };
 
     public TestScenario() : base(scenarioFighters){
