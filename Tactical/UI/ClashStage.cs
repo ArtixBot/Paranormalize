@@ -28,6 +28,7 @@ public partial class ClashStage : Control {
 		tacticalSceneNode = (TacticalScene) GetParent().GetParent();
 		if (!IsInstanceValid(tacticalSceneNode)) return;
 
+		initiator.Texture = tacticalSceneNode.characterToNodeMap[initiatorData].Poses["preclash"];
 		// If the majority of targets are to the right of the initiator, place the initiator on the left side; and vice-versa.
 		// If initiator + all targets are in the same lane, place the initiator on the left if the initiator is a player, else on the right for an enemy.
 		// If initiator is targeting self only, place initiator in the middle.
