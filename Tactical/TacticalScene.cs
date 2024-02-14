@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using UI;
 
-public partial class TacticalScene : Node2D, IEventSubscriber, IEventHandler<CombatEventCombatStart>, IEventHandler<CombatEventCombatStateChanged>, IEventHandler<CombatEventCharacterDeath>
+public partial class TacticalScene : Node2D, IEventSubscriber, IEventHandler<CombatEventCombatStart>, IEventHandler<CombatEventCombatStateChanged>, IEventHandler<CombatEventCharacterDeath>, IEventHandler<CombatEventDieHit>, IEventHandler<CombatEventClashTie>
 {
 	public readonly CombatInstance combatData;
 	private readonly PackedScene charScene = GD.Load<PackedScene>("res://Tactical/UI/Characters/Character.tscn");
@@ -39,6 +39,8 @@ public partial class TacticalScene : Node2D, IEventSubscriber, IEventHandler<Com
 		CombatManager.eventManager.Subscribe(CombatEventType.ON_ROUND_START, this, CombatEventPriority.UI);
 		CombatManager.eventManager.Subscribe(CombatEventType.ON_TURN_START, this, CombatEventPriority.UI);
 		CombatManager.eventManager.Subscribe(CombatEventType.ON_ABILITY_ACTIVATED, this, CombatEventPriority.UI);
+		CombatManager.eventManager.Subscribe(CombatEventType.ON_DIE_HIT, this, CombatEventPriority.UI);
+		CombatManager.eventManager.Subscribe(CombatEventType.ON_CLASH_TIE, this, CombatEventPriority.UI);
 		CombatManager.eventManager.Subscribe(CombatEventType.ON_COMBAT_STATE_CHANGE, this, CombatEventPriority.UI);
     }
 
@@ -70,7 +72,7 @@ public partial class TacticalScene : Node2D, IEventSubscriber, IEventHandler<Com
 		}
 	}
 
-	public async void HandleEvent(CombatEventCombatStateChanged data){
+	public void HandleEvent(CombatEventCombatStateChanged data){
 		foreach (CharacterUI charUI in characterToNodeMap.Values){
 			charUI.Position = new Vector2(150 + (charUI.Character.Position - 1) * 300, 500);
 		}
@@ -87,9 +89,24 @@ public partial class TacticalScene : Node2D, IEventSubscriber, IEventHandler<Com
 			clashStage.targetData = CombatManager.combatInstance?.activeAbilityTargets;
 			clashStage.SetupStage();
 			animationStage.Visible = true;
-
-			await RemoveStage(1f);
 		}
+	}
+
+	public void HandleEvent(CombatEventDieHit data){
+		if (!IsInstanceValid(animationStage.GetNode("Clash Stage"))) return;
+		AbstractCharacter hitter = data.hitter;
+		ClashStage clashStage = (ClashStage) animationStage.GetNode("Clash Stage");
+
+		clashStage.QueueAnimation(hitter, "slash");
+	}
+
+	public void HandleEvent(CombatEventClashTie data){
+		if (!IsInstanceValid(animationStage.GetNode("Clash Stage"))) return;
+		AbstractCharacter hitter = CombatManager.combatInstance?.activeChar;
+		if (hitter == null) return;
+		ClashStage clashStage = (ClashStage) animationStage.GetNode("Clash Stage");
+
+		clashStage.QueueAnimation(hitter, "preclash");
 	}
 
 	public void HandleEvent(CombatEventCharacterDeath data){
@@ -98,17 +115,5 @@ public partial class TacticalScene : Node2D, IEventSubscriber, IEventHandler<Com
 
 		this.RemoveChild(charUI);
 		characterToNodeMap.Remove(data.deadChar);
-	}
-
-	public async Task<bool> RemoveStage(float duration){
-		float currentTime = 0f;
-		while (currentTime <= duration){
-			await Task.Delay(1);
-            currentTime += (float)GetProcessDeltaTime();		// Not using PhysicsProcess since this is graphical effect only.
-        }
-
-		animationStage.Visible = false;
-		animationStage.GetNode("Clash Stage").QueueFree();
-		return true;
 	}
 }

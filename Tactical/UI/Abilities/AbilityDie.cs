@@ -37,7 +37,7 @@ public partial class AbilityDie : Control
 			case DieType.BLUNT:
 				DieImage.Texture = ResourceLoader.Load<Texture2D>("res://Sprites/die - blunt.png");
 				break;
-			case DieType.MAGIC:
+			case DieType.ELDRITCH:
 			case DieType.BLOCK:
 				DieImage.Texture = ResourceLoader.Load<Texture2D>("res://Sprites/die - block.png");
 				break;

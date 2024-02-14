@@ -1,7 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 
-public enum DieType {SLASH, PIERCE, BLUNT, MAGIC, BLOCK, EVADE, UNIQUE};
+public enum DieType {SLASH, PIERCE, BLUNT, ELDRITCH, BLOCK, EVADE, UNIQUE};
 
 /*
     The Die struct forms the basis for the entire combat system.
@@ -24,7 +24,7 @@ public readonly struct Die {
         _dieType = dieType;
         _minValue = minValue;
         _maxValue = maxValue;
-        IsAttackDie = this._dieType == DieType.SLASH || this._dieType == DieType.PIERCE || this._dieType == DieType.BLUNT || this._dieType == DieType.MAGIC;
+        IsAttackDie = this._dieType == DieType.SLASH || this._dieType == DieType.PIERCE || this._dieType == DieType.BLUNT || this._dieType == DieType.ELDRITCH;
         IsDefenseDie = this._dieType == DieType.BLOCK || this._dieType == DieType.EVADE;
     }    
     public readonly int Roll(){

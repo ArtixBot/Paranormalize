@@ -351,11 +351,13 @@ public class CombatEventDamageTaken : ICombatEvent {
         get {return CombatEventType.ON_TAKE_DAMAGE;}
     }
     public AbstractCharacter target;
+    public DamageType damageType;
     public float damageTaken;
     public bool isPoiseDamage;
 
-    public CombatEventDamageTaken(AbstractCharacter target, float damageTaken, bool isPoiseDamage){
+    public CombatEventDamageTaken(AbstractCharacter target, DamageType damageType, float damageTaken, bool isPoiseDamage){
         this.target = target;
+        this.damageType = damageType;
         this.damageTaken = damageTaken;
         this.isPoiseDamage = isPoiseDamage;
     }

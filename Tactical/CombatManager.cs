@@ -333,16 +333,28 @@ public static class CombatManager {
     private static void ResolveDieRoll(AbstractCharacter roller, AbstractCharacter target, Die die, int naturalRoll, int actualRoll, bool rolledDuringClash, bool losingDieWasAttack){
         switch (die.DieType){
             case DieType.SLASH:
+                CombatManager.ExecuteAction(new DamageAction(roller, target, DamageType.SLASH, actualRoll, isPoiseDamage: false));
+                CombatManager.ExecuteAction(new DamageAction(roller, target, DamageType.SLASH, actualRoll, isPoiseDamage: true));
+                eventManager.BroadcastEvent(new CombatEventDieHit(roller, target, die, naturalRoll, actualRoll));
+                break;
             case DieType.PIERCE:
+                CombatManager.ExecuteAction(new DamageAction(roller, target, DamageType.PIERCE, actualRoll, isPoiseDamage: false));
+                CombatManager.ExecuteAction(new DamageAction(roller, target, DamageType.PIERCE, actualRoll, isPoiseDamage: true));
+                eventManager.BroadcastEvent(new CombatEventDieHit(roller, target, die, naturalRoll, actualRoll));
+                break;
             case DieType.BLUNT:
-            case DieType.MAGIC:
-                CombatManager.ExecuteAction(new DamageAction(roller, target, actualRoll, isPoiseDamage: false));
-                CombatManager.ExecuteAction(new DamageAction(roller, target, actualRoll, isPoiseDamage: true));
+                CombatManager.ExecuteAction(new DamageAction(roller, target, DamageType.BLUNT, actualRoll, isPoiseDamage: false));
+                CombatManager.ExecuteAction(new DamageAction(roller, target, DamageType.BLUNT, actualRoll, isPoiseDamage: true));
+                eventManager.BroadcastEvent(new CombatEventDieHit(roller, target, die, naturalRoll, actualRoll));
+                break;
+            case DieType.ELDRITCH:
+                CombatManager.ExecuteAction(new DamageAction(roller, target, DamageType.ELDRITCH, actualRoll, isPoiseDamage: false));
+                CombatManager.ExecuteAction(new DamageAction(roller, target, DamageType.ELDRITCH, actualRoll, isPoiseDamage: true));
                 eventManager.BroadcastEvent(new CombatEventDieHit(roller, target, die, naturalRoll, actualRoll));
                 break;
             case DieType.BLOCK:
                 if (!rolledDuringClash) break;
-                CombatManager.ExecuteAction(new DamageAction(roller, target, actualRoll, isPoiseDamage: true));
+                CombatManager.ExecuteAction(new DamageAction(roller, target, DamageType.PURE, actualRoll, isPoiseDamage: true));
                 break;
             case DieType.EVADE:
                 if (!rolledDuringClash) break;

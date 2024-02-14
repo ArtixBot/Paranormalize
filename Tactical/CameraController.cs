@@ -15,16 +15,6 @@ public partial class CameraController : Camera2D
 		this.Position = new Vector2(960, 540);
 	}
 
-	// TODO: Remove this, this is for testing purposes only.
-	public override async void _Input(InputEvent @event)
-	{
-		if (@event is InputEventKey keyEvent && keyEvent.Pressed){
-			if (keyEvent.Keycode == Key.T){
-				await CinematicZoom(0.1f, 0.5f);
-			}
-		}
-	}
-
 	private bool isCinematic = false;
 
     public async Task<bool> CinematicZoom(float zoomAmount, float duration){

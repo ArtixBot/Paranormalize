@@ -1,16 +1,27 @@
 using System.Diagnostics;
 using Godot;
 
+public enum DamageType {
+    BLUNT,
+    PIERCE,
+    SLASH,
+    ELDRITCH,
+    PURE        // Reserved for effects like DoTs (Bleed, Burn, etc.) and Poise stagger damage dealt from Block dice.
+}
+
 public class DamageAction : AbstractAction {
+
 
     private AbstractCharacter attacker;
     private AbstractCharacter defender;
+    private DamageType damageType;
     private int damage;
     private bool isPoiseDamage;
 
-    public DamageAction(AbstractCharacter attacker, AbstractCharacter defender, int damage, bool isPoiseDamage){
+    public DamageAction(AbstractCharacter attacker, AbstractCharacter defender, DamageType damageType, int damage, bool isPoiseDamage){
         this.attacker = attacker;
         this.defender = defender;
+        this.damageType = damageType;
         this.damage = damage;
         this.isPoiseDamage = isPoiseDamage;
     }
@@ -25,7 +36,7 @@ public class DamageAction : AbstractAction {
 
         // Note that CombatEventDamageTaken does calculations of this.damage as a float.
         // This accounts for cases like a +50% and +100% damage multiplier, which is 3 * 1.5 => 4.5 * 2 => 9.
-        CombatEventDamageTaken damageData = new(this.defender, this.damage, this.isPoiseDamage);
+        CombatEventDamageTaken damageData = new(this.defender, this.damageType, this.damage, this.isPoiseDamage);
         CombatManager.eventManager.BroadcastEvent(damageData);
 
         // The final value always takes the floor (no rounding up).
