@@ -113,7 +113,8 @@ public partial class ClashStage : Control {
 		float currentTime = 0f;
         Sprite2D afterimgSprite = new(){
             Texture = parent.Texture,
-			FlipH = parent.FlipH
+            FlipH = parent.FlipH,
+            ZIndex = parent.ZIndex - 1
         };
         parent.AddChild(afterimgSprite);
 		// Use vectors so we can use Godot's in-built Lerp function.
