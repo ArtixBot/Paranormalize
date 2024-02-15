@@ -97,7 +97,21 @@ public partial class TacticalScene : Node2D, IEventSubscriber, IEventHandler<Com
 		AbstractCharacter hitter = data.hitter;
 		ClashStage clashStage = (ClashStage) animationStage.GetNode("Clash Stage");
 
-		clashStage.QueueAnimation(hitter, "slash");
+		// TODO: Queue animation based on die type *other* than only slash.
+		switch (data.die.DieType){
+			case DieType.PIERCE:
+				clashStage.QueueAnimation(hitter, "pierce");
+				break;
+			case DieType.BLUNT:
+				clashStage.QueueAnimation(hitter, "blunt");
+				break;
+			case DieType.SLASH:
+				clashStage.QueueAnimation(hitter, "slash");
+				break;
+			default:
+				clashStage.QueueAnimation(hitter, "slash");
+				break;
+		}
 	}
 
 	public void HandleEvent(CombatEventClashTie data){
@@ -106,6 +120,7 @@ public partial class TacticalScene : Node2D, IEventSubscriber, IEventHandler<Com
 		if (hitter == null) return;
 		ClashStage clashStage = (ClashStage) animationStage.GetNode("Clash Stage");
 
+		// TODO: Queue animation based on die type *other* than only preclash?
 		clashStage.QueueAnimation(hitter, "preclash");
 	}
 

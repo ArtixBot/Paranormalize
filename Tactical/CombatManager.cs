@@ -99,7 +99,7 @@ public static class CombatManager {
                     List<AbstractAbility> reactableAbilities = CombatManager.GetEligibleReactions(ai);
                     
                     // Get unit's first intended reaction intent. If there's nothing, don't clash.
-                    AbstractAbility reactionIntent = ai.Behavior?.reactions.First();
+                    AbstractAbility reactionIntent = ai.Behavior?.reactions.FirstOrDefault();
                     if (reactableAbilities.Contains(reactionIntent)){
                         InputAbility(reactionIntent, new List<AbstractCharacter>{combatInstance.activeChar});
                     } else {

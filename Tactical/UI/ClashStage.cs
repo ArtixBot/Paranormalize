@@ -2,6 +2,7 @@ using Godot;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 public partial class ClashStage : Control {
 
@@ -12,9 +13,9 @@ public partial class ClashStage : Control {
 	public Sprite2D initiator;
 	public List<Sprite2D> targets = new();
 
-	public Dictionary<AbstractCharacter, Sprite2D> dataToSpriteMap = new();
+	public Dictionary<string, Sprite2D> dataToSpriteMap = new();
 	public Dictionary<Sprite2D, List<Texture2D>> spriteQueuedPoses = new();
-	public float delayBetweenPoses = 0.35f;
+	public float delayBetweenPoses = 1.0f;
 	private float timeSinceDelay;
 
 	private bool isSetup = false;
@@ -34,6 +35,7 @@ public partial class ClashStage : Control {
 			bool stageCompleted = true; 
 			foreach (KeyValuePair<Sprite2D, List<Texture2D>> spritePose in spriteQueuedPoses){
 				if (spritePose.Value.Count == 0) continue;
+                _ = SpawnAfterimg(spritePose.Key, 0.25f);
 				spritePose.Key.Texture = spritePose.Value[0];
 				spritePose.Value.RemoveAt(0);
 				stageCompleted = false;		// If an animation played, don't delete the animations yet.
@@ -51,7 +53,7 @@ public partial class ClashStage : Control {
 		tacticalSceneNode = (TacticalScene) GetParent().GetParent();
 		if (!IsInstanceValid(tacticalSceneNode)) return;
 
-		dataToSpriteMap[initiatorData] = initiator;
+		dataToSpriteMap[initiatorData.CHAR_NAME] = initiator;
 
 		foreach(AbstractCharacter target in targetData){
 			if (target == initiatorData) continue;
@@ -60,7 +62,7 @@ public partial class ClashStage : Control {
             };
             AddChild(targetSprite);
 			targets.Add(targetSprite);
-			dataToSpriteMap[target] = targetSprite;
+			dataToSpriteMap[target.CHAR_NAME] = targetSprite;
 		}
 
 		initiator.Texture = tacticalSceneNode.characterToPoseMap[initiatorData].GetValueOrDefault("preclash", GD.Load<Texture2D>("res://Sprites/Characters/no pose found.png"));
@@ -80,9 +82,8 @@ public partial class ClashStage : Control {
 		isSetup = true;
 	}
 
-	public void QueueAnimation(AbstractCharacter character, string poseToSwapTo, float afterimgDur = 0.25f){
-		Sprite2D charSprite = dataToSpriteMap[character];
-		Texture2D oldPose = charSprite.Texture;			// TODO: Create afterimage effect using afterimgDur.
+	public void QueueAnimation(AbstractCharacter character, string poseToSwapTo){
+		Sprite2D charSprite = dataToSpriteMap[character.CHAR_NAME];
 		Texture2D newPose;
 		try {
 			newPose = tacticalSceneNode.characterToPoseMap[character][poseToSwapTo];
@@ -94,5 +95,30 @@ public partial class ClashStage : Control {
 			spriteQueuedPoses[charSprite] = new List<Texture2D>();
 		}
 		spriteQueuedPoses[charSprite].Add(newPose);
+	}
+
+	private async Task<bool> SpawnAfterimg(Sprite2D parent, float duration){
+		float currentTime = 0f;
+        Sprite2D afterimgSprite = new(){
+            Texture = parent.Texture,
+			FlipH = parent.FlipH
+        };
+        parent.AddChild(afterimgSprite);
+		// Use vectors so we can use Godot's in-built Lerp function.
+		Vector2 startModulateAlpha = new Vector2(1.0f, 0.0f);
+		Vector2 endModulateAlpha = new Vector2(0f, 0.0f);
+		Color afterimgColor = new Color(0.5f, 0.5f, 0.5f, 1.0f);
+		afterimgSprite.Modulate = afterimgColor;
+
+		while (currentTime <= duration){
+			float normalized = Math.Min((float)(currentTime / duration), 1.0f);
+			afterimgColor.A = startModulateAlpha.Lerp(endModulateAlpha, normalized).X;
+			afterimgSprite.Modulate = afterimgColor;
+
+			await Task.Delay(1);
+            currentTime += (float)GetProcessDeltaTime();		// Not using PhysicsProcess since this is graphical effect only.
+		}
+		afterimgSprite.QueueFree();
+		return true;
 	}
 }
