@@ -67,6 +67,16 @@ grow_vertical = 2
 mouse_filter = 2
 script = ExtResource("1_7vhj7")
 
+[node name="Initiator" type="Sprite2D" parent="."]
+position = Vector2(510, 396)
+scale = Vector2(1.39185, 1.10219)
+texture = ExtResource("2_lwiga")
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="Initiator"]
+libraries = {
+"": SubResource("AnimationLibrary_1rda7")
+}
+
 [node name="Clash BG" type="ColorRect" parent="."]
 layout_mode = 1
 anchors_preset = 12
@@ -78,7 +88,7 @@ grow_horizontal = 2
 grow_vertical = 0
 color = Color(0.0862745, 0.0862745, 0.0862745, 1)
 
-[node name="Player Ability Title" type="RichTextLabel" parent="Clash BG"]
+[node name="LHS Ability Title" type="RichTextLabel" parent="Clash BG"]
 layout_mode = 1
 offset_left = 315.0
 offset_top = 15.0
@@ -88,7 +98,7 @@ bbcode_enabled = true
 text = "[right][font n=Assets/AlegreyaSans-Regular.ttf s=42]Relentless Stabbing[/font][/right]"
 fit_content = true
 
-[node name="Enemy Ability Title" type="RichTextLabel" parent="Clash BG"]
+[node name="RHS Ability Title" type="RichTextLabel" parent="Clash BG"]
 layout_mode = 1
 anchors_preset = 1
 anchor_left = 1.0
@@ -114,13 +124,3 @@ grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
 color = Color(0.407843, 0.407843, 0.407843, 0.337255)
-
-[node name="Initiator" type="Sprite2D" parent="."]
-position = Vector2(510, 396)
-scale = Vector2(1.39185, 1.10219)
-texture = ExtResource("2_lwiga")
-
-[node name="AnimationPlayer" type="AnimationPlayer" parent="Initiator"]
-libraries = {
-"": SubResource("AnimationLibrary_1rda7")
-}

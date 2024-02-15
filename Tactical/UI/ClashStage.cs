@@ -10,12 +10,15 @@ public partial class ClashStage : Control {
 	public List<AbstractCharacter> targetData;
 
 	public TacticalScene tacticalSceneNode;
+
 	public Sprite2D initiator;
 	public List<Sprite2D> targets = new();
-
 	public Dictionary<string, Sprite2D> dataToSpriteMap = new();
 	public Dictionary<Sprite2D, List<Texture2D>> spriteQueuedPoses = new();
-	public float delayBetweenPoses = 1.0f;
+	public RichTextLabel lhsAbilityTitle;
+	public RichTextLabel rhsAbilityTitle;
+
+	public float delayBetweenPoses = 0.5f;
 	private float timeSinceDelay;
 
 	private bool isSetup = false;
@@ -23,6 +26,8 @@ public partial class ClashStage : Control {
 	// Called when the node enters the scene tree for the first time.
 	public override void _Ready(){
 		initiator = GetNode<Sprite2D>("Initiator");
+		lhsAbilityTitle = GetNode<RichTextLabel>("Clash BG/LHS Ability Title");
+		rhsAbilityTitle = GetNode<RichTextLabel>("Clash BG/RHS Ability Title");
 	}
 
 	// Called every frame. 'delta' is the elapsed time since the previous frame.
@@ -74,6 +79,13 @@ public partial class ClashStage : Control {
 		bool initiatorOnLeftHalf = initiatorPos < targetAvgPos || (initiatorPos == targetAvgPos && initiatorData.CHAR_FACTION == CharacterFaction.PLAYER);
 		initiator.Position = initiatorOnLeftHalf ? new Vector2(510, 400) : new Vector2(1510, 400);
 		initiator.FlipH = !initiatorOnLeftHalf;
+		if (initiatorOnLeftHalf){
+			lhsAbilityTitle.Text = "[right][font n=Assets/AlegreyaSans-Regular.ttf s=42]" + CombatManager.combatInstance?.activeAbility.NAME + "[/font][/right]";
+			rhsAbilityTitle.Text = (CombatManager.combatInstance?.reactAbility != null) ? "[font n=Assets/AlegreyaSans-Regular.ttf s=42]" + CombatManager.combatInstance.reactAbility.NAME + "[/font]" : "";
+		} else {
+			rhsAbilityTitle.Text = "[font n=Assets/AlegreyaSans-Regular.ttf s=42]" + CombatManager.combatInstance?.activeAbility.NAME + "[/font]";
+			lhsAbilityTitle.Text = (CombatManager.combatInstance?.reactAbility != null) ? "[right][font n=Assets/AlegreyaSans-Regular.ttf s=42]" + CombatManager.combatInstance.reactAbility.NAME + "[/font][/right]" : "";
+		}
 		for (int i = 0; i < targets.Count; i++){
 			targets[i].Position = initiatorOnLeftHalf ? new Vector2(1510 + (100 * i), 400) : new Vector2(510 + (100 * i), 400);
 			targets[i].FlipH = initiatorOnLeftHalf;
