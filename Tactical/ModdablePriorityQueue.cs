@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Dynamic;
 using System.Linq;
 
 public partial class ModdablePriorityQueue<T>{
@@ -48,13 +49,15 @@ public partial class ModdablePriorityQueue<T>{
     }
 
     /// <summary>
-    /// Given a T element, modify *all* inclusions of that element by priority (higher value means it will happen earlier), then reorder the queue.
+    /// Given T elementToModify and int modPriority, *all* occurrences of elementToModify have their priority increased/decreased by modPriority (higher value means it will happen earlier).
+    /// Then, reorder the queue.
+    /// If setToValue is set to true, *all* inclusions of that element are set equal to modPriority.
     /// </summary>
-    public void ModifyItemPriority(T elementToModify, int modPriority){
+    public void ModifyItemPriority(T elementToModify, int modPriority, bool setToValue = false){
         for (int i = 0; i < this.queue.Count; i++){
             (T element, int priority) = this.queue[i];
             if (element.Equals(elementToModify)){
-                this.queue[i] = (element, priority + modPriority);
+                this.queue[i] = setToValue ? (element, modPriority) : (element, priority + modPriority);
             }
         }
         this.queue = this.queue.OrderByDescending(x => x.priority).ToList();

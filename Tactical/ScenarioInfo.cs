@@ -34,10 +34,11 @@ public class TestScenario : ScenarioInfo {
         playerA.EquipAbility(new TestAttack());
         playerA.EquipAbility(new TriWeaponFighting());
         playerA.EquipAbility(new Preparation());
+        playerA.EquipAbility(new ResoluteFollowup());
         playerA.EquipAbility(new BalestraFente());
         playerA.EquipAbility(new IronSwan());
         playerA.MinSpd = 10;
-        playerA.MaxSpd = 10;
+        playerA.MaxSpd = 20;
         playerA.ActionsPerTurn = 3;
 
         playerB.EquipAbility(new Discharge());

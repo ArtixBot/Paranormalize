@@ -18,7 +18,7 @@
 	"PREPARATION": {
 		"NAME": "Preparation",
 		"STRINGS": {
-			"GENERIC": "Gain an additional action next round."
+			"GENERIC": "Target self.\nGain an additional action next round."
 		}
 	},
 	"TEST_REACT": {
@@ -44,6 +44,13 @@
 		"NAME": "Repartee",
 		"STRINGS": {
 			"CLASH_LOSS_DIE": "On clash lose: Discard all remaining dice on this ability."
+		}
+	},
+	"RESOLUTE_FOLLOWUP": {
+		"NAME": "Resolute Followup",
+		"STRINGS": {
+			"GENERIC": "[color=#4cf]On activate:[/color] Forward 1.",
+			"MOVE_UP_ACTIONS": "[color=#4cf]On hit:[/color] {owner}'s remaining actions are moved to the front of the queue."
 		}
 	},
 	"RETREAT": {

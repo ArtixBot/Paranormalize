@@ -13,7 +13,7 @@
 	},
 	"STAGGERED": {
 		"NAME": "Staggered",
-		"DESC": "{owner} cannot take actions.\nAll incoming damage is doubled.\nThis effect wears off at the start of round {UNSTAGGER_ROUND}."
+		"DESC": "Cannot take actions.All incoming damage is doubled.\nThis effect wears off at the start of round {UNSTAGGER_ROUND}."
 	},
 	"VULNERABLE": {
 		"NAME": "Vulnerable",
