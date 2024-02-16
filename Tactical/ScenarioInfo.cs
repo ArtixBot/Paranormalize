@@ -32,8 +32,8 @@ public class TestScenario : ScenarioInfo {
         playerA.EquipAbility(new TestReact());
         playerA.EquipAbility(new RelentlessStabbing());
         playerA.EquipAbility(new TestAttack());
-        playerA.EquipAbility(new Discharge());
-        playerA.EquipAbility(new Retreat());
+        playerA.EquipAbility(new TriWeaponFighting());
+        playerA.EquipAbility(new Preparation());
         playerA.EquipAbility(new BalestraFente());
         playerA.EquipAbility(new IronSwan());
         playerA.MinSpd = 10;

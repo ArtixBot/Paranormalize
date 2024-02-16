@@ -3,13 +3,17 @@
 		"NAME": "Haste",
 		"DESC": "On round start, increase the Speed of {owner}'s actions by {stacks}, then remove all Haste."
 	},
+	"NEXT_ROUND_ACTION_GAIN": {
+		"NAME": "Action Gain",
+		"DESC": "Start next round with {stacks} additional action(s)."
+	},
 	"SLOW": {
 		"NAME": "Slow",
 		"DESC": "On round start, reduce the Speed of {owner}'s actions by {stacks}, then remove all Slow."
 	},
 	"STAGGERED": {
 		"NAME": "Staggered",
-		"DESC": "Cannot take actions. All incoming damage is doubled.\nThis effect wears off at the start of round {UNSTAGGER_ROUND}."
+		"DESC": "{owner} cannot take actions.\nAll incoming damage is doubled.\nThis effect wears off at the start of round {UNSTAGGER_ROUND}."
 	},
 	"VULNERABLE": {
 		"NAME": "Vulnerable",

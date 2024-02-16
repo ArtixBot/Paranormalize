@@ -1,10 +1,7 @@
-using System;
-using System.Linq;
-using System.Collections;
 using System.Collections.Generic;
 
-public class AbilityPass : AbstractAbility, IEventHandler<CombatEventAbilityActivated> {
-    public static string id = "PASS";
+public class Preparation : AbstractAbility, IEventHandler<CombatEventAbilityActivated> {
+    public static string id = "PREPARATION";
     private static Localization.AbilityStrings strings = Localization.LocalizationLibrary.Instance.GetAbilityStrings(id);
 
     private static int cd = 0;
@@ -13,19 +10,23 @@ public class AbilityPass : AbstractAbility, IEventHandler<CombatEventAbilityActi
     private static bool targetsLane = false;
     private static bool needsUnit = true;
 
-    public AbilityPass(): base(
+    public Preparation(): base(
         id,
         strings,
-        AbilityType.SPECIAL,
+        AbilityType.UTILITY,
         cd,
         min_range,
         max_range,
         targetsLane,
         needsUnit,
         new HashSet<TargetingModifiers>{TargetingModifiers.SELF}
-    ){}
+    ){
+    }
 
     public override void HandleEvent(CombatEventAbilityActivated data){
         base.HandleEvent(data);
+        if (data.abilityActivated.Equals(this)){
+            CombatManager.ExecuteAction(new ApplyStatusAction(this.OWNER, new BuffNextRoundActionGain(), 1));
+        }
     }
 }

@@ -15,6 +15,12 @@
 			"PULL_DIE": "[color=#4cf]On hit:[/color] Pull 2."
 		}
 	},
+	"PREPARATION": {
+		"NAME": "Preparation",
+		"STRINGS": {
+			"GENERIC": "Gain an additional action next round."
+		}
+	},
 	"TEST_REACT": {
 		"NAME": "Test Reaction"
 	},
@@ -45,6 +51,12 @@
 		"STRINGS": {
 			"GENERIC": "[color=#4cf]On activate:[/color] Back 1.",
 			"EVADE_HASTE": "[color=#4cf]On [wave]evade[/wave]:[/color] Gain 1 Haste."
+		}
+	},
+	"TRI_WEAPON_FIGHTING": {
+		"NAME": "Tri-Weapon Fighting",
+		"STRINGS": {
+			"PIERCE_PULL": "[color=#4cf]On hit:[/color] Pull 1.\n[color=#4cf]On hit or clash lose:[/color] If the target is not within range 1, discard all remaining dice."
 		}
 	},
 	"PASS": {

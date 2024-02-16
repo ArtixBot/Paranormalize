@@ -415,7 +415,7 @@ public static class CombatManager {
                 winningRoll -= losingRoll;
             }
             eventManager.BroadcastEvent(new CombatEventClashWin(winningDie, winningRoll));
-            eventManager.BroadcastEvent(new CombatEventClashLose(losingDie, losingRoll));
+            eventManager.BroadcastEvent(new CombatEventClashLose(winningChar, losingChar, losingDie, losingRoll));
 
             ResolveDieRoll(winningChar, losingChar, winningDie, winningNatRoll, winningRoll, rolledDuringClash: true, losingDieWasAttack: losingDie.IsAttackDie);
             try {

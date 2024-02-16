@@ -2,28 +2,25 @@ using Godot;
 using System;
 using System.Collections.Generic;
 
-public class ConditionStaggered : AbstractStatusEffect, IEventHandler<CombatEventDamageTaken>, IEventHandler<CombatEventRoundEnd>{
+public class ConditionStaggered : AbstractStatusEffect, IEventHandler<CombatEventDamageTaken>, IEventHandler<CombatEventRoundStart>, IEventHandler<CombatEventRoundEnd>{
 
     public static string id = "STAGGERED";
     private static Localization.EffectStrings strings = Localization.LocalizationLibrary.Instance.GetEffectStrings(id);
 
     public int UNSTAGGER_ROUND;        // Parsed in effects.json and StatusTooltip.cs.
-    private int oldActionsPerTurn;
 
     public ConditionStaggered() : base(
         id,
         strings,
         StatusEffectType.CONDITION,
-        false
+        CAN_GAIN_STACKS: false
     ){}
 
     public override void InitSubscriptions(){
         CombatManager.eventManager.Subscribe(CombatEventType.ON_TAKE_DAMAGE, this, CombatEventPriority.BASE_MULTIPLICATIVE);
+        CombatManager.eventManager.Subscribe(CombatEventType.ON_ROUND_START, this, CombatEventPriority.FINAL);
         CombatManager.eventManager.Subscribe(CombatEventType.ON_ROUND_END, this, CombatEventPriority.STANDARD);
         this.UNSTAGGER_ROUND = CombatManager.combatInstance.round + 2;
-        this.oldActionsPerTurn = this.OWNER.ActionsPerTurn;
-
-        this.OWNER.ActionsPerTurn = 0;
 
         // If the staggered character is in a combat/clash phase, remove all dice from their queue.
         // This will either immediately resolve combat or force a one-sided attack.
@@ -44,12 +41,15 @@ public class ConditionStaggered : AbstractStatusEffect, IEventHandler<CombatEven
         }
     }
 
+    public void HandleEvent(CombatEventRoundStart data){
+        CombatManager.combatInstance.turnlist.RemoveAllInstancesOfItem(this.OWNER);
+    }
+
     public void HandleEvent(CombatEventRoundEnd data){
         this.STACKS -= 1;
 
         // At 0 stacks, Staggered is removed.
         if (this.STACKS == 0){
-            this.OWNER.ActionsPerTurn = this.oldActionsPerTurn;
             CombatManager.ExecuteAction(new RecoverPoiseAction(this.OWNER, this.OWNER.MaxPoise));
             CombatManager.ExecuteAction(new RemoveStatusAction(this.OWNER, this));
         }

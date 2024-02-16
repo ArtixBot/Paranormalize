@@ -39,6 +39,7 @@ public enum CombatEventPriority {
     BASE_MULTIPLICATIVE = 400,      // Multiplicative multipliers to a value.
     STANDARD = 200,
     POST_DAMAGE_CALC = 100,         // E.g. passives which would prevent damage that would cause stagger or death should happen after all other calculations are complete.
+    FINAL = 5,                      // E.g. effects such as "cannot take actions" should go here. If a character has Next Turn Action (+1 action) and Staggered, Staggered wins.
     UI = 1,                         // UI updates should only update after everything else is done.
 }
 
@@ -394,10 +395,14 @@ public class CombatEventClashLose : ICombatEvent {
     public CombatEventType eventType {
         get {return CombatEventType.ON_CLASH_LOSE;}
     }
+    public AbstractCharacter winningClasher;
+    public AbstractCharacter losingClasher;
     public Die losingDie;
     public int losingRoll;
 
-    public CombatEventClashLose(Die losingDie, int losingRoll){
+    public CombatEventClashLose(AbstractCharacter winningClasher, AbstractCharacter losingClasher, Die losingDie, int losingRoll){
+        this.winningClasher = winningClasher;
+        this.losingClasher = losingClasher;
         this.losingDie = losingDie;
         this.losingRoll = losingRoll;
     }
