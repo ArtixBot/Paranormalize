@@ -43,7 +43,8 @@ public class Assault : AbstractAbility, IEventHandler<CombatEventAbilityActivate
 
     public virtual void HandleEvent(CombatEventDieHit data){
         if (data.die == atkDie){
-            CombatManager.combatInstance.turnlist.ModifyItemPriority(this.OWNER, CombatManager.combatInstance.turnlist.GetNextInstanceOfItem(this.OWNER).priority, setToValue: true);
+            // Use GetNextItem() since an enemy can be faster than the owner.
+            CombatManager.combatInstance.turnlist.ModifyItemPriority(this.OWNER, CombatManager.combatInstance.turnlist.GetNextItem().priority, setToValue: true);
         }
     }
 }

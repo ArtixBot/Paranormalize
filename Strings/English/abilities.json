@@ -3,7 +3,7 @@
 		"NAME": "Assault",
 		"STRINGS": {
 			"GENERIC": "[color=#4cf]On activate:[/color] Forward 1.",
-			"MOVE_UP_ACTIONS": "[color=#4cf]On hit:[/color] {owner}'s remaining actions are moved to the front of the queue."
+			"MOVE_UP_ACTIONS": "[color=#4cf]On hit:[/color] Set the speed of {owner}'s remaining actions equal to the speed of the leftmost unit on the turn queue."
 		}
 	},
 	"BALESTRA_FENTE": {

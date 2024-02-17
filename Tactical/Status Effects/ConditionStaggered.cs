@@ -20,7 +20,7 @@ public class ConditionStaggered : AbstractStatusEffect, IEventHandler<CombatEven
         CombatManager.eventManager.Subscribe(CombatEventType.ON_TAKE_DAMAGE, this, CombatEventPriority.BASE_MULTIPLICATIVE);
         CombatManager.eventManager.Subscribe(CombatEventType.ON_ROUND_START, this, CombatEventPriority.FINAL);
         CombatManager.eventManager.Subscribe(CombatEventType.ON_ROUND_END, this, CombatEventPriority.STANDARD);
-        this.UNSTAGGER_ROUND = CombatManager.combatInstance.round + 2;
+        this.UNSTAGGER_ROUND = CombatManager.combatInstance.round + 1;      // Current round + next round.
 
         // If the staggered character is in a combat/clash phase, remove all dice from their queue.
         // This will either immediately resolve combat or force a one-sided attack.

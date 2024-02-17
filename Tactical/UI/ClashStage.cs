@@ -7,7 +7,9 @@ using System.Threading.Tasks;
 public partial class ClashStage : Control {
 
 	public AbstractCharacter initiatorData;
+	public List<Die> initiatorDiceData;
 	public List<AbstractCharacter> targetData;
+	public List<Die> defenderDiceData;
 
 	public TacticalScene tacticalSceneNode;
 
