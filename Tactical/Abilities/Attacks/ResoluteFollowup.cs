@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 
-public class ResoluteFollowup : AbstractAbility, IEventHandler<CombatEventAbilityActivated>, IEventHandler<CombatEventDieHit> {
-    public static string id = "RESOLUTE_FOLLOWUP";
+public class Assault : AbstractAbility, IEventHandler<CombatEventAbilityActivated>, IEventHandler<CombatEventDieHit> {
+    public static string id = "ASSAULT";
     private static Localization.AbilityStrings strings = Localization.LocalizationLibrary.Instance.GetAbilityStrings(id);
 
     private static int MOVE_DISTANCE = 1;
@@ -14,7 +14,7 @@ public class ResoluteFollowup : AbstractAbility, IEventHandler<CombatEventAbilit
     private Die atkDie = new Die(DieType.SLASH, 7, 13, "MOVE_UP_ACTIONS");
     private Die defDie = new Die(DieType.BLOCK, 5, 6);
 
-    public ResoluteFollowup(): base(
+    public Assault(): base(
         id,
         strings,
         AbilityType.ATTACK,

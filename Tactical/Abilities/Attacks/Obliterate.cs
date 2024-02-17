@@ -1,21 +1,23 @@
 using System;
 using System.Collections.Generic;
 
-public class TriWeaponFighting : AbstractAbility, IEventHandler<CombatEventDieHit>, IEventHandler<CombatEventClashLose> {
-    public static string id = "TRI_WEAPON_FIGHTING";
+public class Obliterate : AbstractAbility, IEventHandler<CombatEventDieHit>, IEventHandler<CombatEventClashLose> {
+    public static string id = "OBLITERATE";
     private static Localization.AbilityStrings strings = Localization.LocalizationLibrary.Instance.GetAbilityStrings(id);
 
-    private static int cd = 2;
+    private static int cd = 6;
     private static int min_range = 0;
     private static int max_range = 4;
     private static bool targetsLane = false;
     private static bool needsUnit = true;
 
     private Die atkDieA = new Die(DieType.PIERCE, 6, 11, "PIERCE_PULL");
-    private Die atkDieB = new Die(DieType.SLASH, 4, 7);
-    private Die atkDieC = new Die(DieType.BLUNT, 4, 6);
+    private Die atkDieB = new Die(DieType.SLASH, 7, 9);
+    private Die blkDieC = new Die(DieType.BLOCK, 7, 10);
+    private Die atkDieD = new Die(DieType.BLUNT, 4, 8);
+    private Die atkDieE = new Die(DieType.BLUNT, 9, 11);
 
-    public TriWeaponFighting(): base(
+    public Obliterate(): base(
         id,
         strings,
         AbilityType.ATTACK,
@@ -26,7 +28,7 @@ public class TriWeaponFighting : AbstractAbility, IEventHandler<CombatEventDieHi
         needsUnit,
         new HashSet<TargetingModifiers>{TargetingModifiers.ENEMIES_ONLY}
     ){
-        this.BASE_DICE = new List<Die>{atkDieA, atkDieB, atkDieC};
+        this.BASE_DICE = new List<Die>{atkDieA, atkDieB, blkDieC, atkDieD, atkDieE};
     }
 
     public override void InitSubscriptions(){
@@ -36,7 +38,7 @@ public class TriWeaponFighting : AbstractAbility, IEventHandler<CombatEventDieHi
 
     public virtual void HandleEvent(CombatEventDieHit data){
         if (data.die.Equals(atkDieA)){
-            CombatManager.ExecuteAction(new PullAction(this.OWNER, data.hitUnit, 1));
+            CombatManager.ExecuteAction(new PullAction(this.OWNER, data.hitUnit, 3));
             if (Math.Abs(this.OWNER.Position - data.hitUnit.Position) > 1){
                 if (this == CombatManager.combatInstance.activeAbility){
                     CombatManager.combatInstance.activeAbilityDice.Clear();

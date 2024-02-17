@@ -29,13 +29,14 @@ public class TestScenario : ScenarioInfo {
     };
 
     public TestScenario() : base(scenarioFighters){
-        playerA.EquipAbility(new TestReact());
         playerA.EquipAbility(new RelentlessStabbing());
         playerA.EquipAbility(new TestAttack());
-        playerA.EquipAbility(new TriWeaponFighting());
+        playerA.EquipAbility(new Obliterate());
+        playerA.EquipAbility(new Brutalize());
         playerA.EquipAbility(new Preparation());
-        playerA.EquipAbility(new ResoluteFollowup());
+        playerA.EquipAbility(new Assault());
         playerA.EquipAbility(new BalestraFente());
+        playerA.EquipAbility(new Discharge());
         playerA.EquipAbility(new IronSwan());
         playerA.MinSpd = 10;
         playerA.MaxSpd = 20;

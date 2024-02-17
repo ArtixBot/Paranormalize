@@ -1,6 +1,7 @@
 using Godot;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using UI;
 
@@ -95,6 +96,7 @@ public partial class TacticalScene : Node2D, IEventSubscriber, IEventHandler<Com
 	public void HandleEvent(CombatEventDieHit data){
 		if (!IsInstanceValid(animationStage.GetNode("Clash Stage"))) return;
 		AbstractCharacter hitter = data.hitter;
+		AbstractCharacter hitUnit = data.hitUnit;
 		ClashStage clashStage = (ClashStage) animationStage.GetNode("Clash Stage");
 
 		// TODO: Queue animation based on die type *other* than only slash.
@@ -112,16 +114,19 @@ public partial class TacticalScene : Node2D, IEventSubscriber, IEventHandler<Com
 				clashStage.QueueAnimation(hitter, "slash");
 				break;
 		}
+		clashStage.QueueAnimation(hitUnit, "damaged");
 	}
 
 	public void HandleEvent(CombatEventClashTie data){
 		if (!IsInstanceValid(animationStage.GetNode("Clash Stage"))) return;
 		AbstractCharacter hitter = CombatManager.combatInstance?.activeChar;
-		if (hitter == null) return;
+		AbstractCharacter defender = CombatManager.combatInstance?.activeAbilityTargets.FirstOrDefault();
+		if (hitter == null || defender == null) return;
 		ClashStage clashStage = (ClashStage) animationStage.GetNode("Clash Stage");
 
 		// TODO: Queue animation based on die type *other* than only preclash?
 		clashStage.QueueAnimation(hitter, "preclash");
+		clashStage.QueueAnimation(defender, "preclash");
 	}
 
 	public void HandleEvent(CombatEventCharacterDeath data){
