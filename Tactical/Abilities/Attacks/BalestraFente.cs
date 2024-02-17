@@ -34,7 +34,7 @@ public class BalestraFente : AbstractAbility, IEventSubscriber, IEventHandler<Co
 
     public override void HandleEvent(CombatEventAbilityActivated data){
         base.HandleEvent(data);
-        if (data.abilityActivated.Equals(this)){
+        if (data.abilityActivated == this){
             CombatManager.ExecuteAction(new ForwardAction(this.OWNER, data.target, MOVE_DISTANCE));
         }
     }

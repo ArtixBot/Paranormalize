@@ -34,7 +34,7 @@ public class Repartee : AbstractAbility, IEventHandler<CombatEventClashLose> {
     }
 
     public virtual void HandleEvent(CombatEventClashLose data){
-        if (data.losingDie.Equals(atkDieA)){
+        if (data.losingDie == atkDieA){
             CombatManager.GetDieQueueFromCharacter(this.OWNER).Clear();
         }
     }

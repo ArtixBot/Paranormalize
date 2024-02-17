@@ -37,7 +37,7 @@ public class Obliterate : AbstractAbility, IEventHandler<CombatEventDieHit>, IEv
     }
 
     public virtual void HandleEvent(CombatEventDieHit data){
-        if (data.die.Equals(atkDieA)){
+        if (data.die == atkDieA){
             CombatManager.ExecuteAction(new PullAction(this.OWNER, data.hitUnit, 3));
             if (Math.Abs(this.OWNER.Position - data.hitUnit.Position) > 1){
                 if (this == CombatManager.combatInstance.activeAbility){
@@ -50,7 +50,7 @@ public class Obliterate : AbstractAbility, IEventHandler<CombatEventDieHit>, IEv
     }
 
     public virtual void HandleEvent(CombatEventClashLose data){
-        if (data.losingDie.Equals(atkDieA)){
+        if (data.losingDie == atkDieA){
             if (Math.Abs(this.OWNER.Position - data.winningClasher.Position) > 1){
                 if (this == CombatManager.combatInstance.activeAbility){
                     CombatManager.combatInstance.activeAbilityDice.Clear();

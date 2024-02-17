@@ -11,7 +11,7 @@ public class Brutalize : AbstractAbility, IEventHandler<CombatEventDieHit>, IEve
     private static bool targetsLane = false;
     private static bool needsUnit = true;
 
-    private Die atkDieA = new Die(DieType.PIERCE, 6, 11, "BRUTAL_PULL");
+    private Die atkDieA = new Die(DieType.PIERCE, 6, 11, "PIERCE_PULL");
     private Die atkDieB = new Die(DieType.SLASH, 4, 7);
     private Die atkDieC = new Die(DieType.BLUNT, 4, 6);
 
@@ -35,7 +35,7 @@ public class Brutalize : AbstractAbility, IEventHandler<CombatEventDieHit>, IEve
     }
 
     public virtual void HandleEvent(CombatEventDieHit data){
-        if (data.die.Equals(atkDieA)){
+        if (data.die == atkDieA){
             CombatManager.ExecuteAction(new PullAction(this.OWNER, data.hitUnit, 1));
             if (Math.Abs(this.OWNER.Position - data.hitUnit.Position) > 1){
                 if (this == CombatManager.combatInstance.activeAbility){
@@ -48,7 +48,7 @@ public class Brutalize : AbstractAbility, IEventHandler<CombatEventDieHit>, IEve
     }
 
     public virtual void HandleEvent(CombatEventClashLose data){
-        if (data.losingDie.Equals(atkDieA)){
+        if (data.losingDie == atkDieA){
             if (Math.Abs(this.OWNER.Position - data.winningClasher.Position) > 1){
                 if (this == CombatManager.combatInstance.activeAbility){
                     CombatManager.combatInstance.activeAbilityDice.Clear();

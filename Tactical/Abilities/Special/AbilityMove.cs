@@ -27,7 +27,7 @@ public class AbilityMove : AbstractAbility, IEventHandler<CombatEventAbilityActi
 
     public override void HandleEvent(CombatEventAbilityActivated data){
         base.HandleEvent(data);
-        if (data.abilityActivated.Equals(this) && data.lanes != null && data.lanes.Count == 1){
+        if (data.abilityActivated == this && data.lanes != null && data.lanes.Count == 1){
             this.OWNER.Position = data.lanes[0];
         }
     }

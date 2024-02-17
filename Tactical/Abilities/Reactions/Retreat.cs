@@ -37,13 +37,13 @@ public class Retreat : AbstractAbility, IEventSubscriber, IEventHandler<CombatEv
 
     public override void HandleEvent(CombatEventAbilityActivated data){
         base.HandleEvent(data);
-        if (data.abilityActivated.Equals(this)){
+        if (data.abilityActivated == this){
             CombatManager.ExecuteAction(new BackAction(this.OWNER, data.target, MOVE_DISTANCE));
         }
     }
 
     public virtual void HandleEvent(CombatEventClashWin data){
-        if (data.winningDie.Equals(evadeDie)){
+        if (data.winningDie == evadeDie){
             CombatManager.ExecuteAction(new ApplyStatusAction(this.OWNER, new BuffHaste(), 1));
         }
     }

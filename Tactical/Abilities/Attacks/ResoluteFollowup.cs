@@ -36,13 +36,13 @@ public class Assault : AbstractAbility, IEventHandler<CombatEventAbilityActivate
 
     public override void HandleEvent(CombatEventAbilityActivated data){
         base.HandleEvent(data);
-        if (data.abilityActivated.Equals(this)){
+        if (data.abilityActivated == this){
             CombatManager.ExecuteAction(new ForwardAction(this.OWNER, data.target, MOVE_DISTANCE));
         }
     }
 
     public virtual void HandleEvent(CombatEventDieHit data){
-        if (data.die.Equals(atkDie)){
+        if (data.die == atkDie){
             CombatManager.combatInstance.turnlist.ModifyItemPriority(this.OWNER, CombatManager.combatInstance.turnlist.GetNextInstanceOfItem(this.OWNER).priority, setToValue: true);
         }
     }
