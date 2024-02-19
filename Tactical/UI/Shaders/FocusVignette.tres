@@ -1,9 +1,9 @@
 [gd_resource type="ShaderMaterial" load_steps=2 format=3 uid="uid://dq4brrrgxw7vs"]
 
-[ext_resource type="Shader" path="res://Tactical/UI/Shaders/BlurVignette.gdshader" id="1_ix4xb"]
+[ext_resource type="Shader" path="res://Tactical/UI/Shaders/FocusVignette.gdshader" id="1_85lnk"]
 
 [resource]
-shader = ExtResource("1_ix4xb")
+shader = ExtResource("1_85lnk")
 shader_parameter/blur_radius = 0.2
 shader_parameter/blur_amount = 1.0
 shader_parameter/blur_inner = 0.64

@@ -5,12 +5,12 @@ using System.Threading.Tasks;
 public partial class CameraController : Camera2D
 {
 
-	public ColorRect cameraEffect;
+	public ColorRect focusEffect;
 	public ShaderMaterial vignetteEffect;
 	// Called when the node enters the scene tree for the first time.
 	public override void _Ready() {
-		cameraEffect = GetNode<ColorRect>("ColorRect");
-		vignetteEffect = GD.Load<ShaderMaterial>("res://Tactical/UI/Shaders/BlurVignette.tres");
+		focusEffect = GetNode<ColorRect>("Focus Effect");
+		vignetteEffect = GD.Load<ShaderMaterial>("res://Tactical/UI/Shaders/FocusVignette.tres");
 		this.Position = new Vector2(960, 540);
 	}
 
@@ -24,7 +24,7 @@ public partial class CameraController : Camera2D
 		// Use vectors so we can use Godot's in-built Lerp function.
 		Vector2 startBlurRadius = new Vector2(0.01f, 0.0f);
 		Vector2 endBlurRadius = new Vector2(0.2f, 0.0f);
-		cameraEffect.Material = vignetteEffect;
+		focusEffect.Material = vignetteEffect;
 		vignetteEffect.SetShaderParameter("blur_radius", startBlurRadius);
 
 		float currentTime = 0f;
@@ -61,7 +61,7 @@ public partial class CameraController : Camera2D
 			await Task.Delay(1);
             currentTime += (float)GetProcessDeltaTime();		// Not using PhysicsProcess since this is graphical effect only.
         }
-		cameraEffect.Material = null;
+		focusEffect.Material = null;
 		isCinematic = false;
 		return true;
 	}

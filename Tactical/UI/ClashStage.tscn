@@ -1,7 +1,14 @@
-[gd_scene load_steps=7 format=3 uid="uid://c3lqs0jnxwurh"]
+[gd_scene load_steps=9 format=3 uid="uid://c3lqs0jnxwurh"]
 
 [ext_resource type="Script" path="res://Tactical/UI/ClashStage.cs" id="1_7vhj7"]
 [ext_resource type="Texture2D" uid="uid://buo3g2eppj3vc" path="res://Sprites/Characters/Duelist/preclash.png" id="2_lwiga"]
+[ext_resource type="Shader" path="res://Tactical/UI/Shaders/CameraBlur.gdshader" id="2_rdan6"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_2psho"]
+shader = ExtResource("2_rdan6")
+shader_parameter/blur_amount = 1.0
+shader_parameter/mix_amount = 0.14
+shader_parameter/color_over = Color(0, 0, 0, 0)
 
 [sub_resource type="Animation" id="Animation_kph4i"]
 length = 0.001
@@ -66,6 +73,16 @@ grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
 script = ExtResource("1_7vhj7")
+
+[node name="ColorRect" type="ColorRect" parent="."]
+material = SubResource("ShaderMaterial_2psho")
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(1, 1, 1, 0.333333)
 
 [node name="Initiator" type="Sprite2D" parent="."]
 position = Vector2(510, 396)

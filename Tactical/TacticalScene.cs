@@ -75,6 +75,8 @@ public partial class TacticalScene : Node2D, IEventSubscriber, IEventHandler<Com
 		}
 	}
 
+	// TODO: Since game effects are calculated immediately, this effect will render immediately even if a push/pull/forward/back is a later die.
+	// In short, it renders faster than the dice roll and playout render effect will take place. Figure out a way to delay rendering.
 	public async void HandleEvent(CombatEventUnitMoved data){
 		CharacterUI charNode = characterToNodeMap[data.movedUnit];
 		if (!IsInstanceValid(charNode)) return;
