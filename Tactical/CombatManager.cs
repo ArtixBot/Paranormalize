@@ -29,6 +29,8 @@ public class CombatInstance {
     public AbstractAbility reactAbility;
     public List<Die> reactAbilityDice;
 
+    public int abilityItrCount;     // Used only for UI purposes to determine when to play events like push/pull/forward/back, which could occur on later dice.
+
 	public CombatInstance(ScenarioInfo info){
         CombatManager.eventManager = new CombatEventManager();
         CombatEventManager.instance = CombatManager.eventManager;
@@ -285,6 +287,7 @@ public static class CombatManager {
         combatInstance.activeAbilityTargets = null;
         combatInstance.reactAbility = null;
         combatInstance.reactAbilityDice = null;
+        combatInstance.abilityItrCount = 0;
         ChangeCombatState(nextState);
     }
 
@@ -292,6 +295,7 @@ public static class CombatManager {
         // Use a while loop since additional dice can be tossed into the queue during combat processing (e.g. die has "Cycle" effect).
         int i = 0;      // There should never be more than 100 iterations but if somehow there were an infinite Cycle loop, this should break that.
         while (combatInstance.activeAbilityDice?.Count > 0 && i < 100){
+            combatInstance.abilityItrCount += 1;
             Die die = combatInstance.activeAbilityDice[0];
             int dieRoll = die.Roll();
             Logging.Log($"{combatInstance.activeAbility.OWNER.CHAR_NAME} rolls a(n) {die.DieType} die (range: {die.MinValue} - {die.MaxValue}, natural roll: {dieRoll}).", Logging.LogLevel.ESSENTIAL);
@@ -312,6 +316,7 @@ public static class CombatManager {
 
         i = 0;
         while (combatInstance.reactAbilityDice?.Count > 0 && i < 100){
+            combatInstance.abilityItrCount += 1;
             Die die = combatInstance.reactAbilityDice[0];
             int dieRoll = die.Roll();
             Logging.Log($"{combatInstance.reactAbility.OWNER.CHAR_NAME} rolls a(n) {die.DieType} die (range: {die.MinValue} - {die.MaxValue}, natural roll: {dieRoll}).", Logging.LogLevel.ESSENTIAL);
@@ -371,6 +376,8 @@ public static class CombatManager {
         int i = 0;      // There should never be more than 100 iterations but if somehow there were an infinite Cycle loop, this should break that.
         Logging.Log($"Clash between {combatInstance.activeAbility.NAME} and {combatInstance.reactAbility.NAME}!", Logging.LogLevel.ESSENTIAL);
         while (combatInstance.activeAbilityDice.Count > 0 && combatInstance.reactAbilityDice.Count > 0 && i < 100){
+            combatInstance.abilityItrCount += 1;
+            
             Die atkDie = combatInstance.activeAbilityDice[0], reactDie = combatInstance.reactAbilityDice[0];
             int natAtkRoll = atkDie.Roll(), natReactRoll = reactDie.Roll();
 
@@ -384,6 +391,7 @@ public static class CombatManager {
 
             // On tie, remove both dice.
             if (modAtkRoll == modReactRoll){
+                combatInstance.abilityItrCount += 1;
                 eventManager.BroadcastEvent(new CombatEventClashTie(atkDie, reactDie));
                 try {
                     combatInstance.activeAbilityDice.RemoveAt(0);

@@ -75,10 +75,9 @@ public partial class TacticalScene : Node2D, IEventSubscriber, IEventHandler<Com
 		}
 	}
 
-	// TODO: Since game effects are calculated immediately, this effect will render immediately even if a push/pull/forward/back is a later die.
-	// In short, it renders faster than the dice roll and playout render effect will take place. Figure out a way to delay rendering.
 	public async void HandleEvent(CombatEventUnitMoved data){
-		CharacterUI charNode = characterToNodeMap[data.movedUnit];
+		float? delay = CombatManager.combatInstance?.abilityItrCount * 0.5f;
+		CharacterUI charNode = characterToNodeMap.GetValueOrDefault(data.movedUnit);
 		if (!IsInstanceValid(charNode)) return;
 
 		int newLane = data.isMoveLeft ? data.originalLane - data.moveMagnitude : data.originalLane + data.moveMagnitude;
@@ -87,6 +86,7 @@ public partial class TacticalScene : Node2D, IEventSubscriber, IEventHandler<Com
 		Vector2 newPos = new(150 + (newLane - 1) * 300, 500);
 
 		float currentTime = 0f;
+		await Task.Delay(TimeSpan.FromSeconds((double)delay));
 		while (currentTime <= 0.25f){
             float normalized = Math.Min((float)(currentTime / 0.25f), 1.0f);
 			charNode.Position = oldPos.Lerp(newPos, Lerpables.EaseOut(normalized, 5));
