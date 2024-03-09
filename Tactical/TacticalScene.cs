@@ -5,7 +5,15 @@ using System.Linq;
 using System.Threading.Tasks;
 using UI;
 
-public partial class TacticalScene : Node2D, IEventSubscriber, IEventHandler<CombatEventUnitMoved>, IEventHandler<CombatEventCombatStart>, IEventHandler<CombatEventCombatStateChanged>, IEventHandler<CombatEventCharacterDeath>, IEventHandler<CombatEventDieHit>, IEventHandler<CombatEventClashTie>
+public partial class TacticalScene : Node2D,
+									 IEventSubscriber,
+									 IEventHandler<CombatEventDamageTaken>,
+									 IEventHandler<CombatEventUnitMoved>,
+									 IEventHandler<CombatEventCombatStart>,
+									 IEventHandler<CombatEventCombatStateChanged>,
+									 IEventHandler<CombatEventCharacterDeath>,
+									 IEventHandler<CombatEventDieHit>,
+									 IEventHandler<CombatEventClashTie>
 {
 	public readonly CombatInstance combatData;
 	private readonly PackedScene charScene = GD.Load<PackedScene>("res://Tactical/UI/Characters/Character.tscn");
@@ -37,10 +45,8 @@ public partial class TacticalScene : Node2D, IEventSubscriber, IEventHandler<Com
 	public virtual void InitSubscriptions(){
 		CombatManager.eventManager.Subscribe(CombatEventType.ON_COMBAT_START, this, CombatEventPriority.UI);
 		CombatManager.eventManager.Subscribe(CombatEventType.ON_CHARACTER_DEATH, this, CombatEventPriority.UI);
-		CombatManager.eventManager.Subscribe(CombatEventType.ON_ROUND_START, this, CombatEventPriority.UI);
-		CombatManager.eventManager.Subscribe(CombatEventType.ON_TURN_START, this, CombatEventPriority.UI);
 		CombatManager.eventManager.Subscribe(CombatEventType.ON_UNIT_MOVED, this, CombatEventPriority.UI);
-		CombatManager.eventManager.Subscribe(CombatEventType.ON_ABILITY_ACTIVATED, this, CombatEventPriority.UI);
+		CombatManager.eventManager.Subscribe(CombatEventType.ON_TAKE_DAMAGE, this, CombatEventPriority.UI);
 		CombatManager.eventManager.Subscribe(CombatEventType.ON_DIE_HIT, this, CombatEventPriority.UI);
 		CombatManager.eventManager.Subscribe(CombatEventType.ON_CLASH_TIE, this, CombatEventPriority.UI);
 		CombatManager.eventManager.Subscribe(CombatEventType.ON_COMBAT_STATE_CHANGE, this, CombatEventPriority.UI);
@@ -75,7 +81,27 @@ public partial class TacticalScene : Node2D, IEventSubscriber, IEventHandler<Com
 		}
 	}
 
+	public void HandleEvent(CombatEventCombatStateChanged data){
+		if (data.newState == CombatState.RESOLVE_ABILITIES){
+			if (CombatManager.combatInstance == null) { return; }
+			if (CombatManager.combatInstance?.activeAbility.TYPE == AbilityType.SPECIAL){ return; }
+			if (!IsInstanceValid(animationStage)){ return; }
+
+			ClashStage clashStage = (ClashStage) clashScene.Instantiate();
+			clashStage.Name = "Clash Stage";
+			animationStage.AddChild(clashStage);
+
+			clashStage.initiatorData = CombatManager.combatInstance.activeChar;
+			clashStage.initiatorDiceData = CombatManager.combatInstance.activeAbilityDice;
+			clashStage.targetData = CombatManager.combatInstance.activeAbilityTargets;
+			clashStage.defenderDiceData = CombatManager.combatInstance.reactAbilityDice;
+			clashStage.SetupStage();
+			animationStage.Visible = true;
+		}
+	}
+
 	public async void HandleEvent(CombatEventUnitMoved data){
+		// TODO: 0.5f is a static value used because Clash Stage currently has anims set to 0.5 seconds. Define this someplace better.
 		float? delay = CombatManager.combatInstance?.abilityItrCount * 0.5f;
 		CharacterUI charNode = characterToNodeMap.GetValueOrDefault(data.movedUnit);
 		if (!IsInstanceValid(charNode)) return;
@@ -96,27 +122,38 @@ public partial class TacticalScene : Node2D, IEventSubscriber, IEventHandler<Com
         }
 	}
 
-	public void HandleEvent(CombatEventCombatStateChanged data){
-		// foreach (CharacterUI charUI in characterToNodeMap.Values){
-		// 	charUI.Position = new Vector2(150 + (charUI.Character.Position - 1) * 300, 500);
-		// }
+	public async void HandleEvent(CombatEventDamageTaken data){
+		// TODO: 0.5f is a static value used because Clash Stage currently has anims set to 0.5 seconds. Define this someplace better.
+		float? delay = CombatManager.combatInstance?.abilityItrCount * 0.5f;
+		await Task.Delay(TimeSpan.FromSeconds((double)delay));
 
-		if (data.newState == CombatState.RESOLVE_ABILITIES){
-			if (CombatManager.combatInstance == null) { return; }
-			if (CombatManager.combatInstance?.activeAbility.TYPE == AbilityType.SPECIAL){ return; }
-			if (!IsInstanceValid(animationStage)){ return; }
 
-			ClashStage clashStage = (ClashStage) clashScene.Instantiate();
-			clashStage.Name = "Clash Stage";
-			animationStage.AddChild(clashStage);
+		string colorPrefix = data.isPoiseDamage ? "[color=#ffba44]" : "[color=#ff4444]";
 
-			clashStage.initiatorData = CombatManager.combatInstance.activeChar;
-			clashStage.initiatorDiceData = CombatManager.combatInstance.activeAbilityDice;
-			clashStage.targetData = CombatManager.combatInstance.activeAbilityTargets;
-			clashStage.defenderDiceData = CombatManager.combatInstance.reactAbilityDice;
-			clashStage.SetupStage();
-			animationStage.Visible = true;
+        RichTextLabel damageNumber = new(){
+			BbcodeEnabled = true,
+			Size = new Vector2(100, 100),
+			Position = data.isPoiseDamage ? new Vector2(50, 50) : new Vector2(0, 0),
+			MouseFilter = Control.MouseFilterEnum.Ignore,
+			// Int-cast; DamageAction does an int cast before dealing final damage.
+            Text = colorPrefix + $"[font n=Assets/RobotoSlab-VariableFont_wght.ttf s=64][outline_size=12][outline_color=black]{(int)data.damageTaken}[/outline_color][/outline_size][/font][/color]"
+        };
+		float lifetime = 0.25f;
+
+		ClashStage clashStage = (ClashStage) animationStage.GetNodeOrNull("Clash Stage");
+        if (IsInstanceValid(clashStage)){
+			Sprite2D hitUnit = clashStage.dataToSpriteMap[data.target.CHAR_NAME];
+			damageNumber.Position -= new Vector2(300, 300);		// Move damage number off the sprite itself.
+			hitUnit.AddChild(damageNumber);
+		} else {
+			AbstractCharacter damagedCharacter = data.target;
+			CharacterUI charNode = characterToNodeMap.GetValueOrDefault(damagedCharacter);
+			if (!IsInstanceValid(charNode)) return;
+        	// A character can take damage outside the clash stage (e.g. status effects). If the clash stage isn't active, damage numbers go above the sprite instead.
+			charNode.AddChild(damageNumber);
 		}
+		await Task.Delay(TimeSpan.FromSeconds((double)lifetime));
+		damageNumber.QueueFree();
 	}
 
 	public void HandleEvent(CombatEventDieHit data){
@@ -125,7 +162,7 @@ public partial class TacticalScene : Node2D, IEventSubscriber, IEventHandler<Com
 		AbstractCharacter hitter = data.hitter;
 		AbstractCharacter hitUnit = data.hitUnit;
 
-		// TODO: Queue animation based on die type *other* than only slash.
+		// TODO: Randomize type of pierce/blunt/slash animation each time?
 		switch (data.die.DieType){
 			case DieType.PIERCE:
 				clashStage.QueueAnimation(hitter, "pierce");
