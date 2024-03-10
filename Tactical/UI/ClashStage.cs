@@ -17,8 +17,13 @@ public partial class ClashStage : Control {
 	public List<Sprite2D> targets = new();
 	public Dictionary<string, Sprite2D> dataToSpriteMap = new();
 	public Dictionary<Sprite2D, List<Texture2D>> spriteQueuedPoses = new();
+
 	public RichTextLabel lhsAbilityTitle;
 	public RichTextLabel rhsAbilityTitle;
+	public Control lhsDice;
+	public Control rhsDice;
+
+	public readonly PackedScene clashStageDie = GD.Load<PackedScene>("res://Tactical/UI/Abilities/ClashStageDie.tscn");
 
 	public float delayBetweenPoses = 0.5f;
 	private float timeSinceDelay;
@@ -30,6 +35,8 @@ public partial class ClashStage : Control {
 		initiator = GetNode<Sprite2D>("Initiator");
 		lhsAbilityTitle = GetNode<RichTextLabel>("Clash BG/LHS Ability Title");
 		rhsAbilityTitle = GetNode<RichTextLabel>("Clash BG/RHS Ability Title");
+		lhsDice = GetNode<Control>("Clash BG/LHS Ability Dice");
+		rhsDice = GetNode<Control>("Clash BG/RHS Ability Dice");
 	}
 
 	// Called every frame. 'delta' is the elapsed time since the previous frame.
@@ -49,10 +56,13 @@ public partial class ClashStage : Control {
 			}
 			if (stageCompleted) {
 				await Task.Delay(TimeSpan.FromSeconds(0.5f));		// linger effect
-				CanvasLayer animationStage = (CanvasLayer) GetParent();
-				animationStage.Visible = false;
-				
-				QueueFree();
+				try {
+					CanvasLayer animationStage = (CanvasLayer) GetParent();
+					animationStage.Visible = false;
+					QueueFree();
+				} catch (Exception){
+					Logging.Log("Could not get parent / queue free (clash stage itself was likely removed)", Logging.LogLevel.DEBUG);
+				}
 			}
 		}
 	}
@@ -93,6 +103,30 @@ public partial class ClashStage : Control {
 		for (int i = 0; i < targets.Count; i++){
 			targets[i].Position = initiatorOnLeftHalf ? new Vector2(1510 + (100 * i), 400) : new Vector2(510 + (100 * i), 400);
 			targets[i].FlipH = initiatorOnLeftHalf;
+		}
+
+		Control initiatorSide = initiatorOnLeftHalf ? lhsDice : rhsDice;
+		Control defenderSide = initiatorOnLeftHalf ? rhsDice : lhsDice;
+		int initiatorDiceAddOnLeftSide = initiatorOnLeftHalf ? -1 : 1;
+		if (initiatorDiceData != null){
+			for (int i = 0; i < initiatorDiceData.Count; i++){
+				UI.AbilityDie dieNode = (UI.AbilityDie) clashStageDie.Instantiate();
+				initiatorSide.AddChild(dieNode);
+				if (i == 0){
+					dieNode.Scale = new Vector2(1.3f, 1.3f);
+				}
+				dieNode.Position = new Vector2(i * 60 * initiatorDiceAddOnLeftSide, dieNode.Position.Y);
+				dieNode.Die = initiatorDiceData[i];
+			}
+		}
+
+		if (defenderDiceData != null){
+			for (int i = 0; i < defenderDiceData.Count; i++){
+				UI.AbilityDie dieNode = (UI.AbilityDie) clashStageDie.Instantiate();
+				defenderSide.AddChild(dieNode);
+				dieNode.Position = new Vector2(i * 60 * -initiatorDiceAddOnLeftSide, dieNode.Position.Y);
+				dieNode.Die = defenderDiceData[i];
+			}
 		}
 
 		isSetup = true;
