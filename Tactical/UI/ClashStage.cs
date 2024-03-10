@@ -33,7 +33,7 @@ public partial class ClashStage : Control {
 	}
 
 	// Called every frame. 'delta' is the elapsed time since the previous frame.
-	public override void _Process(double delta){
+	public override async void _Process(double delta){
 		timeSinceDelay += (float) delta;
 		if (timeSinceDelay >= delayBetweenPoses) {
 			timeSinceDelay = 0.0f;
@@ -48,8 +48,10 @@ public partial class ClashStage : Control {
 				stageCompleted = false;		// If an animation played, don't delete the animations yet.
 			}
 			if (stageCompleted) {
+				await Task.Delay(TimeSpan.FromSeconds(0.5f));		// linger effect
 				CanvasLayer animationStage = (CanvasLayer) GetParent();
 				animationStage.Visible = false;
+				
 				QueueFree();
 			}
 		}
