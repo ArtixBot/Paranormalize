@@ -17,8 +17,18 @@ public class ForwardAction : AbstractAction {
     }
 
     public override void Execute(){
-        GD.Print($"{this.mover} and {this.targetToMoveTo}");
-        if (this.mover == null || this.targetToMoveTo == null) return;
+        // If targetToMoveTo is null, ForwardAction always moves the unit right X lanes.
+        if (this.targetToMoveTo == null){
+            CombatManager.eventManager.BroadcastEvent(
+            new CombatEventUnitMoved(this.mover, 
+                                     this.mover.Position, 
+                                     forwardDistance, 
+                                     isMoveLeft: false,
+                                     isForcedMovement: false));
+            this.mover.Position = Math.Min(this.mover.Position + this.forwardDistance, GameVariables.MAX_LANES);
+            return;
+        }
+        if (this.mover == null) return;
         bool moveLeft = this.mover.Position > this.targetToMoveTo.Position;
 
         // Cannot move beyond the target's position.

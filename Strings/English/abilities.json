@@ -1,9 +1,22 @@
 {
+	"ASSAULT": {
+		"NAME": "Assault",
+		"STRINGS": {
+			"GENERIC": "[color=#4cf]On activate:[/color] Forward 1.",
+			"MOVE_UP_ACTIONS": "[color=#4cf]On hit:[/color] Set the speed of {owner}'s remaining actions equal to the speed of the leftmost unit on the turn queue."
+		}
+	},
 	"BALESTRA_FENTE": {
 		"NAME": "Balestra Fente",
 		"STRINGS": {
 			"GENERIC": "[color=#4cf]On activate:[/color] Forward 3.",
 			"CRIT_DIE": "[color=#4cf]On [shake]critical[/shake] hit:[/color] Consume all Critical to deal +50% damage per Critical consumed."
+		}
+	},
+	"BRUTALIZE": {
+		"NAME": "Brutalize",
+		"STRINGS": {
+			"PIERCE_PULL": "[color=#4cf]On hit:[/color] Pull 1.\n[color=#4cf]On hit or clash lose:[/color] If the target is not within range 1, discard all remaining dice."
 		}
 	},
 	"DISCHARGE": {
@@ -13,6 +26,18 @@
 		"NAME": "Iron Swan",
 		"STRINGS": {
 			"PULL_DIE": "[color=#4cf]On hit:[/color] Pull 2."
+		}
+	},
+	"OBLITERATE": {
+		"NAME": "Obliterate",
+		"STRINGS": {
+			"PIERCE_PULL": "[color=#4cf]On hit:[/color] Pull 3.\n[color=#4cf]On hit or clash lose:[/color] If the target is not within range 1, discard all remaining dice."
+		}
+	},
+	"PREPARATION": {
+		"NAME": "Preparation",
+		"STRINGS": {
+			"GENERIC": "Target self.\nGain an additional action next round."
 		}
 	},
 	"TEST_REACT": {

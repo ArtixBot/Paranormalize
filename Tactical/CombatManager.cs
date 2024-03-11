@@ -29,6 +29,9 @@ public class CombatInstance {
     public AbstractAbility reactAbility;
     public List<Die> reactAbilityDice;
 
+    // TODO: Consider making this an combat event property instead of directly accessing this value.
+    public int abilityItrCount;     // Used only for UI purposes to determine when to play events like push/pull/forward/back, which could occur on later dice.
+
 	public CombatInstance(ScenarioInfo info){
         CombatManager.eventManager = new CombatEventManager();
         CombatEventManager.instance = CombatManager.eventManager;
@@ -99,7 +102,7 @@ public static class CombatManager {
                     List<AbstractAbility> reactableAbilities = CombatManager.GetEligibleReactions(ai);
                     
                     // Get unit's first intended reaction intent. If there's nothing, don't clash.
-                    AbstractAbility reactionIntent = ai.Behavior?.reactions.First();
+                    AbstractAbility reactionIntent = ai.Behavior?.reactions.FirstOrDefault();
                     if (reactableAbilities.Contains(reactionIntent)){
                         InputAbility(reactionIntent, new List<AbstractCharacter>{combatInstance.activeChar});
                     } else {
@@ -285,6 +288,7 @@ public static class CombatManager {
         combatInstance.activeAbilityTargets = null;
         combatInstance.reactAbility = null;
         combatInstance.reactAbilityDice = null;
+        combatInstance.abilityItrCount = 0;
         ChangeCombatState(nextState);
     }
 
@@ -292,11 +296,13 @@ public static class CombatManager {
         // Use a while loop since additional dice can be tossed into the queue during combat processing (e.g. die has "Cycle" effect).
         int i = 0;      // There should never be more than 100 iterations but if somehow there were an infinite Cycle loop, this should break that.
         while (combatInstance.activeAbilityDice?.Count > 0 && i < 100){
+            combatInstance.abilityItrCount += 1;
             Die die = combatInstance.activeAbilityDice[0];
             int dieRoll = die.Roll();
             Logging.Log($"{combatInstance.activeAbility.OWNER.CHAR_NAME} rolls a(n) {die.DieType} die (range: {die.MinValue} - {die.MaxValue}, natural roll: {dieRoll}).", Logging.LogLevel.ESSENTIAL);
+           
             int modifiedRoll = eventManager.BroadcastEvent(new CombatEventDieRolled(die, dieRoll)).rolledValue;
-
+            
             foreach (AbstractCharacter target in combatInstance.activeAbilityTargets.ToList()){
                 ResolveDieRoll(combatInstance.activeAbility.OWNER, target, die, dieRoll, modifiedRoll, rolledDuringClash: false, losingDieWasAttack: false);
             }
@@ -312,6 +318,7 @@ public static class CombatManager {
 
         i = 0;
         while (combatInstance.reactAbilityDice?.Count > 0 && i < 100){
+            combatInstance.abilityItrCount += 1;
             Die die = combatInstance.reactAbilityDice[0];
             int dieRoll = die.Roll();
             Logging.Log($"{combatInstance.reactAbility.OWNER.CHAR_NAME} rolls a(n) {die.DieType} die (range: {die.MinValue} - {die.MaxValue}, natural roll: {dieRoll}).", Logging.LogLevel.ESSENTIAL);
@@ -333,20 +340,40 @@ public static class CombatManager {
     private static void ResolveDieRoll(AbstractCharacter roller, AbstractCharacter target, Die die, int naturalRoll, int actualRoll, bool rolledDuringClash, bool losingDieWasAttack){
         switch (die.DieType){
             case DieType.SLASH:
+                CombatManager.ExecuteAction(new DamageAction(roller, target, DamageType.SLASH, actualRoll, isPoiseDamage: false));
+                CombatManager.ExecuteAction(new DamageAction(roller, target, DamageType.SLASH, actualRoll, isPoiseDamage: true));
+                eventManager.BroadcastEvent(new CombatEventDieHit(roller, target, die, naturalRoll, actualRoll));
+                break;
             case DieType.PIERCE:
+                CombatManager.ExecuteAction(new DamageAction(roller, target, DamageType.PIERCE, actualRoll, isPoiseDamage: false));
+                CombatManager.ExecuteAction(new DamageAction(roller, target, DamageType.PIERCE, actualRoll, isPoiseDamage: true));
+                eventManager.BroadcastEvent(new CombatEventDieHit(roller, target, die, naturalRoll, actualRoll));
+                break;
             case DieType.BLUNT:
-            case DieType.MAGIC:
-                CombatManager.ExecuteAction(new DamageAction(roller, target, actualRoll, isPoiseDamage: false));
-                CombatManager.ExecuteAction(new DamageAction(roller, target, actualRoll, isPoiseDamage: true));
+                CombatManager.ExecuteAction(new DamageAction(roller, target, DamageType.BLUNT, actualRoll, isPoiseDamage: false));
+                CombatManager.ExecuteAction(new DamageAction(roller, target, DamageType.BLUNT, actualRoll, isPoiseDamage: true));
+                eventManager.BroadcastEvent(new CombatEventDieHit(roller, target, die, naturalRoll, actualRoll));
+                break;
+            case DieType.ELDRITCH:
+                CombatManager.ExecuteAction(new DamageAction(roller, target, DamageType.ELDRITCH, actualRoll, isPoiseDamage: false));
+                CombatManager.ExecuteAction(new DamageAction(roller, target, DamageType.ELDRITCH, actualRoll, isPoiseDamage: true));
                 eventManager.BroadcastEvent(new CombatEventDieHit(roller, target, die, naturalRoll, actualRoll));
                 break;
             case DieType.BLOCK:
-                if (!rolledDuringClash) break;
-                CombatManager.ExecuteAction(new DamageAction(roller, target, actualRoll, isPoiseDamage: true));
+                if (!rolledDuringClash){
+                    eventManager.BroadcastEvent(new CombatEventDieEvaded(roller, target, die, naturalRoll, actualRoll, rolledDuringClash: false));
+                    break;
+                };
+                CombatManager.ExecuteAction(new DamageAction(roller, target, DamageType.PURE, actualRoll, isPoiseDamage: true));
+                eventManager.BroadcastEvent(new CombatEventDieBlocked(roller, target, die, naturalRoll, actualRoll, rolledDuringClash: true));
                 break;
             case DieType.EVADE:
-                if (!rolledDuringClash) break;
+                if (!rolledDuringClash){
+                    eventManager.BroadcastEvent(new CombatEventDieEvaded(roller, target, die, naturalRoll, actualRoll, rolledDuringClash: false));
+                    break;
+                };
                 CombatManager.ExecuteAction(new RecoverPoiseAction(roller, actualRoll));
+                eventManager.BroadcastEvent(new CombatEventDieEvaded(roller, target, die, naturalRoll, actualRoll, rolledDuringClash: true));
                 if (losingDieWasAttack) CombatManager.CycleDie(roller, die);
                 break;
             case DieType.UNIQUE:
@@ -359,6 +386,8 @@ public static class CombatManager {
         int i = 0;      // There should never be more than 100 iterations but if somehow there were an infinite Cycle loop, this should break that.
         Logging.Log($"Clash between {combatInstance.activeAbility.NAME} and {combatInstance.reactAbility.NAME}!", Logging.LogLevel.ESSENTIAL);
         while (combatInstance.activeAbilityDice.Count > 0 && combatInstance.reactAbilityDice.Count > 0 && i < 100){
+            combatInstance.abilityItrCount += 1;
+
             Die atkDie = combatInstance.activeAbilityDice[0], reactDie = combatInstance.reactAbilityDice[0];
             int natAtkRoll = atkDie.Roll(), natReactRoll = reactDie.Roll();
 
@@ -372,6 +401,7 @@ public static class CombatManager {
 
             // On tie, remove both dice.
             if (modAtkRoll == modReactRoll){
+                combatInstance.abilityItrCount += 1;
                 eventManager.BroadcastEvent(new CombatEventClashTie(atkDie, reactDie));
                 try {
                     combatInstance.activeAbilityDice.RemoveAt(0);
@@ -403,7 +433,7 @@ public static class CombatManager {
                 winningRoll -= losingRoll;
             }
             eventManager.BroadcastEvent(new CombatEventClashWin(winningDie, winningRoll));
-            eventManager.BroadcastEvent(new CombatEventClashLose(losingDie, losingRoll));
+            eventManager.BroadcastEvent(new CombatEventClashLose(winningChar, losingChar, losingDie, losingRoll));
 
             ResolveDieRoll(winningChar, losingChar, winningDie, winningNatRoll, winningRoll, rolledDuringClash: true, losingDieWasAttack: losingDie.IsAttackDie);
             try {

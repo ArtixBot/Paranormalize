@@ -1,4 +1,6 @@
 using Godot;
+using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reflection.Metadata;
 
@@ -15,6 +17,7 @@ public partial class CharacterUI : Area2D, IEventSubscriber, IEventHandler<Comba
 		set {_character = value; UpdateSprite();}
 	}
 
+	public Dictionary<string, Texture2D> Poses = new();
 	public Sprite2D Sprite;
 	private Label HPStat;
 	private RichTextLabel PoiseStat;
@@ -132,10 +135,24 @@ public partial class CharacterUI : Area2D, IEventSubscriber, IEventHandler<Comba
 	private void UpdateSprite(){
 		if (Character == null || Sprite == null) {return;}
 		if (Character.CHAR_FACTION == CharacterFaction.PLAYER){
-			Sprite.Texture = ResourceLoader.Load<Texture2D>("res://Sprites/character.png");
+			Sprite.Texture = ResourceLoader.Load<Texture2D>("res://Sprites/Characters/Duelist/idle.png");
 		}
 		if (Character.CHAR_FACTION == CharacterFaction.ENEMY){
-			Sprite.Texture = ResourceLoader.Load<Texture2D>("res://Sprites/target dummy.png");
+			Sprite.Texture = ResourceLoader.Load<Texture2D>("res://Sprites/Characters/Test Dummy/idle.png");
+		}
+		// TODO: Preload this during game instead of doing this here.
+		using var dir = DirAccess.Open($"res://Sprites/Characters/{Character.CHAR_NAME}");
+		if (dir != null){
+			dir.ListDirBegin();
+			string fileName = dir.GetNext();
+			while (fileName != ""){
+				if (fileName.EndsWith("import")){
+					fileName = dir.GetNext();
+					continue;
+				}
+				Poses[fileName.TrimSuffix(".png")] = GD.Load<Texture2D>($"res://Sprites/Characters/{Character.CHAR_NAME}/{fileName}");
+				fileName = dir.GetNext();
+			}
 		}
 	}
 

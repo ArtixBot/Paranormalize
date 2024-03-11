@@ -3,7 +3,7 @@ using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
 
-public class AbilityPass : AbstractAbility {
+public class AbilityPass : AbstractAbility, IEventHandler<CombatEventAbilityActivated> {
     public static string id = "PASS";
     private static Localization.AbilityStrings strings = Localization.LocalizationLibrary.Instance.GetAbilityStrings(id);
 
@@ -25,7 +25,7 @@ public class AbilityPass : AbstractAbility {
         new HashSet<TargetingModifiers>{TargetingModifiers.SELF}
     ){}
 
-    public override void Activate(CombatEventAbilityActivated data){
-        base.Activate(data);
+    public override void HandleEvent(CombatEventAbilityActivated data){
+        base.HandleEvent(data);
     }
 }

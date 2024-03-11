@@ -36,7 +36,7 @@ public class RelentlessStabbing : AbstractAbility, IEventHandler<CombatEventDieH
 
     public virtual void HandleEvent(CombatEventDieHit data){
         // TODO: Add && this.OWNER.HasStatusEffect(Lethality);
-        if (data.die.Equals(atkDie) && data.rolledMaximumNaturalValue && this.cycles < 2){
+        if (data.die == atkDie && data.rolledMaximumNaturalValue && this.cycles < 2){
             this.cycles += 1;
             CombatManager.CycleDie(this.OWNER, data.die);
         }
@@ -44,7 +44,7 @@ public class RelentlessStabbing : AbstractAbility, IEventHandler<CombatEventDieH
 
     public override void HandleEvent(CombatEventAbilityActivated data){
         base.HandleEvent(data);
-        if (data.abilityActivated.Equals(this)){
+        if (data.abilityActivated == this){
             this.cycles = 0;
         }
     }

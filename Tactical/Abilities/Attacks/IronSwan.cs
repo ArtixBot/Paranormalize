@@ -32,7 +32,7 @@ public class IronSwan : AbstractAbility, IEventHandler<CombatEventDieHit> {
     }
 
     public virtual void HandleEvent(CombatEventDieHit data){
-        if (data.die.Equals(atkDie)){
+        if (data.die == atkDie){
             CombatManager.ExecuteAction(new PullAction(this.OWNER, data.hitUnit, 2));
         }
     }

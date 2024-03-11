@@ -77,6 +77,7 @@ public class AiBehaviorPureRandom : AiBehavior {
             List<AbstractAbility> activatableReactions = this.OWNER.ActivatableAbilities.Where(ability => ability.TYPE != AbilityType.UTILITY 
                                                                                                         && ability.TYPE != AbilityType.SPECIAL
                                                                                                         && !doNotPlanSameReaction.Contains(ability)).ToList();
+            if (activatableReactions.Count <= 0) break;
             AbstractAbility abilityToReact = activatableReactions[Rng.RandiRange(0, activatableReactions.Count - 1)];
 
             plannedReactions.Add(abilityToReact);

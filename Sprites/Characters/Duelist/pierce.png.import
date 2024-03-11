@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://cw8bqtm7wcp60"
-path="res://.godot/imported/target dummy.png-135cc673bf76a56bb1c8f6e574929edc.ctex"
+uid="uid://odqtapgnu7hw"
+path="res://.godot/imported/pierce.png-cd5ba75c2164b81747c56a644ff55af5.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Sprites/target dummy.png"
-dest_files=["res://.godot/imported/target dummy.png-135cc673bf76a56bb1c8f6e574929edc.ctex"]
+source_file="res://Sprites/Characters/Duelist/pierce.png"
+dest_files=["res://.godot/imported/pierce.png-cd5ba75c2164b81747c56a644ff55af5.ctex"]
 
 [params]
 

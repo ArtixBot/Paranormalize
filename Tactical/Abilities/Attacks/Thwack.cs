@@ -4,7 +4,7 @@ public class Thwack : AbstractAbility {
     public static string id = "THWACK";
     private static Localization.AbilityStrings strings = Localization.LocalizationLibrary.Instance.GetAbilityStrings(id);
 
-    private static int cd = 0;
+    private static int cd = 5;
     private static int min_range = 0;
     private static int max_range = 1;
     private static bool targetsLane = false;

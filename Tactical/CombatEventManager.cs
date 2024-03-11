@@ -24,7 +24,7 @@ public enum CombatEventType {
     // Attacks will always trigger ON_DEAL_DAMAGE, then ON_TAKE_DAMAGE. Status effects like burn/bleed will only trigger ON_TAKE_DAMAGE.
     ON_DEAL_DAMAGE, ON_TAKE_DAMAGE,
     ON_CHARACTER_DEATH,
-    ON_DIE_ROLLED, ON_DIE_HIT,
+    ON_DIE_ROLLED, ON_DIE_HIT, ON_DIE_BLOCKED, ON_DIE_EVADED,
     ON_CLASH_ELIGIBLE, ON_CLASH, ON_CLASH_TIE, ON_CLASH_WIN, ON_CLASH_LOSE,
     ON_UNIT_MOVED,
     ON_STATUS_APPLIED, ON_STATUS_EXPIRED,
@@ -39,6 +39,7 @@ public enum CombatEventPriority {
     BASE_MULTIPLICATIVE = 400,      // Multiplicative multipliers to a value.
     STANDARD = 200,
     POST_DAMAGE_CALC = 100,         // E.g. passives which would prevent damage that would cause stagger or death should happen after all other calculations are complete.
+    FINAL = 5,                      // E.g. effects such as "cannot take actions" should go here. If a character has Next Turn Action (+1 action) and Staggered, Staggered wins.
     UI = 1,                         // UI updates should only update after everything else is done.
 }
 
@@ -312,6 +313,60 @@ public class CombatEventDieHit : ICombatEvent {
     }
 }
 
+public class CombatEventDieBlocked : ICombatEvent {
+    public CombatEventType eventType {
+        get {return CombatEventType.ON_DIE_BLOCKED;}
+    }
+    public AbstractCharacter hitter;
+    public AbstractCharacter hitUnit;
+    public Die die;
+    public int naturalRoll;
+    public int actualRoll;
+
+    public bool rolledMinimumNaturalValue;
+    public bool rolledMaximumNaturalValue;
+    public bool rolledDuringClash;
+
+    public CombatEventDieBlocked(AbstractCharacter hitter, AbstractCharacter hitUnit, Die die, int naturalRoll, int actualRoll, bool rolledDuringClash){
+        this.hitter = hitter;
+        this.hitUnit = hitUnit;
+        this.die = die;
+        this.naturalRoll = naturalRoll;
+        this.actualRoll = actualRoll;
+
+        this.rolledMaximumNaturalValue = naturalRoll == die.MaxValue;
+        this.rolledMinimumNaturalValue = naturalRoll == die.MinValue;
+        this.rolledDuringClash = rolledDuringClash;
+    }
+}
+
+public class CombatEventDieEvaded : ICombatEvent {
+    public CombatEventType eventType {
+        get {return CombatEventType.ON_DIE_EVADED;}
+    }
+    public AbstractCharacter hitter;
+    public AbstractCharacter hitUnit;
+    public Die die;
+    public int naturalRoll;
+    public int actualRoll;
+
+    public bool rolledMinimumNaturalValue;
+    public bool rolledMaximumNaturalValue;
+    public bool rolledDuringClash;
+
+    public CombatEventDieEvaded(AbstractCharacter hitter, AbstractCharacter hitUnit, Die die, int naturalRoll, int actualRoll, bool rolledDuringClash){
+        this.hitter = hitter;
+        this.hitUnit = hitUnit;
+        this.die = die;
+        this.naturalRoll = naturalRoll;
+        this.actualRoll = actualRoll;
+
+        this.rolledMaximumNaturalValue = naturalRoll == die.MaxValue;
+        this.rolledMinimumNaturalValue = naturalRoll == die.MinValue;
+        this.rolledDuringClash = rolledDuringClash;
+    }
+}
+
 public class CombatEventStatusApplied : ICombatEvent {
     public CombatEventType eventType {
         get {return CombatEventType.ON_STATUS_APPLIED;}
@@ -351,11 +406,13 @@ public class CombatEventDamageTaken : ICombatEvent {
         get {return CombatEventType.ON_TAKE_DAMAGE;}
     }
     public AbstractCharacter target;
+    public DamageType damageType;
     public float damageTaken;
     public bool isPoiseDamage;
 
-    public CombatEventDamageTaken(AbstractCharacter target, float damageTaken, bool isPoiseDamage){
+    public CombatEventDamageTaken(AbstractCharacter target, DamageType damageType, float damageTaken, bool isPoiseDamage){
         this.target = target;
+        this.damageType = damageType;
         this.damageTaken = damageTaken;
         this.isPoiseDamage = isPoiseDamage;
     }
@@ -392,10 +449,14 @@ public class CombatEventClashLose : ICombatEvent {
     public CombatEventType eventType {
         get {return CombatEventType.ON_CLASH_LOSE;}
     }
+    public AbstractCharacter winningClasher;
+    public AbstractCharacter losingClasher;
     public Die losingDie;
     public int losingRoll;
 
-    public CombatEventClashLose(Die losingDie, int losingRoll){
+    public CombatEventClashLose(AbstractCharacter winningClasher, AbstractCharacter losingClasher, Die losingDie, int losingRoll){
+        this.winningClasher = winningClasher;
+        this.losingClasher = losingClasher;
         this.losingDie = losingDie;
         this.losingRoll = losingRoll;
     }

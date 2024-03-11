@@ -17,8 +17,18 @@ public class BackAction : AbstractAction {
     }
 
     public override void Execute(){
-        GD.Print($"{this.mover} and {this.targetToMoveFrom}");
-        if (this.mover == null || this.targetToMoveFrom == null) return;
+        // If targetToMoveFrom is null, BackAction always moves the unit left X lanes.
+        if (this.targetToMoveFrom == null){
+            CombatManager.eventManager.BroadcastEvent(
+            new CombatEventUnitMoved(this.mover, 
+                                     this.mover.Position, 
+                                     backDistance, 
+                                     isMoveLeft: true,
+                                     isForcedMovement: false));
+            this.mover.Position = Math.Max(this.mover.Position - this.backDistance, GameVariables.MIN_LANES);
+            return;
+        }
+        if (this.mover == null) return;
         bool moveLeft = this.mover.Position < this.targetToMoveFrom.Position;
 
         CombatManager.eventManager.BroadcastEvent(

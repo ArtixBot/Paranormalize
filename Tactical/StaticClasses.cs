@@ -1,3 +1,4 @@
+using System;
 using Godot;
 
 public static class GameVariables {
@@ -37,4 +38,15 @@ public static class Logging {
             GD.Print(logString);
         }
     }
+}
+
+public static class Lerpables {
+    // Credit to https://www.febucci.com/2018/08/easing-functions/
+	private static float Flip(float x){
+    	return 1 - x;
+	}
+
+	public static float EaseOut(float t, int power = 3){
+		return Flip((float)Math.Pow(Flip(t), power));
+	}
 }

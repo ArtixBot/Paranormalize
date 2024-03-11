@@ -1,7 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 
-public enum DieType {SLASH, PIERCE, BLUNT, MAGIC, BLOCK, EVADE, UNIQUE};
+public enum DieType {SLASH, PIERCE, BLUNT, ELDRITCH, BLOCK, EVADE, UNIQUE};
 
 /*
     The Die struct forms the basis for the entire combat system.
@@ -11,7 +11,7 @@ public enum DieType {SLASH, PIERCE, BLUNT, MAGIC, BLOCK, EVADE, UNIQUE};
         - DieType
         - ints for the minimum and maximum roll value
 */
-public readonly struct Die {
+public class Die {
     private readonly string _dieId;
     private readonly DieType _dieType;
     private readonly int _minValue;
@@ -24,26 +24,26 @@ public readonly struct Die {
         _dieType = dieType;
         _minValue = minValue;
         _maxValue = maxValue;
-        IsAttackDie = this._dieType == DieType.SLASH || this._dieType == DieType.PIERCE || this._dieType == DieType.BLUNT || this._dieType == DieType.MAGIC;
+        IsAttackDie = this._dieType == DieType.SLASH || this._dieType == DieType.PIERCE || this._dieType == DieType.BLUNT || this._dieType == DieType.ELDRITCH;
         IsDefenseDie = this._dieType == DieType.BLOCK || this._dieType == DieType.EVADE;
     }    
-    public readonly int Roll(){
+    public int Roll(){
         return Rng.RandiRange(MinValue, MaxValue);
     }
 
-    public readonly string DieId{
+    public string DieId{
         get {return _dieId;}
     }
 
-    public readonly DieType DieType{
+    public DieType DieType{
         get {return _dieType;}
     }
 
-    public readonly int MinValue{
+    public int MinValue{
         get {return _minValue;}
     }
 
-    public readonly int MaxValue{
+    public int MaxValue{
         get {return _maxValue;}
     }
 }

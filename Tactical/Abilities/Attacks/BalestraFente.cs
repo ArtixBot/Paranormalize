@@ -1,6 +1,4 @@
 using System.Collections.Generic;
-using System.Linq;
-using Godot;
 
 public class BalestraFente : AbstractAbility, IEventSubscriber, IEventHandler<CombatEventAbilityActivated> {
     public static string id = "BALESTRA_FENTE";
@@ -36,8 +34,8 @@ public class BalestraFente : AbstractAbility, IEventSubscriber, IEventHandler<Co
 
     public override void HandleEvent(CombatEventAbilityActivated data){
         base.HandleEvent(data);
-        if (data.abilityActivated.Equals(this)){
-            CombatManager.ExecuteAction(new ForwardAction(this.OWNER, data.targets.First(), MOVE_DISTANCE));
+        if (data.abilityActivated == this){
+            CombatManager.ExecuteAction(new ForwardAction(this.OWNER, data.target, MOVE_DISTANCE));
         }
     }
 }

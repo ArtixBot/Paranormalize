@@ -1,0 +1,37 @@
+[gd_scene load_steps=5 format=3 uid="uid://8gqwukk6oa27"]
+
+[ext_resource type="Script" path="res://Tactical/UI/Abilities/AbilityDie.cs" id="1_0odu8"]
+[ext_resource type="Texture2D" uid="uid://be2dx8wnx2c1" path="res://Sprites/die - evade.png" id="2_umkbt"]
+[ext_resource type="FontFile" uid="uid://bbbh26n3nsxrr" path="res://Assets/Jost-Medium.ttf" id="3_mkura"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_vivry"]
+font = ExtResource("3_mkura")
+font_size = 18
+shadow_color = Color(0, 0, 0, 1)
+shadow_offset = Vector2(0, 1)
+
+[node name="Die" type="Control"]
+layout_mode = 3
+anchors_preset = 0
+grow_horizontal = 2
+grow_vertical = 2
+pivot_offset = Vector2(20, 20)
+script = ExtResource("1_0odu8")
+
+[node name="TextureRect" type="TextureRect" parent="."]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+texture = ExtResource("2_umkbt")
+expand_mode = 1
+
+[node name="Roll Range" type="Label" parent="."]
+layout_mode = 0
+offset_left = -18.0
+offset_top = -32.0
+offset_right = 56.0
+offset_bottom = 8.0
+text = "1 - 3"
+label_settings = SubResource("LabelSettings_vivry")
+horizontal_alignment = 1
+vertical_alignment = 1

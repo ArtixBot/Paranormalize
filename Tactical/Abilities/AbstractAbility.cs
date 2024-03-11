@@ -174,14 +174,10 @@ public abstract class AbstractAbility : IEventSubscriber, IEventHandler<CombatEv
     public virtual void HandleEvent(CombatEventAbilityActivated data){
         if (data.abilityActivated.Equals(this)){
             this.curCooldown = this.BASE_CD;
-            this.Activate(data);
         }
     }
 
     public virtual void HandleEvent(CombatEventRoundEnd data){
         this.curCooldown = Math.Max(this.curCooldown - 1, 0);
     }
-
-    // Should be overridden by Utility abilties.
-    public virtual void Activate(CombatEventAbilityActivated data){}
 }
