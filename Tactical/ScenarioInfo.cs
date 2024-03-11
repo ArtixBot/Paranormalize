@@ -52,11 +52,11 @@ public class TestScenario : ScenarioInfo {
         characterB.MaxPoise = 10;
         characterB.EquipAbility(new Thwack());
         characterB.EquipAbility(new Discharge());
-        characterB.ActionsPerTurn = 0;
+        // characterB.ActionsPerTurn = 0;
         characterB.Behavior = new AiBehaviorPureRandom(characterB);
         characterC.ActionsPerTurn = 0;
-        characterC.MaxHP = 30;
-        characterC.CurHP = 30;
+        characterC.MaxHP = 100;
+        characterC.CurHP = 100;
         characterD.ActionsPerTurn = 0;
     }
 }

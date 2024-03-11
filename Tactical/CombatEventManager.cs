@@ -24,7 +24,7 @@ public enum CombatEventType {
     // Attacks will always trigger ON_DEAL_DAMAGE, then ON_TAKE_DAMAGE. Status effects like burn/bleed will only trigger ON_TAKE_DAMAGE.
     ON_DEAL_DAMAGE, ON_TAKE_DAMAGE,
     ON_CHARACTER_DEATH,
-    ON_DIE_ROLLED, ON_DIE_HIT,
+    ON_DIE_ROLLED, ON_DIE_HIT, ON_DIE_BLOCKED, ON_DIE_EVADED,
     ON_CLASH_ELIGIBLE, ON_CLASH, ON_CLASH_TIE, ON_CLASH_WIN, ON_CLASH_LOSE,
     ON_UNIT_MOVED,
     ON_STATUS_APPLIED, ON_STATUS_EXPIRED,
@@ -310,6 +310,60 @@ public class CombatEventDieHit : ICombatEvent {
 
         this.rolledMaximumNaturalValue = naturalRoll == die.MaxValue;
         this.rolledMinimumNaturalValue = naturalRoll == die.MinValue;
+    }
+}
+
+public class CombatEventDieBlocked : ICombatEvent {
+    public CombatEventType eventType {
+        get {return CombatEventType.ON_DIE_BLOCKED;}
+    }
+    public AbstractCharacter hitter;
+    public AbstractCharacter hitUnit;
+    public Die die;
+    public int naturalRoll;
+    public int actualRoll;
+
+    public bool rolledMinimumNaturalValue;
+    public bool rolledMaximumNaturalValue;
+    public bool rolledDuringClash;
+
+    public CombatEventDieBlocked(AbstractCharacter hitter, AbstractCharacter hitUnit, Die die, int naturalRoll, int actualRoll, bool rolledDuringClash){
+        this.hitter = hitter;
+        this.hitUnit = hitUnit;
+        this.die = die;
+        this.naturalRoll = naturalRoll;
+        this.actualRoll = actualRoll;
+
+        this.rolledMaximumNaturalValue = naturalRoll == die.MaxValue;
+        this.rolledMinimumNaturalValue = naturalRoll == die.MinValue;
+        this.rolledDuringClash = rolledDuringClash;
+    }
+}
+
+public class CombatEventDieEvaded : ICombatEvent {
+    public CombatEventType eventType {
+        get {return CombatEventType.ON_DIE_EVADED;}
+    }
+    public AbstractCharacter hitter;
+    public AbstractCharacter hitUnit;
+    public Die die;
+    public int naturalRoll;
+    public int actualRoll;
+
+    public bool rolledMinimumNaturalValue;
+    public bool rolledMaximumNaturalValue;
+    public bool rolledDuringClash;
+
+    public CombatEventDieEvaded(AbstractCharacter hitter, AbstractCharacter hitUnit, Die die, int naturalRoll, int actualRoll, bool rolledDuringClash){
+        this.hitter = hitter;
+        this.hitUnit = hitUnit;
+        this.die = die;
+        this.naturalRoll = naturalRoll;
+        this.actualRoll = actualRoll;
+
+        this.rolledMaximumNaturalValue = naturalRoll == die.MaxValue;
+        this.rolledMinimumNaturalValue = naturalRoll == die.MinValue;
+        this.rolledDuringClash = rolledDuringClash;
     }
 }
 

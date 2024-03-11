@@ -7,9 +7,7 @@ using System.Threading.Tasks;
 public partial class ClashStage : Control {
 
 	public AbstractCharacter initiatorData;
-	public Die[] initiatorDiceData;
 	public List<AbstractCharacter> targetData;
-	public Die[] defenderDiceData;
 
 	public TacticalScene tacticalSceneNode;
 
@@ -48,6 +46,7 @@ public partial class ClashStage : Control {
 		if (timeSinceDelay >= delayBetweenPoses) {
 			timeSinceDelay = 0.0f;
 			
+			RenderDice();
 			// Default to deleting once all animations have played out.
 			bool stageCompleted = true; 
 			foreach (KeyValuePair<Sprite2D, List<Texture2D>> spritePose in spriteQueuedPoses){
@@ -57,15 +56,6 @@ public partial class ClashStage : Control {
 				spritePose.Value.RemoveAt(0);
 				stageCompleted = false;		// If an animation played, don't delete the animations yet.
 			}
-			if (initiatorQueuedDice.Count > 0){
-				initiatorDiceData = initiatorQueuedDice[0];
-				initiatorQueuedDice.RemoveAt(0);
-			}
-			if (defenderQueuedDice.Count > 0){
-				defenderDiceData = defenderQueuedDice[0];
-				defenderQueuedDice.RemoveAt(0);
-			}
-			RenderDice();
 			if (stageCompleted) {
 				initiatorQueuedDice.Clear();
 				defenderQueuedDice.Clear();
@@ -128,6 +118,11 @@ public partial class ClashStage : Control {
 			n.QueueFree();
 		}
 
+		Die[] initiatorDiceData = initiatorQueuedDice.ElementAtOrDefault(0);
+		Die[] defenderDiceData = defenderQueuedDice.ElementAtOrDefault(0);
+		initiatorQueuedDice.Remove(initiatorDiceData);
+		defenderQueuedDice.Remove(defenderDiceData);
+
 		Control initiatorSide = initiatorOnLeftHalf ? lhsDice : rhsDice;
 		Control defenderSide = initiatorOnLeftHalf ? rhsDice : lhsDice;
 		int initiatorDiceAddOnLeftSide = initiatorOnLeftHalf ? -1 : 1;
@@ -147,6 +142,9 @@ public partial class ClashStage : Control {
 			for (int i = 0; i < defenderDiceData.Length; i++){
 				UI.AbilityDie dieNode = (UI.AbilityDie) clashStageDie.Instantiate();
 				defenderSide.AddChild(dieNode);
+				if (i == 0){
+					dieNode.Scale = new Vector2(1.3f, 1.3f);
+				}
 				dieNode.Position = new Vector2(i * 60 * -initiatorDiceAddOnLeftSide, dieNode.Position.Y);
 				dieNode.Die = defenderDiceData[i];
 			}
