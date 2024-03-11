@@ -12,6 +12,7 @@ shadow_offset = Vector2(0, 1)
 
 [node name="Die" type="Control"]
 layout_mode = 3
+anchors_preset = 0
 grow_horizontal = 2
 grow_vertical = 2
 pivot_offset = Vector2(20, 20)

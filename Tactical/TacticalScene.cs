@@ -12,6 +12,7 @@ public partial class TacticalScene : Node2D,
 									 IEventHandler<CombatEventCombatStart>,
 									 IEventHandler<CombatEventCombatStateChanged>,
 									 IEventHandler<CombatEventCharacterDeath>,
+									 IEventHandler<CombatEventDieRolled>,
 									 IEventHandler<CombatEventDieHit>,
 									 IEventHandler<CombatEventClashTie>
 {
@@ -47,6 +48,7 @@ public partial class TacticalScene : Node2D,
 		CombatManager.eventManager.Subscribe(CombatEventType.ON_CHARACTER_DEATH, this, CombatEventPriority.UI);
 		CombatManager.eventManager.Subscribe(CombatEventType.ON_UNIT_MOVED, this, CombatEventPriority.UI);
 		CombatManager.eventManager.Subscribe(CombatEventType.ON_TAKE_DAMAGE, this, CombatEventPriority.UI);
+		CombatManager.eventManager.Subscribe(CombatEventType.ON_DIE_ROLLED, this, CombatEventPriority.UI);
 		CombatManager.eventManager.Subscribe(CombatEventType.ON_DIE_HIT, this, CombatEventPriority.UI);
 		CombatManager.eventManager.Subscribe(CombatEventType.ON_CLASH_TIE, this, CombatEventPriority.UI);
 		CombatManager.eventManager.Subscribe(CombatEventType.ON_COMBAT_STATE_CHANGE, this, CombatEventPriority.UI);
@@ -92,9 +94,10 @@ public partial class TacticalScene : Node2D,
 			animationStage.AddChild(clashStage);
 
 			clashStage.initiatorData = CombatManager.combatInstance.activeChar;
-			clashStage.initiatorDiceData = CombatManager.combatInstance.activeAbilityDice;
+			clashStage.initiatorDiceData = CombatManager.combatInstance.activeAbilityDice?.ToArray();
 			clashStage.targetData = CombatManager.combatInstance.activeAbilityTargets;
-			clashStage.defenderDiceData = CombatManager.combatInstance.reactAbilityDice;
+			clashStage.defenderDiceData = CombatManager.combatInstance.reactAbilityDice?.ToArray();
+
 			clashStage.SetupStage();
 			animationStage.Visible = true;
 		}
@@ -157,8 +160,9 @@ public partial class TacticalScene : Node2D,
 	}
 
 	public void HandleEvent(CombatEventDieHit data){
-		if (!IsInstanceValid(animationStage.GetNode("Clash Stage"))) return;
-		ClashStage clashStage = (ClashStage) animationStage.GetNode("Clash Stage");
+		ClashStage clashStage = (ClashStage) animationStage.GetNodeOrNull("Clash Stage");
+		if (!IsInstanceValid(clashStage)) return;
+
 		AbstractCharacter hitter = data.hitter;
 		AbstractCharacter hitUnit = data.hitUnit;
 
@@ -180,12 +184,26 @@ public partial class TacticalScene : Node2D,
 		clashStage.QueueAnimation(hitUnit, "damaged");
 	}
 
+	public void HandleEvent(CombatEventDieRolled data){
+		ClashStage clashStage = (ClashStage) animationStage.GetNodeOrNull("Clash Stage");
+		if (!IsInstanceValid(clashStage)) return;
+
+		// Add to render queues for clashStage. Apparently casting ToArray() prevents the items from becoming null when activeAbilityDice is null??
+		if (CombatManager.combatInstance.activeAbilityDice?.Count > 0){
+			clashStage.initiatorQueuedDice.Add(CombatManager.combatInstance.activeAbilityDice?.ToArray());
+		}
+		if (CombatManager.combatInstance.reactAbilityDice?.Count > 0){
+			clashStage.defenderQueuedDice.Add(CombatManager.combatInstance.reactAbilityDice?.ToArray());
+		}
+	}
+
 	public void HandleEvent(CombatEventClashTie data){
-		if (!IsInstanceValid(animationStage.GetNode("Clash Stage"))) return;
+		ClashStage clashStage = (ClashStage) animationStage.GetNodeOrNull("Clash Stage");
+		if (!IsInstanceValid(clashStage)) return;
+
 		AbstractCharacter hitter = CombatManager.combatInstance?.activeChar;
 		AbstractCharacter defender = CombatManager.combatInstance?.activeAbilityTargets.FirstOrDefault();
 		if (hitter == null || defender == null) return;
-		ClashStage clashStage = (ClashStage) animationStage.GetNode("Clash Stage");
 
 		// TODO: Queue animation based on die type *other* than only preclash?
 		clashStage.QueueAnimation(hitter, "preclash");

@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 public partial class ClashStage : Control {
 
 	public AbstractCharacter initiatorData;
-	public List<Die> initiatorDiceData;
+	public Die[] initiatorDiceData;
 	public List<AbstractCharacter> targetData;
-	public List<Die> defenderDiceData;
+	public Die[] defenderDiceData;
 
 	public TacticalScene tacticalSceneNode;
 
@@ -17,6 +17,8 @@ public partial class ClashStage : Control {
 	public List<Sprite2D> targets = new();
 	public Dictionary<string, Sprite2D> dataToSpriteMap = new();
 	public Dictionary<Sprite2D, List<Texture2D>> spriteQueuedPoses = new();
+	public List<Die[]> initiatorQueuedDice = new();
+	public List<Die[]> defenderQueuedDice = new();
 
 	public RichTextLabel lhsAbilityTitle;
 	public RichTextLabel rhsAbilityTitle;
@@ -28,6 +30,7 @@ public partial class ClashStage : Control {
 	public float delayBetweenPoses = 0.5f;
 	private float timeSinceDelay;
 
+	private bool initiatorOnLeftHalf;
 	private bool isSetup = false;
 	
 	// Called when the node enters the scene tree for the first time.
@@ -54,7 +57,18 @@ public partial class ClashStage : Control {
 				spritePose.Value.RemoveAt(0);
 				stageCompleted = false;		// If an animation played, don't delete the animations yet.
 			}
+			if (initiatorQueuedDice.Count > 0){
+				initiatorDiceData = initiatorQueuedDice[0];
+				initiatorQueuedDice.RemoveAt(0);
+			}
+			if (defenderQueuedDice.Count > 0){
+				defenderDiceData = defenderQueuedDice[0];
+				defenderQueuedDice.RemoveAt(0);
+			}
+			RenderDice();
 			if (stageCompleted) {
+				initiatorQueuedDice.Clear();
+				defenderQueuedDice.Clear();
 				await Task.Delay(TimeSpan.FromSeconds(0.5f));		// linger effect
 				try {
 					CanvasLayer animationStage = (CanvasLayer) GetParent();
@@ -89,8 +103,8 @@ public partial class ClashStage : Control {
 		// If initiator + all targets are in the same lane, place the initiator on the left if the initiator is a player, else on the right for an enemy.
 		int initiatorPos = initiatorData.Position;
 		double targetAvgPos = targetData.Select(_ => _.Position).Average();
+		initiatorOnLeftHalf = initiatorPos < targetAvgPos || (initiatorPos == targetAvgPos && initiatorData.CHAR_FACTION == CharacterFaction.PLAYER);
 
-		bool initiatorOnLeftHalf = initiatorPos < targetAvgPos || (initiatorPos == targetAvgPos && initiatorData.CHAR_FACTION == CharacterFaction.PLAYER);
 		initiator.Position = initiatorOnLeftHalf ? new Vector2(510, 400) : new Vector2(1510, 400);
 		initiator.FlipH = !initiatorOnLeftHalf;
 		if (initiatorOnLeftHalf){
@@ -105,11 +119,20 @@ public partial class ClashStage : Control {
 			targets[i].FlipH = initiatorOnLeftHalf;
 		}
 
+		RenderDice();
+		isSetup = true;
+	}
+
+	public void RenderDice(){
+		foreach (Node n in lhsDice.GetChildren() + rhsDice.GetChildren()){
+			n.QueueFree();
+		}
+
 		Control initiatorSide = initiatorOnLeftHalf ? lhsDice : rhsDice;
 		Control defenderSide = initiatorOnLeftHalf ? rhsDice : lhsDice;
 		int initiatorDiceAddOnLeftSide = initiatorOnLeftHalf ? -1 : 1;
 		if (initiatorDiceData != null){
-			for (int i = 0; i < initiatorDiceData.Count; i++){
+			for (int i = 0; i < initiatorDiceData.Length; i++){
 				UI.AbilityDie dieNode = (UI.AbilityDie) clashStageDie.Instantiate();
 				initiatorSide.AddChild(dieNode);
 				if (i == 0){
@@ -121,15 +144,13 @@ public partial class ClashStage : Control {
 		}
 
 		if (defenderDiceData != null){
-			for (int i = 0; i < defenderDiceData.Count; i++){
+			for (int i = 0; i < defenderDiceData.Length; i++){
 				UI.AbilityDie dieNode = (UI.AbilityDie) clashStageDie.Instantiate();
 				defenderSide.AddChild(dieNode);
 				dieNode.Position = new Vector2(i * 60 * -initiatorDiceAddOnLeftSide, dieNode.Position.Y);
 				dieNode.Die = defenderDiceData[i];
 			}
 		}
-
-		isSetup = true;
 	}
 
 	public void QueueAnimation(AbstractCharacter character, string poseToSwapTo){

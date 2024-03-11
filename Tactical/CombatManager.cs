@@ -300,8 +300,9 @@ public static class CombatManager {
             Die die = combatInstance.activeAbilityDice[0];
             int dieRoll = die.Roll();
             Logging.Log($"{combatInstance.activeAbility.OWNER.CHAR_NAME} rolls a(n) {die.DieType} die (range: {die.MinValue} - {die.MaxValue}, natural roll: {dieRoll}).", Logging.LogLevel.ESSENTIAL);
+           
             int modifiedRoll = eventManager.BroadcastEvent(new CombatEventDieRolled(die, dieRoll)).rolledValue;
-
+            
             foreach (AbstractCharacter target in combatInstance.activeAbilityTargets.ToList()){
                 ResolveDieRoll(combatInstance.activeAbility.OWNER, target, die, dieRoll, modifiedRoll, rolledDuringClash: false, losingDieWasAttack: false);
             }
