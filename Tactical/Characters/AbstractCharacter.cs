@@ -11,7 +11,7 @@ public partial class AbstractCharacter : IEventSubscriber, IEventHandler<CombatE
 
     public List<AbstractAbility> abilities = new();       // At the start of combat, deep-copy everything from PERMA_ABILITIES.
     public List<AbstractAbility> AvailableAbilities {
-        get {return abilities.Where(ability => ability.IsAvailable).ToList();}
+        get {return abilities.Where(ability => ability.IsAvailable && ability.TYPE != AbilityType.SPECIAL).ToList();}
     }
     public List<AbstractAbility> ActivatableAbilities {
         get {return abilities.Where(ability => ability.IsActivatable).ToList();}

@@ -134,7 +134,6 @@ public partial class TacticalScene : Node2D,
 		float? delay = CombatManager.combatInstance?.abilityItrCount * 0.5f;
 		await Task.Delay(TimeSpan.FromSeconds((double)delay));
 
-
 		string colorPrefix = data.isPoiseDamage ? "[color=#ffba44]" : "[color=#ff4444]";
 
         RichTextLabel damageNumber = new(){

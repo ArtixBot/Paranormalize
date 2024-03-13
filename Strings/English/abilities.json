@@ -1,4 +1,11 @@
 {
+	"ALL_IN": {
+		"NAME": "All In",
+		"STRINGS": {
+			"GENERIC": "[color=#4cf]On activate:[/color] All other Available abilities suffer Exert 2.",
+			"ALL_IN": "This roll is increased equal to twice the abilities exerted on ability activation.\n[color=#4cf]On hit:[/color] If this rolled a 32 or higher, Stagger the target."
+		}
+	},
 	"ASSAULT": {
 		"NAME": "Assault",
 		"STRINGS": {
