@@ -33,6 +33,8 @@ public class TestScenario : ScenarioInfo {
         playerA.EquipAbility(new TestAttack());
         playerA.EquipAbility(new Obliterate());
         playerA.EquipAbility(new Brutalize());
+        playerA.EquipAbility(new Purge());
+        playerA.EquipAbility(new Knockout());
         playerA.EquipAbility(new Preparation());
         playerA.EquipAbility(new Assault());
         playerA.EquipAbility(new BalestraFente());

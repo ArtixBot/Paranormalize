@@ -3,7 +3,7 @@
 		"NAME": "All In",
 		"STRINGS": {
 			"GENERIC": "[color=#4cf]On activate:[/color] All other Available abilities suffer Exert 2.",
-			"ALL_IN": "This roll is increased equal to twice the abilities exerted on ability activation.\n[color=#4cf]On hit:[/color] If this rolled a 32 or higher, Stagger the target."
+			"ALL_IN": "Increase this die's roll by twice the abilities exerted on ability activation.\n[color=#4cf]On hit:[/color] If this rolled a 32 or higher, Stagger the target."
 		}
 	},
 	"ASSAULT": {
@@ -35,6 +35,12 @@
 			"PULL_DIE": "[color=#4cf]On hit:[/color] Pull 2."
 		}
 	},
+	"KNOCKOUT": {
+		"NAME": "Knockout",
+		"STRINGS": {
+			"GENERIC": "[color=#4cf]On activate:[/color] If the target started this round in a different lane, add a Blunt 8-10 die to this ability."
+		}
+	},
 	"OBLITERATE": {
 		"NAME": "Obliterate",
 		"STRINGS": {
@@ -46,6 +52,10 @@
 		"STRINGS": {
 			"GENERIC": "Target self.\nGain an additional action next round."
 		}
+	},
+	"PURGE": {
+		"NAME": "Purge",
+		"STRINGS": {}
 	},
 	"TEST_REACT": {
 		"NAME": "Test Reaction"
