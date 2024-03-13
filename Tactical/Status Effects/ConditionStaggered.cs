@@ -31,6 +31,7 @@ public class ConditionStaggered : AbstractStatusEffect, IEventHandler<CombatEven
             CombatManager.combatInstance.reactAbilityDice?.Clear();
         }
         // On stagger, remove all remaining actions from the user this turn as well.
+        this.OWNER.CurPoise = 0;        // Also set to zero from cases where Stagger is applied (e.g. All In ability)
         CombatManager.combatInstance.turnlist.RemoveAllInstancesOfItem(this.OWNER);
     }
 

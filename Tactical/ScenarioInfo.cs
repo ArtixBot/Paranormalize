@@ -33,11 +33,14 @@ public class TestScenario : ScenarioInfo {
         playerA.EquipAbility(new TestAttack());
         playerA.EquipAbility(new Obliterate());
         playerA.EquipAbility(new Brutalize());
+        playerA.EquipAbility(new Purge());
+        playerA.EquipAbility(new Knockout());
         playerA.EquipAbility(new Preparation());
         playerA.EquipAbility(new Assault());
         playerA.EquipAbility(new BalestraFente());
         playerA.EquipAbility(new Discharge());
         playerA.EquipAbility(new IronSwan());
+        playerA.EquipAbility(new AllIn());
         playerA.MinSpd = 10;
         playerA.MaxSpd = 20;
         playerA.ActionsPerTurn = 3;
@@ -49,7 +52,8 @@ public class TestScenario : ScenarioInfo {
 
         characterB.MaxHP = 100;
         characterB.CurHP = 100;
-        characterB.MaxPoise = 10;
+        characterB.MaxPoise = 60;
+        characterB.CurPoise = 60;
         characterB.EquipAbility(new Thwack());
         characterB.EquipAbility(new Discharge());
         // characterB.ActionsPerTurn = 0;
