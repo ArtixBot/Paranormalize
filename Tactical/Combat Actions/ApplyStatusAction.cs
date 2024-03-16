@@ -7,13 +7,11 @@ public class ApplyStatusAction : AbstractAction {
     private AbstractCharacter target;
     private AbstractStatusEffect effect;
     private int stacksToApply;
-    private int delay;      // Delay application of the effect until round start of round X + delay.
 
-    public ApplyStatusAction(AbstractCharacter target, AbstractStatusEffect effect, int stacksToApply, int delay = 0){
+    public ApplyStatusAction(AbstractCharacter target, AbstractStatusEffect effect, int stacksToApply){
         this.target = target;
         this.effect = effect;
         this.stacksToApply = stacksToApply;
-        this.delay = delay;
     }
 
     public override void Execute(){
