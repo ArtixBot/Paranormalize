@@ -43,7 +43,7 @@ public class AllIn : AbstractAbility, IEventHandler<CombatEventAbilityActivated>
         if (data.abilityActivated == this){
             this.addedRoll = 0;
 
-            foreach (AbstractAbility ability in this.OWNER.AvailableAbilities.Where(ability => ability.ID != this.ID)){
+            foreach (AbstractAbility ability in this.OWNER.AvailableAbilities){
                 // TODO: Replace this with a Combat Action that allows for exert actions to take place.
                 ability.curCooldown = 2;
                 this.addedRoll += 2;

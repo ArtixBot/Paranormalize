@@ -372,7 +372,7 @@ public static class CombatManager {
                     eventManager.BroadcastEvent(new CombatEventDieEvaded(roller, target, die, naturalRoll, actualRoll, rolledDuringClash: false));
                     break;
                 };
-                CombatManager.ExecuteAction(new RecoverPoiseAction(roller, actualRoll));
+                CombatManager.ExecuteAction(new RestoreAction(roller, actualRoll, RestoreAction.RestoreType.POISE));
                 eventManager.BroadcastEvent(new CombatEventDieEvaded(roller, target, die, naturalRoll, actualRoll, rolledDuringClash: true));
                 if (losingDieWasAttack) CombatManager.CycleDie(roller, die);
                 break;

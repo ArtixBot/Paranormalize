@@ -11,7 +11,6 @@ public enum DamageType {
 
 public class DamageAction : AbstractAction {
 
-
     private AbstractCharacter attacker;
     private AbstractCharacter defender;
     private DamageType damageType;
