@@ -9,7 +9,7 @@ public enum CombatState {
 	ROUND_START, ROUND_END,
 	TURN_START, TURN_END,
 	AWAITING_ABILITY_INPUT, AWAITING_CLASH_INPUT,
-	RESOLVE_ABILITIES, POST_RESOLVE_ABILITIES,
+	RESOLVE_ABILITIES
 }
 
 public class CombatInstance {
@@ -125,7 +125,7 @@ public static class CombatManager {
                     ));
                 }
                 break;
-            case CombatState.RESOLVE_ABILITIES:         // Triggers after AWAITING_ABILITY_INPUT, or (optionally) AWAITING_CLASH_INPUT.
+            case CombatState.RESOLVE_ABILITIES:         // Triggers after AWAITING_ABILITY_INPUT or AWAITING_CLASH_INPUT.
                 ResolveAbilities();
                 break;
             default:

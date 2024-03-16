@@ -32,6 +32,12 @@
 			"PIERCE_PULL": "[color=#4cf]On hit:[/color] Pull 1.\n[color=#4cf]On hit or clash lose:[/color] If the target is not within range 1, discard all remaining dice."
 		}
 	},
+	"CHARGE": {
+		"NAME": "Charge",
+		"STRINGS": {
+			"GENERIC": "[color=#4cf]On activate:[/color] Forward 2.\nAfter activation, if the target is defeated, this ability has Cantrip and reset this ability's cooldown."
+		}
+	},
 	"DISCHARGE": {
 		"NAME": "Discharge"
 	},

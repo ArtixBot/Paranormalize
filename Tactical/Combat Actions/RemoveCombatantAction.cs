@@ -26,6 +26,7 @@ public class RemoveCombatantAction : AbstractAction {
         }
 
         // Handle on-death effects.
+        GD.Print("DJLOKVHEIONSADFASDF");
         CombatManager.eventManager?.BroadcastEvent(new CombatEventCharacterDeath(this.target));
         // TODO: Unsubscribe all of the fighter's abilities and passives as well.
         CombatManager.eventManager?.UnsubscribeAll(this.target);
