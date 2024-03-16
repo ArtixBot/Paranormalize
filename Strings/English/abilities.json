@@ -20,6 +20,12 @@
 			"CRIT_DIE": "[color=#4cf]On [shake]critical[/shake] hit:[/color] Consume all Critical to deal +50% damage per Critical consumed."
 		}
 	},
+	"BEATDOWN": {
+		"NAME": "Beatdown",
+		"STRINGS": {
+			"NEXT_ROUND_STR_ON_HIT": "[color=#4cf]On hit:[/color] Gain 1 Strength next round."
+		}
+	},
 	"BRUTALIZE": {
 		"NAME": "Brutalize",
 		"STRINGS": {
@@ -28,6 +34,12 @@
 	},
 	"DISCHARGE": {
 		"NAME": "Discharge"
+	},
+	"INDOMITABLE": {
+		"NAME": "Indomitable",
+		"STRINGS": {
+			"GENERIC": "Target self.\nRecover 33% of max HP. Recover 33% of max Poise."
+		}
 	},
 	"IRON_SWAN": {
 		"NAME": "Iron Swan",
@@ -87,6 +99,12 @@
 		"STRINGS": {
 			"GENERIC": "[color=#4cf]On activate:[/color] Back 1.",
 			"EVADE_HASTE": "[color=#4cf]On [wave]evade[/wave]:[/color] Gain 1 Haste."
+		}
+	},
+	"SECOND_WIND": {
+		"NAME": "Second Wind",
+		"STRINGS": {
+			"GENERIC": "Target self.\nRecover 33% of missing HP. Recover 33% of missing Poise."
 		}
 	},
 	"PASS": {

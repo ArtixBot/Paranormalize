@@ -280,10 +280,12 @@ public class CombatEventDieRolled : ICombatEvent {
     public CombatEventType eventType {
         get {return CombatEventType.ON_DIE_ROLLED;}
     }
+    public AbstractAbility ability;     // Used for things like Strength status effect to get owner.
     public Die die;
     public int rolledValue;
 
-    public CombatEventDieRolled(Die die, int rolledValue){
+    public CombatEventDieRolled(AbstractAbility ability, Die die, int rolledValue){
+        this.ability = ability;
         this.die = die;
         this.rolledValue = rolledValue;
     }

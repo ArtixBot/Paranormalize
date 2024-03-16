@@ -32,8 +32,11 @@ public class TestScenario : ScenarioInfo {
         playerA.EquipAbility(new RelentlessStabbing());
         playerA.EquipAbility(new TestAttack());
         playerA.EquipAbility(new Obliterate());
+        playerA.EquipAbility(new Beatdown());
         playerA.EquipAbility(new Brutalize());
         playerA.EquipAbility(new Purge());
+        playerA.EquipAbility(new SecondWind());
+        playerA.EquipAbility(new Indomitable());
         playerA.EquipAbility(new Knockout());
         playerA.EquipAbility(new Preparation());
         playerA.EquipAbility(new Assault());
@@ -44,6 +47,8 @@ public class TestScenario : ScenarioInfo {
         playerA.MinSpd = 10;
         playerA.MaxSpd = 20;
         playerA.ActionsPerTurn = 3;
+        playerA.MaxHP = 100;
+        playerA.MaxPoise = 100;
 
         playerB.EquipAbility(new Discharge());
         playerB.EquipAbility(new Repartee());
@@ -56,7 +61,7 @@ public class TestScenario : ScenarioInfo {
         characterB.CurPoise = 60;
         characterB.EquipAbility(new Thwack());
         characterB.EquipAbility(new Discharge());
-        // characterB.ActionsPerTurn = 0;
+        characterB.ActionsPerTurn = 0;
         characterB.Behavior = new AiBehaviorPureRandom(characterB);
         characterC.ActionsPerTurn = 0;
         characterC.MaxHP = 100;
