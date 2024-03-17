@@ -432,10 +432,9 @@ public static class CombatManager {
             if (winningDie.IsAttackDie && losingDie.DieType == DieType.BLOCK) {
                 winningRoll -= losingRoll;
             }
-            eventManager.BroadcastEvent(new CombatEventClashWin(winningDie, winningRoll));
-            eventManager.BroadcastEvent(new CombatEventClashLose(winningChar, losingChar, losingDie, losingRoll));
+            CombatEventClashComplete data = eventManager.BroadcastEvent(new CombatEventClashComplete(winningChar, losingChar, winningDie, winningRoll, losingDie, losingRoll));
 
-            ResolveDieRoll(winningChar, losingChar, winningDie, winningNatRoll, winningRoll, rolledDuringClash: true, losingDieWasAttack: losingDie.IsAttackDie);
+            ResolveDieRoll(data.winningClasher, data.losingClasher, data.winningDie, winningNatRoll, data.winningRoll, rolledDuringClash: true, losingDieWasAttack: losingDie.IsAttackDie);
             try {
                 combatInstance.activeAbilityDice.RemoveAt(0);
             } catch (ArgumentOutOfRangeException){

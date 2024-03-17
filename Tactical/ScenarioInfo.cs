@@ -47,6 +47,7 @@ public class TestScenario : ScenarioInfo {
         playerA.EquipAbility(new Discharge());
         playerA.EquipAbility(new IronSwan());
         playerA.EquipAbility(new AllIn());
+        playerA.EquipAbility(new ShrugOff());
         playerA.MinSpd = 10;
         playerA.MaxSpd = 20;
         playerA.ActionsPerTurn = 3;
@@ -62,9 +63,10 @@ public class TestScenario : ScenarioInfo {
         characterB.CurHP = 100;
         characterB.MaxPoise = 60;
         characterB.CurPoise = 60;
+        characterB.MaxSpd = 1000;
         characterB.EquipAbility(new Thwack());
-        characterB.EquipAbility(new Discharge());
-        characterB.ActionsPerTurn = 0;
+        // characterB.EquipAbility(new Discharge());
+        // characterB.ActionsPerTurn = 0;
         characterB.Behavior = new AiBehaviorPureRandom(characterB);
         characterC.ActionsPerTurn = 0;
         characterC.MaxHP = 100;

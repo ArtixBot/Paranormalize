@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-public class Repartee : AbstractAbility, IEventHandler<CombatEventClashLose> {
+public class Repartee : AbstractAbility, IEventHandler<CombatEventClashComplete> {
     public static string id = "REPARTEE";
     private static Localization.AbilityStrings strings = Localization.LocalizationLibrary.Instance.GetAbilityStrings(id);
 
@@ -30,10 +30,10 @@ public class Repartee : AbstractAbility, IEventHandler<CombatEventClashLose> {
 
     public override void InitSubscriptions(){
         base.InitSubscriptions();
-        CombatEventManager.instance?.Subscribe(CombatEventType.ON_CLASH_LOSE, this, CombatEventPriority.STANDARD);
+        CombatEventManager.instance?.Subscribe(CombatEventType.ON_CLASH_COMPLETE, this, CombatEventPriority.STANDARD);
     }
 
-    public virtual void HandleEvent(CombatEventClashLose data){
+    public virtual void HandleEvent(CombatEventClashComplete data){
         if (data.losingDie == atkDieA){
             CombatManager.GetDieQueueFromCharacter(this.OWNER).Clear();
         }

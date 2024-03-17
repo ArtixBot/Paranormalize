@@ -25,7 +25,7 @@ public enum CombatEventType {
     ON_DEAL_DAMAGE, ON_TAKE_DAMAGE,
     ON_CHARACTER_DEATH,
     ON_DIE_ROLLED, ON_DIE_HIT, ON_DIE_BLOCKED, ON_DIE_EVADED,
-    ON_CLASH_ELIGIBLE, ON_CLASH, ON_CLASH_TIE, ON_CLASH_WIN, ON_CLASH_LOSE,
+    ON_CLASH_ELIGIBLE, ON_CLASH, ON_CLASH_TIE, ON_CLASH_COMPLETE,
     ON_UNIT_MOVED,
     ON_STATUS_APPLIED, ON_STATUS_EXPIRED,
 }
@@ -434,31 +434,22 @@ public class CombatEventClashTie : ICombatEvent {
     }
 }
 
-public class CombatEventClashWin : ICombatEvent {
+public class CombatEventClashComplete : ICombatEvent {
     public CombatEventType eventType {
-        get {return CombatEventType.ON_CLASH_WIN;}
-    }
-    public Die winningDie;
-    public int winningRoll;
-
-    public CombatEventClashWin(Die winningDie, int winningRoll){
-        this.winningDie = winningDie;
-        this.winningRoll = winningRoll;
-    }
-}
-
-public class CombatEventClashLose : ICombatEvent {
-    public CombatEventType eventType {
-        get {return CombatEventType.ON_CLASH_LOSE;}
+        get {return CombatEventType.ON_CLASH_COMPLETE;}
     }
     public AbstractCharacter winningClasher;
     public AbstractCharacter losingClasher;
+    public Die winningDie;
+    public int winningRoll;
     public Die losingDie;
     public int losingRoll;
 
-    public CombatEventClashLose(AbstractCharacter winningClasher, AbstractCharacter losingClasher, Die losingDie, int losingRoll){
+    public CombatEventClashComplete(AbstractCharacter winningClasher, AbstractCharacter losingClasher, Die winningDie, int winningRoll, Die losingDie, int losingRoll){
         this.winningClasher = winningClasher;
         this.losingClasher = losingClasher;
+        this.winningDie = winningDie;
+        this.winningRoll = winningRoll;
         this.losingDie = losingDie;
         this.losingRoll = losingRoll;
     }
