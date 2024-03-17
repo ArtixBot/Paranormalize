@@ -70,5 +70,6 @@ public class TestScenario : ScenarioInfo {
         characterC.MaxHP = 100;
         characterC.CurHP = 100;
         characterD.ActionsPerTurn = 0;
+        characterE.ActionsPerTurn = 0;
     }
 }
