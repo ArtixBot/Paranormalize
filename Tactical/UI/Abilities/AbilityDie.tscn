@@ -37,4 +37,8 @@ offset_left = 107.0
 offset_right = 532.0
 offset_bottom = 53.0
 bbcode_enabled = true
-text = "[font s=18][i]On critical hit[/i]: Consume all Critical. Add +50% damage per Critical consumed.[/font]"
+text = "[font s=18][i]On critical hit[/i]: Consume all Critical. Add +50% damage per Critical consumed.
+
+This is a long description."
+fit_content = true
+scroll_active = false

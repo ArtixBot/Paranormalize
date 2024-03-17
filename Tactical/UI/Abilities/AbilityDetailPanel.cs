@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Godot;
 
 namespace UI;
@@ -28,14 +29,14 @@ public partial class AbilityDetailPanel : Control
 		abilityName = GetNode<Label>("Ability Name");
 	}
 
-	private void UpdateDescriptions(){
+	private async void UpdateDescriptions(){
 		abilityName.Text = _ability.NAME;
 		string rangeText = (_ability.TYPE == AbilityType.REACTION) ? "" : $"\t\t[img=24]res://Sprites/range.png[/img] {_ability.MIN_RANGE} - {_ability.MAX_RANGE}";
 		abilityInfo.Text = $"[font n='res://Assets/Jost-Medium.ttf' s=16]{_ability.TYPE}"  + $"\t\t[img=24]res://Sprites/cooldown.png[/img] {_ability.BASE_CD}" + rangeText;
 		AbilityDesc = "[font n='res://Assets/Inter-Regular.ttf' s=16]" + _ability.STRINGS.GetValueOrDefault("GENERIC", "") + "[/font]";
 
-		// TODO: Reevaluate use of constant values.
-		int startingDieYPos = _ability.STRINGS.GetValueOrDefault("GENERIC", "") == "" ? 100 : 120;
+		await Task.Delay(1);		// RTL text label does not update size until after delay.
+		int startingDieYPos = 100 + (int)_abilityDesc.Size.Y;	// +100 for earlier content (title, range/cooldown), +10 for margin.
 
 		for (int i = 0; i < _ability.BASE_DICE.Count; i++){
             AbilityDie node = (AbilityDie) abilityDie.Instantiate();
