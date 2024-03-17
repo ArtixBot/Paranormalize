@@ -53,6 +53,18 @@
 	"DISCHARGE": {
 		"NAME": "Discharge"
 	},
+	"ENDURE": {
+		"NAME": "Endure",
+		"STRINGS": {
+			"GENERIC": "Target self.\nGain 4 Protection and 4 Poise Protection this round and next round."
+		}
+	},
+	"HEW": {
+		"NAME": "Hew",
+		"STRINGS": {
+			"GENERIC": "AoE: Targets all enemies in a lane."
+		}
+	},
 	"INDOMITABLE": {
 		"NAME": "Indomitable",
 		"STRINGS": {

@@ -15,6 +15,14 @@
 		"NAME": "Next Round {STATUS_NAME}",
 		"DESC": "On round start, gain {stacks} stack(s) of {STATUS_NAME}."
 	},
+	"POISE_PROTECTION": {
+		"NAME": "Poise Protection",
+		"DESC": "Incoming Poise damage is reduced by {stacks} this round."
+	},
+	"PROTECTION": {
+		"NAME": "Protection",
+		"DESC": "Incoming damage is reduced by {stacks} this round."
+	},
 	"SLOW": {
 		"NAME": "Slow",
 		"DESC": "On round start, reduce the Speed of {owner}'s actions by {stacks}, then remove all Slow."

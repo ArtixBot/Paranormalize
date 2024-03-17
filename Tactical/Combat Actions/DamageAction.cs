@@ -1,3 +1,4 @@
+using System;
 using System.Diagnostics;
 using Godot;
 
@@ -37,6 +38,9 @@ public class DamageAction : AbstractAction {
         // This accounts for cases like a +50% and +100% damage multiplier, which is 3 * 1.5 => 4.5 * 2 => 9.
         CombatEventDamageTaken damageData = new(this.defender, this.damageType, this.damage, this.isPoiseDamage);
         CombatManager.eventManager.BroadcastEvent(damageData);
+
+        // Damage cannot be negative.
+        damageData.damageTaken = Math.Max(damageData.damageTaken, 0);
 
         // The final value always takes the floor (no rounding up).
         if (damageData.isPoiseDamage) {
