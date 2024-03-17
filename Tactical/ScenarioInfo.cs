@@ -47,6 +47,7 @@ public class TestScenario : ScenarioInfo {
         playerA.EquipAbility(new Discharge());
         playerA.EquipAbility(new IronSwan());
         playerA.EquipAbility(new Breather());
+        playerA.EquipAbility(new Break());
         playerA.EquipAbility(new AllIn());
         playerA.EquipAbility(new ShrugOff());
         playerA.MinSpd = 10;
@@ -67,7 +68,7 @@ public class TestScenario : ScenarioInfo {
         characterB.MaxSpd = 1000;
         characterB.EquipAbility(new Thwack());
         // characterB.EquipAbility(new Discharge());
-        characterB.ActionsPerTurn = 0;
+        // characterB.ActionsPerTurn = 1;
         characterB.Behavior = new AiBehaviorPureRandom(characterB);
         characterC.ActionsPerTurn = 0;
         characterC.MaxHP = 100;

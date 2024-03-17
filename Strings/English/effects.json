@@ -1,4 +1,8 @@
 {
+	"BROKEN": {
+		"NAME": "Broken",
+		"DESC": "Block dice have -{stacks} to rolls this round."
+	},
 	"HASTE": {
 		"NAME": "Haste",
 		"DESC": "On round start, increase the Speed of {owner}'s actions by {stacks}, then remove all Haste."

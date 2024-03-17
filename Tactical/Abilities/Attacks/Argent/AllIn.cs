@@ -34,7 +34,7 @@ public class AllIn : AbstractAbility, IEventHandler<CombatEventAbilityActivated>
         base.InitSubscriptions();
         CombatEventManager.instance?.Subscribe(CombatEventType.ON_ABILITY_ACTIVATED, this, CombatEventPriority.STANDARD);
         CombatEventManager.instance?.Subscribe(CombatEventType.ON_DIE_ROLLED, this, CombatEventPriority.STANDARD);
-        CombatEventManager.instance?.Subscribe(CombatEventType.ON_DIE_HIT, this, CombatEventPriority.STANDARD);
+        CombatEventManager.instance?.Subscribe(CombatEventType.ON_DIE_HIT, this, CombatEventPriority.FINAL);
     }
 
     public override void HandleEvent(CombatEventAbilityActivated data){

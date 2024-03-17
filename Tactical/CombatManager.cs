@@ -399,6 +399,10 @@ public static class CombatManager {
             int modAtkRoll = eventManager.BroadcastEvent(new CombatEventDieRolled(combatInstance.activeAbility, atkDie, natAtkRoll)).rolledValue;
             int modReactRoll = eventManager.BroadcastEvent(new CombatEventDieRolled(combatInstance.reactAbility, reactDie, natReactRoll)).rolledValue;
 
+            CombatEventDieClash dieClashData = eventManager.BroadcastEvent(new CombatEventDieClash(combatInstance.activeAbility, atkDie, modAtkRoll, combatInstance.reactAbility, reactDie, modReactRoll));
+            modAtkRoll = dieClashData.attackerRoll;
+            modReactRoll = dieClashData.reactRoll;
+
             // On tie, remove both dice.
             if (modAtkRoll == modReactRoll){
                 combatInstance.abilityItrCount += 1;
@@ -433,6 +437,8 @@ public static class CombatManager {
                 winningRoll -= losingRoll;
             }
             CombatEventClashComplete data = eventManager.BroadcastEvent(new CombatEventClashComplete(winningChar, losingChar, winningDie, winningRoll, losingDie, losingRoll));
+            data.winningRoll = Math.Max(winningRoll, 0);        // Cannot have dice values < 0.
+            data.losingRoll = Math.Max(losingRoll, 0);
 
             ResolveDieRoll(data.winningClasher, data.losingClasher, data.winningDie, winningNatRoll, data.winningRoll, rolledDuringClash: true, losingDieWasAttack: losingDie.IsAttackDie);
             try {

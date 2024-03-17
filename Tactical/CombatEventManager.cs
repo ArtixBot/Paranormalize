@@ -25,7 +25,7 @@ public enum CombatEventType {
     ON_DEAL_DAMAGE, ON_TAKE_DAMAGE,
     ON_CHARACTER_DEATH,
     ON_DIE_ROLLED, ON_DIE_HIT, ON_DIE_BLOCKED, ON_DIE_EVADED,
-    ON_CLASH_ELIGIBLE, ON_CLASH, ON_CLASH_TIE, ON_CLASH_COMPLETE,
+    ON_CLASH_ELIGIBLE, ON_DIE_CLASH, ON_CLASH, ON_CLASH_TIE, ON_CLASH_COMPLETE,
     ON_UNIT_MOVED,
     ON_STATUS_APPLIED, ON_STATUS_EXPIRED,
 }
@@ -273,6 +273,29 @@ public class CombatEventClashOccurs : ICombatEvent {
         this.reacter = reacter;
         this.reacterAbility = reacterAbility;
         this.reacterDice = reacterDice;
+    }
+}
+
+public class CombatEventDieClash : ICombatEvent {
+    public CombatEventType eventType {
+        get {return CombatEventType.ON_DIE_CLASH;}
+    }
+    public AbstractAbility attackerAbility;
+    public Die attackerDie;
+    public int attackerRoll;
+
+    public AbstractAbility reactAbility;
+    public Die reactDie;
+    public int reactRoll;
+
+    public CombatEventDieClash(AbstractAbility attackerAbility, Die attackerDie, int attackerRoll, AbstractAbility reacterAbility, Die reacterDie, int reacterRoll){
+        this.attackerAbility = attackerAbility;
+        this.attackerDie = attackerDie;
+        this.attackerRoll = attackerRoll;
+
+        this.reactAbility = reacterAbility;
+        this.reactDie = reacterDie;
+        this.reactRoll = reacterRoll;
     }
 }
 
