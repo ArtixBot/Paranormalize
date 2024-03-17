@@ -26,6 +26,12 @@
 			"NEXT_ROUND_STR_ON_HIT": "[color=#4cf]On hit:[/color] Gain 1 Strength next round."
 		}
 	},
+	"BREATHER": {
+		"NAME": "Breather",
+		"STRINGS": {
+			"GENERIC": "Target self.\nA random Unavailable ability gains Invigorate 1. Repeat this effect once."
+		}
+	},
 	"BRUTALIZE": {
 		"NAME": "Brutalize",
 		"STRINGS": {
