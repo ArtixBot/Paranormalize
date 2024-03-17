@@ -13,6 +13,9 @@ public partial class AbstractCharacter : IEventSubscriber, IEventHandler<CombatE
     public List<AbstractAbility> AvailableAbilities {
         get {return abilities.Where(ability => ability.IsAvailable && ability.TYPE != AbilityType.SPECIAL).ToList();}
     }
+    public List<AbstractAbility> UnavailableAbilities {
+        get {return abilities.Where(ability => !ability.IsAvailable && ability.TYPE != AbilityType.SPECIAL).ToList();}
+    }
     public List<AbstractAbility> ActivatableAbilities {
         get {return abilities.Where(ability => ability.IsActivatable).ToList();}
     }

@@ -37,7 +37,7 @@ public class ForwardAction : AbstractAction {
         CombatManager.eventManager.BroadcastEvent(
             new CombatEventUnitMoved(this.mover, 
                                      this.mover.Position, 
-                                     forwardDistance, 
+                                     maxFwdDistance, 
                                      isMoveLeft: moveLeft,
                                      isForcedMovement: false));
 

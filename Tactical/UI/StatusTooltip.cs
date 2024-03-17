@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using System.Reflection;
+using Localization;
 
 public partial class StatusTooltip : PanelContainer
 {
@@ -23,8 +24,9 @@ public partial class StatusTooltip : PanelContainer
         if (effects == null || effects.Count == 0 || !IsInstanceValid(rtlNode)) return;
         string effectText = "";
         foreach (AbstractStatusEffect effect in effects){
-            string parsedDesc = ParseTooltip(effect);
-            effectText += $"[color={statusToColorMap[effect.TYPE]}]{effect.NAME}[/color]\n{parsedDesc}\n\n";
+            string parsedName = ParseTooltip(effect.NAME, effect);
+            string parsedDesc = ParseTooltip(effect.DESC, effect);
+            effectText += $"[color={statusToColorMap[effect.TYPE]}]{parsedName}[/color]\n{parsedDesc}\n\n";
         }
         rtlNode.Text = "[font n='res://Assets/Inter-Regular.ttf' s=16]" + effectText + "[/font]";
 	}
@@ -35,8 +37,7 @@ public partial class StatusTooltip : PanelContainer
         this.Size = new Vector2(450, 500);
 	}
 
-	string ParseTooltip(AbstractStatusEffect effect){
-        string s = effect.DESC;
+	string ParseTooltip(string s, AbstractStatusEffect effect){
         MatchCollection matches = new Regex(@"(?<=\{)(.*?)(?=\})").Matches(s);
         string prefix = $"[color={statusToColorMap[effect.TYPE]}]";
         string suffix = "[/color]";

@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-public class Obliterate : AbstractAbility, IEventHandler<CombatEventDieHit>, IEventHandler<CombatEventClashLose> {
+public class Obliterate : AbstractAbility, IEventHandler<CombatEventDieHit>, IEventHandler<CombatEventClashComplete> {
     public static string id = "OBLITERATE";
     private static Localization.AbilityStrings strings = Localization.LocalizationLibrary.Instance.GetAbilityStrings(id);
 
@@ -34,6 +34,7 @@ public class Obliterate : AbstractAbility, IEventHandler<CombatEventDieHit>, IEv
     public override void InitSubscriptions(){
         base.InitSubscriptions();
         CombatEventManager.instance?.Subscribe(CombatEventType.ON_DIE_HIT, this, CombatEventPriority.STANDARD);
+        CombatEventManager.instance?.Subscribe(CombatEventType.ON_CLASH_COMPLETE, this, CombatEventPriority.STANDARD);
     }
 
     public virtual void HandleEvent(CombatEventDieHit data){
@@ -49,7 +50,7 @@ public class Obliterate : AbstractAbility, IEventHandler<CombatEventDieHit>, IEv
         }
     }
 
-    public virtual void HandleEvent(CombatEventClashLose data){
+    public virtual void HandleEvent(CombatEventClashComplete data){
         if (data.losingDie == atkDieA){
             if (Math.Abs(this.OWNER.Position - data.winningClasher.Position) > 1){
                 if (this == CombatManager.combatInstance.activeAbility){

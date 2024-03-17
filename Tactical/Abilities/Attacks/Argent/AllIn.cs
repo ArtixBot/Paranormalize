@@ -34,7 +34,7 @@ public class AllIn : AbstractAbility, IEventHandler<CombatEventAbilityActivated>
         base.InitSubscriptions();
         CombatEventManager.instance?.Subscribe(CombatEventType.ON_ABILITY_ACTIVATED, this, CombatEventPriority.STANDARD);
         CombatEventManager.instance?.Subscribe(CombatEventType.ON_DIE_ROLLED, this, CombatEventPriority.STANDARD);
-        CombatEventManager.instance?.Subscribe(CombatEventType.ON_DIE_HIT, this, CombatEventPriority.STANDARD);
+        CombatEventManager.instance?.Subscribe(CombatEventType.ON_DIE_HIT, this, CombatEventPriority.FINAL);
     }
 
     public override void HandleEvent(CombatEventAbilityActivated data){
@@ -43,9 +43,8 @@ public class AllIn : AbstractAbility, IEventHandler<CombatEventAbilityActivated>
         if (data.abilityActivated == this){
             this.addedRoll = 0;
 
-            foreach (AbstractAbility ability in this.OWNER.AvailableAbilities.Where(ability => ability.ID != this.ID)){
-                // TODO: Replace this with a Combat Action that allows for exert actions to take place.
-                ability.curCooldown = 2;
+            foreach (AbstractAbility ability in this.OWNER.AvailableAbilities){
+                CombatManager.ExecuteAction(new ExertAction(ability, 2));
                 this.addedRoll += 2;
             }
         }

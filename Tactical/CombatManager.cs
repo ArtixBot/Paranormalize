@@ -9,7 +9,7 @@ public enum CombatState {
 	ROUND_START, ROUND_END,
 	TURN_START, TURN_END,
 	AWAITING_ABILITY_INPUT, AWAITING_CLASH_INPUT,
-	RESOLVE_ABILITIES, POST_RESOLVE_ABILITIES,
+	RESOLVE_ABILITIES
 }
 
 public class CombatInstance {
@@ -125,7 +125,7 @@ public static class CombatManager {
                     ));
                 }
                 break;
-            case CombatState.RESOLVE_ABILITIES:         // Triggers after AWAITING_ABILITY_INPUT, or (optionally) AWAITING_CLASH_INPUT.
+            case CombatState.RESOLVE_ABILITIES:         // Triggers after AWAITING_ABILITY_INPUT or AWAITING_CLASH_INPUT.
                 ResolveAbilities();
                 break;
             default:
@@ -301,7 +301,7 @@ public static class CombatManager {
             int dieRoll = die.Roll();
             Logging.Log($"{combatInstance.activeAbility.OWNER.CHAR_NAME} rolls a(n) {die.DieType} die (range: {die.MinValue} - {die.MaxValue}, natural roll: {dieRoll}).", Logging.LogLevel.ESSENTIAL);
            
-            int modifiedRoll = eventManager.BroadcastEvent(new CombatEventDieRolled(die, dieRoll)).rolledValue;
+            int modifiedRoll = eventManager.BroadcastEvent(new CombatEventDieRolled(combatInstance.activeAbility, die, dieRoll)).rolledValue;
             
             foreach (AbstractCharacter target in combatInstance.activeAbilityTargets.ToList()){
                 ResolveDieRoll(combatInstance.activeAbility.OWNER, target, die, dieRoll, modifiedRoll, rolledDuringClash: false, losingDieWasAttack: false);
@@ -322,7 +322,7 @@ public static class CombatManager {
             Die die = combatInstance.reactAbilityDice[0];
             int dieRoll = die.Roll();
             Logging.Log($"{combatInstance.reactAbility.OWNER.CHAR_NAME} rolls a(n) {die.DieType} die (range: {die.MinValue} - {die.MaxValue}, natural roll: {dieRoll}).", Logging.LogLevel.ESSENTIAL);
-            int modifiedRoll = eventManager.BroadcastEvent(new CombatEventDieRolled(die, dieRoll)).rolledValue;
+            int modifiedRoll = eventManager.BroadcastEvent(new CombatEventDieRolled(combatInstance.reactAbility, die, dieRoll)).rolledValue;
 
             GD.Print($"{combatInstance.reactAbility.OWNER.CHAR_NAME} targets {combatInstance.activeChar.CHAR_NAME}");
             ResolveDieRoll(combatInstance.reactAbility.OWNER, combatInstance.activeChar, die, dieRoll, modifiedRoll, rolledDuringClash: false, losingDieWasAttack: false);
@@ -372,7 +372,7 @@ public static class CombatManager {
                     eventManager.BroadcastEvent(new CombatEventDieEvaded(roller, target, die, naturalRoll, actualRoll, rolledDuringClash: false));
                     break;
                 };
-                CombatManager.ExecuteAction(new RecoverPoiseAction(roller, actualRoll));
+                CombatManager.ExecuteAction(new RestoreAction(roller, actualRoll, RestoreAction.RestoreType.POISE));
                 eventManager.BroadcastEvent(new CombatEventDieEvaded(roller, target, die, naturalRoll, actualRoll, rolledDuringClash: true));
                 if (losingDieWasAttack) CombatManager.CycleDie(roller, die);
                 break;
@@ -396,8 +396,12 @@ public static class CombatManager {
             $"\n\t{combatInstance.reactAbility.OWNER.CHAR_NAME}: {reactDie.DieType} die (range {reactDie.MinValue} - {reactDie.MaxValue}, roll: {natReactRoll}))", Logging.LogLevel.ESSENTIAL);
 
             // Reassign to atkRoll/reactRoll to handle any changes in dice power.
-            int modAtkRoll = eventManager.BroadcastEvent(new CombatEventDieRolled(atkDie, natAtkRoll)).rolledValue;
-            int modReactRoll = eventManager.BroadcastEvent(new CombatEventDieRolled(reactDie, natReactRoll)).rolledValue;
+            int modAtkRoll = eventManager.BroadcastEvent(new CombatEventDieRolled(combatInstance.activeAbility, atkDie, natAtkRoll)).rolledValue;
+            int modReactRoll = eventManager.BroadcastEvent(new CombatEventDieRolled(combatInstance.reactAbility, reactDie, natReactRoll)).rolledValue;
+
+            CombatEventDieClash dieClashData = eventManager.BroadcastEvent(new CombatEventDieClash(combatInstance.activeAbility, atkDie, modAtkRoll, combatInstance.reactAbility, reactDie, modReactRoll));
+            modAtkRoll = dieClashData.attackerRoll;
+            modReactRoll = dieClashData.reactRoll;
 
             // On tie, remove both dice.
             if (modAtkRoll == modReactRoll){
@@ -432,10 +436,11 @@ public static class CombatManager {
             if (winningDie.IsAttackDie && losingDie.DieType == DieType.BLOCK) {
                 winningRoll -= losingRoll;
             }
-            eventManager.BroadcastEvent(new CombatEventClashWin(winningDie, winningRoll));
-            eventManager.BroadcastEvent(new CombatEventClashLose(winningChar, losingChar, losingDie, losingRoll));
+            CombatEventClashComplete data = eventManager.BroadcastEvent(new CombatEventClashComplete(winningChar, losingChar, winningDie, winningRoll, losingDie, losingRoll));
+            data.winningRoll = Math.Max(winningRoll, 0);        // Cannot have dice values < 0.
+            data.losingRoll = Math.Max(losingRoll, 0);
 
-            ResolveDieRoll(winningChar, losingChar, winningDie, winningNatRoll, winningRoll, rolledDuringClash: true, losingDieWasAttack: losingDie.IsAttackDie);
+            ResolveDieRoll(data.winningClasher, data.losingClasher, data.winningDie, winningNatRoll, data.winningRoll, rolledDuringClash: true, losingDieWasAttack: losingDie.IsAttackDie);
             try {
                 combatInstance.activeAbilityDice.RemoveAt(0);
             } catch (ArgumentOutOfRangeException){

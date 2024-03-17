@@ -20,14 +20,56 @@
 			"CRIT_DIE": "[color=#4cf]On [shake]critical[/shake] hit:[/color] Consume all Critical to deal +50% damage per Critical consumed."
 		}
 	},
+	"BEATDOWN": {
+		"NAME": "Beatdown",
+		"STRINGS": {
+			"NEXT_ROUND_STR_ON_HIT": "[color=#4cf]On hit:[/color] Gain 1 Strength next round."
+		}
+	},
+	"BREAK": {
+		"NAME": "Break",
+		"STRINGS": {
+			"ANTI_BLOCK": "[color=#4cf]On clash vs. Block die:[/color] +4 to roll.\n[color=#4cf]On hit:[/color] Inflict 2 Broken.\n[color=#4cf]On hit:[/color] Inflict 2 Broken next round."
+		}
+	},
+	"BREATHER": {
+		"NAME": "Breather",
+		"STRINGS": {
+			"GENERIC": "Target self.\nA random Unavailable ability gains Invigorate 1. Repeat this effect once."
+		}
+	},
 	"BRUTALIZE": {
 		"NAME": "Brutalize",
 		"STRINGS": {
 			"PIERCE_PULL": "[color=#4cf]On hit:[/color] Pull 1.\n[color=#4cf]On hit or clash lose:[/color] If the target is not within range 1, discard all remaining dice."
 		}
 	},
+	"CHARGE": {
+		"NAME": "Charge",
+		"STRINGS": {
+			"GENERIC": "[color=#4cf]On activate:[/color] Forward 2.\nAfter activation, if the target is defeated, this ability has Cantrip and reset this ability's cooldown."
+		}
+	},
 	"DISCHARGE": {
 		"NAME": "Discharge"
+	},
+	"ENDURE": {
+		"NAME": "Endure",
+		"STRINGS": {
+			"GENERIC": "Target self.\nGain 4 Protection and 4 Poise Protection this round and next round."
+		}
+	},
+	"HEW": {
+		"NAME": "Hew",
+		"STRINGS": {
+			"GENERIC": "AoE: Targets all enemies in a lane."
+		}
+	},
+	"INDOMITABLE": {
+		"NAME": "Indomitable",
+		"STRINGS": {
+			"GENERIC": "Target self.\nRecover 33% of max HP. Recover 33% of max Poise."
+		}
 	},
 	"IRON_SWAN": {
 		"NAME": "Iron Swan",
@@ -57,6 +99,12 @@
 		"NAME": "Purge",
 		"STRINGS": {}
 	},
+	"SHRUG_OFF": {
+		"NAME": "Shrug Off",
+		"STRINGS": {
+			"SHRUG_OFF": "[color=#4cf]On clash lose vs. Attack die:[/color] If the winning die had a roll of 4 or lower, reduce the winning roll to zero."
+		}
+	},
 	"TEST_REACT": {
 		"NAME": "Test Reaction"
 	},
@@ -73,7 +121,7 @@
 	"RELENTLESS_STABBING": {
 		"NAME": "Relentless Stabbing",
 		"STRINGS": {
-			"LETHAL_HIT_CYCLING": "[color=#4cf]On [shake]critical[/shake] hit[/color]: Cycle this die (up to 2 times)."
+			"LETHAL_HIT_CYCLING": "[color=#4cf]On [shake]critical[/shake] hit:[/color] Cycle this die (up to 2 times)."
 		}
 	},
 	"REPARTEE": {
@@ -86,7 +134,13 @@
 		"NAME": "Retreat",
 		"STRINGS": {
 			"GENERIC": "[color=#4cf]On activate:[/color] Back 1.",
-			"EVADE_HASTE": "[color=#4cf]On [wave]evade[/wave]:[/color] Gain 1 Haste."
+			"EVADE_HASTE": "[color=#4cf]On [wave]evade:[/wave][/color] Gain 1 Haste."
+		}
+	},
+	"SECOND_WIND": {
+		"NAME": "Second Wind",
+		"STRINGS": {
+			"GENERIC": "Target self.\nRecover 33% of missing HP. Recover 33% of missing Poise."
 		}
 	},
 	"PASS": {

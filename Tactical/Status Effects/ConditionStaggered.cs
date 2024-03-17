@@ -51,7 +51,7 @@ public class ConditionStaggered : AbstractStatusEffect, IEventHandler<CombatEven
 
         // At 0 stacks, Staggered is removed.
         if (this.STACKS == 0){
-            CombatManager.ExecuteAction(new RecoverPoiseAction(this.OWNER, this.OWNER.MaxPoise));
+            CombatManager.ExecuteAction(new RestoreAction(this.OWNER, 1.0f, RestoreAction.RestoreType.POISE, RestoreAction.RestorePercentType.PERCENTAGE_MAX));
             CombatManager.ExecuteAction(new RemoveStatusAction(this.OWNER, this));
         }
     }

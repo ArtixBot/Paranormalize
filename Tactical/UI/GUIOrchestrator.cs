@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Godot;
 using UI;
@@ -85,7 +86,13 @@ public partial class GUIOrchestrator : Control, IEventSubscriber, IEventHandler<
 	public async void _on_child_lane_selection(int lane){
 		if (clickedAbility == null) return;
 		// TODO - This doesn't work with AoE attacks, figure out how to get *that* to work. Maybe we still just do this and have CombatEventManager.AbilityActivated modify the list of fighters post-hoc?
-		CombatManager.InputAbility(clickedAbility, new List<int>{lane});
+		if (clickedAbility.requiresUnit){
+			List<(int lane, HashSet<AbstractCharacter> targetsInLane)> targeting = clickedAbility.GetValidTargets();
+			List<AbstractCharacter> characters = targeting.Where(element => element.lane == lane).First().targetsInLane.ToList();
+			CombatManager.InputAbility(clickedAbility, characters);
+		} else {
+			CombatManager.InputAbility(clickedAbility, new List<int>{lane});
+		}
 		clickedAbility = null;
 
 		foreach (Lane laneUI in tacticalSceneNode.laneToNodeMap.Values){

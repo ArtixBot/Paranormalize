@@ -3,7 +3,7 @@ using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
 
-public class Retreat : AbstractAbility, IEventSubscriber, IEventHandler<CombatEventAbilityActivated>, IEventHandler<CombatEventClashWin> {
+public class Retreat : AbstractAbility, IEventSubscriber, IEventHandler<CombatEventAbilityActivated>, IEventHandler<CombatEventClashComplete> {
     public static string id = "RETREAT";
     private static Localization.AbilityStrings strings = Localization.LocalizationLibrary.Instance.GetAbilityStrings(id);
 
@@ -32,7 +32,7 @@ public class Retreat : AbstractAbility, IEventSubscriber, IEventHandler<CombatEv
     public override void InitSubscriptions(){
         base.InitSubscriptions();
         CombatEventManager.instance?.Subscribe(CombatEventType.ON_ABILITY_ACTIVATED, this, CombatEventPriority.STANDARD);
-        CombatEventManager.instance?.Subscribe(CombatEventType.ON_CLASH_WIN, this, CombatEventPriority.STANDARD);
+        CombatEventManager.instance?.Subscribe(CombatEventType.ON_CLASH_COMPLETE, this, CombatEventPriority.STANDARD);
     }
 
     public override void HandleEvent(CombatEventAbilityActivated data){
@@ -42,7 +42,7 @@ public class Retreat : AbstractAbility, IEventSubscriber, IEventHandler<CombatEv
         }
     }
 
-    public virtual void HandleEvent(CombatEventClashWin data){
+    public virtual void HandleEvent(CombatEventClashComplete data){
         if (data.winningDie == evadeDie){
             CombatManager.ExecuteAction(new ApplyStatusAction(this.OWNER, new BuffHaste(), 1));
         }
