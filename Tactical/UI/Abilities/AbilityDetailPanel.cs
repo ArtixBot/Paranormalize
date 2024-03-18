@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Godot;
@@ -35,16 +36,19 @@ public partial class AbilityDetailPanel : Control
 		abilityInfo.Text = $"[font n='res://Assets/Jost-Medium.ttf' s=16]{_ability.TYPE}"  + $"\t\t[img=24]res://Sprites/cooldown.png[/img] {_ability.BASE_CD}" + rangeText;
 		AbilityDesc = "[font n='res://Assets/Inter-Regular.ttf' s=16]" + _ability.STRINGS.GetValueOrDefault("GENERIC", "") + "[/font]";
 
-		await Task.Delay(1);		// RTL text label does not update size until after delay.
-		int startingDieYPos = 100 + (int)_abilityDesc.Size.Y;	// +100 for earlier content (title, range/cooldown), +10 for margin.
+		await ToSignal(GetTree(), SceneTree.SignalName.ProcessFrame);	// RTL node does not update size until after delay.
+		int offsetY = 100 + (int)_abilityDesc.Size.Y;	// Starts at +100 for earlier content (title, range/cooldown).
 
 		for (int i = 0; i < _ability.BASE_DICE.Count; i++){
             AbilityDie node = (AbilityDie) abilityDie.Instantiate();
 			AddChild(node);
-			node.SetPosition(new Vector2(10, startingDieYPos + (i * 50)));
+			node.SetPosition(new Vector2(10, offsetY));
 
 			node.Die = _ability.BASE_DICE[i];
 			node.DieDesc = "[font n='res://Assets/Inter-Regular.ttf' s=16]" + _ability.STRINGS.GetValueOrDefault(node.Die.DieId, "") + "[/font]";
+			await ToSignal(GetTree(), SceneTree.SignalName.ProcessFrame);	// Dice descriptions do not update size until next frame.
+
+			offsetY += (int)Math.Max(50, node._dieDesc.Size.Y);
 		}
 	}
 }

@@ -10,7 +10,7 @@ public partial class AbilityDie : Control
 		set {_die = value; UpdateImage(); UpdateRollRange();}
 	}
 
-	private RichTextLabel _dieDesc;
+	public RichTextLabel _dieDesc;
 	public string DieDesc {
 		get {return _dieDesc?.Text;}
 		set {_dieDesc.Text = value;}
