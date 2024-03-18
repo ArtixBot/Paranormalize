@@ -46,9 +46,9 @@ public partial class AbilityDetailPanel : Control
 
 			node.Die = _ability.BASE_DICE[i];
 			node.DieDesc = "[font n='res://Assets/Inter-Regular.ttf' s=16]" + _ability.STRINGS.GetValueOrDefault(node.Die.DieId, "") + "[/font]";
-			await ToSignal(GetTree(), SceneTree.SignalName.ProcessFrame);	// Dice descriptions do not update size until next frame.
 
-			offsetY += (int)Math.Max(50, node._dieDesc.Size.Y);
+			// Auto-calculate based on line count since that doesn't invoke a GUI delay when DieDesc is updated.
+			offsetY += (int)Math.Max(50, node._dieDesc.GetLineCount() * 20);
 		}
 	}
 }
