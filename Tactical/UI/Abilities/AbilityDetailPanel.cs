@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Godot;
 
 namespace UI;
@@ -28,22 +30,25 @@ public partial class AbilityDetailPanel : Control
 		abilityName = GetNode<Label>("Ability Name");
 	}
 
-	private void UpdateDescriptions(){
+	private async void UpdateDescriptions(){
 		abilityName.Text = _ability.NAME;
 		string rangeText = (_ability.TYPE == AbilityType.REACTION) ? "" : $"\t\t[img=24]res://Sprites/range.png[/img] {_ability.MIN_RANGE} - {_ability.MAX_RANGE}";
 		abilityInfo.Text = $"[font n='res://Assets/Jost-Medium.ttf' s=16]{_ability.TYPE}"  + $"\t\t[img=24]res://Sprites/cooldown.png[/img] {_ability.BASE_CD}" + rangeText;
 		AbilityDesc = "[font n='res://Assets/Inter-Regular.ttf' s=16]" + _ability.STRINGS.GetValueOrDefault("GENERIC", "") + "[/font]";
 
-		// TODO: Reevaluate use of constant values.
-		int startingDieYPos = _ability.STRINGS.GetValueOrDefault("GENERIC", "") == "" ? 100 : 120;
+		await ToSignal(GetTree(), SceneTree.SignalName.ProcessFrame);	// RTL node does not update size until after delay.
+		int offsetY = 100 + (int)_abilityDesc.Size.Y;	// Starts at +100 for earlier content (title, range/cooldown).
 
 		for (int i = 0; i < _ability.BASE_DICE.Count; i++){
             AbilityDie node = (AbilityDie) abilityDie.Instantiate();
 			AddChild(node);
-			node.SetPosition(new Vector2(10, startingDieYPos + (i * 50)));
+			node.SetPosition(new Vector2(10, offsetY));
 
 			node.Die = _ability.BASE_DICE[i];
 			node.DieDesc = "[font n='res://Assets/Inter-Regular.ttf' s=16]" + _ability.STRINGS.GetValueOrDefault(node.Die.DieId, "") + "[/font]";
+
+			// Auto-calculate based on line count since that doesn't invoke a GUI delay when DieDesc is updated.
+			offsetY += (int)Math.Max(50, node._dieDesc.GetLineCount() * 20);
 		}
 	}
 }
