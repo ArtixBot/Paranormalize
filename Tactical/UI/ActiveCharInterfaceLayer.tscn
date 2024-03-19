@@ -1,10 +1,26 @@
-[gd_scene load_steps=4 format=3 uid="uid://yyhqttdpvpjw"]
+[gd_scene load_steps=7 format=3 uid="uid://yyhqttdpvpjw"]
 
 [ext_resource type="Script" path="res://Tactical/UI/ActiveCharInterfaceLayer.cs" id="1_qyu5r"]
 [ext_resource type="Texture2D" uid="uid://654pve5epxq3" path="res://Sprites/icon.svg" id="2_lgul8"]
+[ext_resource type="FontFile" uid="uid://cvwb3yt1ydxk3" path="res://Assets/Marmelad-Regular.ttf" id="3_2hc4w"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_g3f1q"]
+font = ExtResource("3_2hc4w")
+font_size = 32
+shadow_size = 4
+shadow_color = Color(0, 0, 0, 1)
+
+[sub_resource type="LabelSettings" id="LabelSettings_3l176"]
+font = ExtResource("3_2hc4w")
 font_size = 24
+shadow_size = 4
+shadow_color = Color(0, 0, 0, 1)
+
+[sub_resource type="LabelSettings" id="LabelSettings_2saxj"]
+font = ExtResource("3_2hc4w")
+font_size = 32
+shadow_size = 4
+shadow_color = Color(0, 0, 0, 1)
 
 [node name="ActiveCharInterfaceLayer" type="Control"]
 layout_mode = 3
@@ -21,9 +37,9 @@ anchors_preset = 2
 anchor_top = 1.0
 anchor_bottom = 1.0
 offset_left = 2.0
-offset_top = -337.0
+offset_top = -187.0
 offset_right = 150.0
-offset_bottom = -288.0
+offset_bottom = -138.0
 grow_vertical = 0
 texture = ExtResource("2_lgul8")
 expand_mode = 1
@@ -34,14 +50,56 @@ offset_left = 152.0
 offset_top = 5.0
 offset_right = 355.0
 offset_bottom = 45.0
-text = "Character Name"
+text = "Duelist"
 label_settings = SubResource("LabelSettings_g3f1q")
+
+[node name="HP" type="Label" parent="Portrait/Name"]
+layout_mode = 0
+offset_top = 53.0
+offset_right = 33.0
+offset_bottom = 83.0
+text = "HP"
+label_settings = SubResource("LabelSettings_3l176")
+
+[node name="HP Val" type="Label" parent="Portrait/Name"]
+layout_mode = 0
+offset_left = 115.0
+offset_top = 40.0
+offset_right = 238.0
+offset_bottom = 80.0
+text = "253/253"
+label_settings = SubResource("LabelSettings_2saxj")
+horizontal_alignment = 2
+
+[node name="Poise" type="Label" parent="Portrait/Name"]
+layout_mode = 0
+offset_top = 95.0
+offset_right = 59.0
+offset_bottom = 125.0
+text = "Poise
+"
+label_settings = SubResource("LabelSettings_3l176")
+
+[node name="Poise Val" type="Label" parent="Portrait/Name"]
+layout_mode = 0
+offset_left = 115.0
+offset_top = 95.0
+offset_right = 238.0
+offset_bottom = 135.0
+text = "16/49"
+label_settings = SubResource("LabelSettings_2saxj")
+horizontal_alignment = 2
+
+[node name="ColorRect" type="ColorRect" parent="Portrait/Name"]
+layout_mode = 0
+offset_left = -1.0
+offset_top = 87.0
+offset_right = 240.0
+offset_bottom = 88.0
+color = Color(1, 1, 1, 0.313726)
 
 [node name="Ability List" type="Control" parent="."]
 layout_mode = 1
-anchor_top = 1.0
-anchor_right = 0.18
-anchor_bottom = 1.0
-offset_top = -68.0
-offset_right = 0.399994
-grow_vertical = 0
+anchor_right = 0.257
+offset_right = 0.559998
+offset_bottom = 68.0

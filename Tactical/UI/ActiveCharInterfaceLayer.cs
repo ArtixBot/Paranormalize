@@ -46,7 +46,7 @@ public partial class ActiveCharInterfaceLayer : Control, IEventSubscriber, IEven
 		for(int i = 0; i < abilitiesToDisplay.Count; i++){
 			AbilityButton instance = (AbilityButton) abilityButton.Instantiate();
 			abilityButtonInstances.Add(instance);
-			instance.SetPosition(new Vector2(0, -i * instance.Size.Y));
+			instance.SetPosition(new Vector2(0, i * instance.Size.Y));
 
 			AbstractAbility ability = abilitiesToDisplay[i];
 			abilityListNode.AddChild(instance);
