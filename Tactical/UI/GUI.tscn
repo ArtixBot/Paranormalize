@@ -1,7 +1,8 @@
-[gd_scene load_steps=6 format=3 uid="uid://cdon4x8pubue0"]
+[gd_scene load_steps=7 format=3 uid="uid://cdon4x8pubue0"]
 
 [ext_resource type="PackedScene" uid="uid://yyhqttdpvpjw" path="res://Tactical/UI/ActiveCharInterfaceLayer.tscn" id="1_4hy55"]
 [ext_resource type="Script" path="res://Tactical/UI/GUIOrchestrator.cs" id="1_7ak4a"]
+[ext_resource type="FontFile" uid="uid://cvwb3yt1ydxk3" path="res://Assets/Marmelad-Regular.ttf" id="4_efdxj"]
 [ext_resource type="FontFile" uid="uid://bwboh1vdh8npd" path="res://Assets/AlegreyaSans-Regular.ttf" id="6_xeyi2"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_a110w"]
@@ -9,8 +10,10 @@ font = ExtResource("6_xeyi2")
 font_size = 32
 
 [sub_resource type="LabelSettings" id="LabelSettings_b8ixw"]
-font = ExtResource("6_xeyi2")
+font = ExtResource("4_efdxj")
 font_size = 46
+shadow_size = 4
+shadow_color = Color(0, 0, 0, 1)
 
 [node name="GUI" type="Control"]
 layout_mode = 3
