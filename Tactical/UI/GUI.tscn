@@ -23,21 +23,23 @@ offset_bottom = 40.0
 mouse_filter = 2
 script = ExtResource("1_7ak4a")
 
-[node name="Turn List" type="Label" parent="."]
-layout_mode = 0
-offset_left = 527.0
-offset_top = 891.0
-offset_right = 2202.0
-offset_bottom = 1005.0
-text = "Turnlist: "
-
 [node name="Active Character" parent="." instance=ExtResource("1_4hy55")]
 layout_mode = 1
+anchors_preset = -1
+anchor_bottom = 26.6
 offset_left = 1.0
 offset_top = 4.0
-offset_right = 1879.0
-offset_bottom = 1033.0
+offset_right = 1915.0
+offset_bottom = 9.0
 mouse_filter = 2
+
+[node name="Turn List" type="Label" parent="."]
+layout_mode = 0
+offset_left = 449.0
+offset_top = 953.0
+offset_right = 2124.0
+offset_bottom = 1067.0
+text = "Turnlist: "
 
 [node name="Prompt Text" type="Label" parent="."]
 layout_mode = 0

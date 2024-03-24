@@ -8,10 +8,12 @@ public partial class ActiveCharInterfaceLayer : Control, IEventSubscriber, IEven
 	private AbstractCharacter _activeChar;
 	public AbstractCharacter ActiveChar {
 		get {return _activeChar;}
-		set {_activeChar = value; UpdateAvailableAbilities(); UpdateCharacterName();}
+		set {_activeChar = value; UpdateAvailableAbilities(); UpdateCharacterStats();}
 	}
 
 	private Label charName;
+	private Label charHP;
+	private Label charPoise;
 
 	private Control abilityListNode;
 	private readonly PackedScene abilityButton = GD.Load<PackedScene>("res://Tactical/UI/Abilities/AbilityButton.tscn");
@@ -21,6 +23,8 @@ public partial class ActiveCharInterfaceLayer : Control, IEventSubscriber, IEven
 	public override void _Ready() {		
 		abilityListNode = GetNode<Control>("Ability List");
 		charName = GetNode<Label>("Portrait/Name");
+		charHP = charName.GetNode<Label>("HP Val");
+		charPoise = charName.GetNode<Label>("Poise Val");
 
 		InitSubscriptions();
 	}
@@ -94,10 +98,12 @@ public partial class ActiveCharInterfaceLayer : Control, IEventSubscriber, IEven
 		}
 	}
 
-	private void UpdateCharacterName(){
+	private void UpdateCharacterStats(){
 		CombatInstance combatInstance = CombatManager.combatInstance;
 		if (combatInstance == null) return;
-		charName.Text = combatInstance.activeChar.CHAR_NAME;
+		charName.Text = ActiveChar.CHAR_NAME;
+		charHP.Text = ActiveChar.CurHP + "/" + ActiveChar.MaxHP;
+		charPoise.Text = ActiveChar.CurPoise + "/" + ActiveChar.MaxPoise;
 	}
 	
 	public virtual void InitSubscriptions(){

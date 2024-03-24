@@ -1,4 +1,4 @@
-[gd_scene load_steps=7 format=3 uid="uid://yyhqttdpvpjw"]
+[gd_scene load_steps=8 format=3 uid="uid://yyhqttdpvpjw"]
 
 [ext_resource type="Script" path="res://Tactical/UI/ActiveCharInterfaceLayer.cs" id="1_qyu5r"]
 [ext_resource type="Texture2D" uid="uid://654pve5epxq3" path="res://Sprites/icon.svg" id="2_lgul8"]
@@ -22,13 +22,17 @@ font_size = 32
 shadow_size = 4
 shadow_color = Color(0, 0, 0, 1)
 
+[sub_resource type="LabelSettings" id="LabelSettings_ul05n"]
+font = ExtResource("3_2hc4w")
+shadow_size = 4
+shadow_color = Color(0, 0, 0, 1)
+
 [node name="ActiveCharInterfaceLayer" type="Control"]
 layout_mode = 3
-anchors_preset = 15
-anchor_right = 1.0
+anchors_preset = 2
+anchor_top = 1.0
 anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
+grow_vertical = 0
 script = ExtResource("1_qyu5r")
 
 [node name="Portrait" type="TextureRect" parent="."]
@@ -38,8 +42,8 @@ anchor_top = 1.0
 anchor_bottom = 1.0
 offset_left = 2.0
 offset_top = -187.0
-offset_right = 150.0
-offset_bottom = -138.0
+offset_right = 152.0
+offset_bottom = -137.0
 grow_vertical = 0
 texture = ExtResource("2_lgul8")
 expand_mode = 1
@@ -90,13 +94,14 @@ text = "16/49"
 label_settings = SubResource("LabelSettings_2saxj")
 horizontal_alignment = 2
 
-[node name="ColorRect" type="ColorRect" parent="Portrait/Name"]
+[node name="\'separator\'" type="Label" parent="Portrait/Name"]
 layout_mode = 0
-offset_left = -1.0
-offset_top = 87.0
+offset_left = 3.0
+offset_top = 70.0
 offset_right = 240.0
-offset_bottom = 88.0
-color = Color(1, 1, 1, 0.313726)
+offset_bottom = 93.0
+text = "_________________________"
+label_settings = SubResource("LabelSettings_ul05n")
 
 [node name="Ability List" type="Control" parent="."]
 layout_mode = 1
