@@ -20,7 +20,7 @@ public partial class ActiveCharInterfaceLayer : Control, IEventSubscriber, IEven
 	private readonly PackedScene abilityDetailPanel = GD.Load<PackedScene>("res://Tactical/UI/Abilities/AbilityDetailPanel.tscn");
 
 	// Called when the node enters the scene tree for the first time.
-	public override void _Ready() {		
+	public override void _Ready() {
 		abilityListNode = GetNode<Control>("Ability List");
 		charName = GetNode<Label>("Portrait/Name");
 		charHP = charName.GetNode<Label>("HP Val");
