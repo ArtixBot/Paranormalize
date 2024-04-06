@@ -65,6 +65,12 @@
 			"GENERIC": "[color=#4cf]On activate:[/color] Forward 3. Gain 2 Haste."
 		}
 	},
+	"HAVE_AT_THEE": {
+		"NAME": "Have at Thee!",
+		"STRINGS": {
+			"GENERIC": "Can only be activated when nobody is Dishonorable.\nTarget an enemy without Duel to the Death.\nInflict Duel to the Death."
+		}
+	},
 	"HEW": {
 		"NAME": "Hew",
 		"STRINGS": {

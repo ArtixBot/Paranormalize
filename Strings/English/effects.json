@@ -5,11 +5,11 @@
 	},
 	"DISHONORABLE": {
 		"NAME": "Dishonorable",
-		"DESC": "A sacred duel has been broken! Enemies will prioritize attacking this unit until it dies."
+		"DESC": "A sacred duel has been broken!\nEnemies will prioritize attacking this unit until it dies."
 	},
 	"DUEL_TO_THE_DEATH": {
 		"NAME": "Duel to the Death",
-		"DESC": "If {owner} or {TARGET_NAME} attack someone else (except each other), remove Duel to the Death from EVERYONE and apply Dishonorable to the unit that initiated the attack."
+		"DESC": "{owner} and {APPLIER_NAME} are locked in a duel!\nIf either character attacks anyone else, removes Duel to the Death from EVERYONE and inflict Dishonorable on the attacker."
 	},
 	"HASTE": {
 		"NAME": "Haste",

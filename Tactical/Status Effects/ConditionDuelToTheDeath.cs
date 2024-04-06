@@ -1,13 +1,14 @@
 using Godot;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 public class ConditionDuelToTheDeath : AbstractStatusEffect, IEventHandler<CombatEventAbilityActivated>{
 
     public static string id = "DUEL_TO_THE_DEATH";
     private static Localization.EffectStrings strings = Localization.LocalizationLibrary.Instance.GetEffectStrings(id);
 
-    public string TARGET_NAME = "";        // Parsed in effects.json and StatusTooltip.cs.
+    public string APPLIER_NAME = "";        // Parsed in effects.json and StatusTooltip.cs.
 
     private AbstractCharacter applier;
     private AbstractCharacter target;
@@ -18,7 +19,7 @@ public class ConditionDuelToTheDeath : AbstractStatusEffect, IEventHandler<Comba
         StatusEffectType.CONDITION,
         CAN_GAIN_STACKS: false
     ){
-        this.TARGET_NAME = target.CHAR_NAME;
+        this.APPLIER_NAME = applier.CHAR_NAME;
         this.target = target;
         this.applier = applier;
     }
@@ -28,8 +29,22 @@ public class ConditionDuelToTheDeath : AbstractStatusEffect, IEventHandler<Comba
     }
 
     public void HandleEvent(CombatEventAbilityActivated data){
-        if (data.abilityActivated.OWNER == applier || data.abilityActivated.OWNER == target){
-            
+        if (data.abilityActivated.TYPE != AbilityType.ATTACK || 
+            (data.abilityActivated.OWNER != this.applier && data.abilityActivated.OWNER != this.target)){
+            return;
+        }
+        foreach (AbstractCharacter character in data.targets){
+            if (character != this.applier && character != this.target){
+                // Duel to the Death is activated!
+                foreach (AbstractCharacter fighter in CombatManager.combatInstance?.fighters){
+                    AbstractStatusEffect ddEffect = fighter.statusEffects.Find(effect => effect.ID == "DUEL_TO_THE_DEATH");
+                    if (ddEffect != default){
+                        CombatManager.ExecuteAction(new RemoveStatusAction(fighter, ddEffect));
+                    }
+                }
+                CombatManager.ExecuteAction(new ApplyStatusAction(data.abilityActivated.OWNER, new ConditionDishonorable(), 1));
+                return;
+            }
         }
     }
 }
