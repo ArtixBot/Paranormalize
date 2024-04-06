@@ -11,8 +11,8 @@ region = Rect2(0, 175, 600, 200)
 [sub_resource type="LabelSettings" id="LabelSettings_wosjj"]
 font = ExtResource("3_ykb1q")
 font_size = 36
-font_color = Color(1, 1, 0.87451, 1)
-outline_size = 1
+font_color = Color(1, 1, 0.823529, 1)
+outline_size = 4
 outline_color = Color(0, 0, 0, 1)
 shadow_size = 4
 shadow_color = Color(0, 0, 0, 1)
