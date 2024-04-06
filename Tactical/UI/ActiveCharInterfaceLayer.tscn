@@ -1,19 +1,55 @@
-[gd_scene load_steps=4 format=3 uid="uid://yyhqttdpvpjw"]
+[gd_scene load_steps=9 format=3 uid="uid://yyhqttdpvpjw"]
 
 [ext_resource type="Script" path="res://Tactical/UI/ActiveCharInterfaceLayer.cs" id="1_qyu5r"]
-[ext_resource type="Texture2D" uid="uid://654pve5epxq3" path="res://Sprites/icon.svg" id="2_lgul8"]
+[ext_resource type="Texture2D" uid="uid://cjf4qextmctn1" path="res://Sprites/Characters/Duelist/icon.png" id="2_lnher"]
+[ext_resource type="FontFile" uid="uid://cvwb3yt1ydxk3" path="res://Assets/Marmelad-Regular.ttf" id="3_2hc4w"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_65joj"]
+atlas = ExtResource("2_lnher")
+region = Rect2(0, 160, 600, 200)
 
 [sub_resource type="LabelSettings" id="LabelSettings_g3f1q"]
+font = ExtResource("3_2hc4w")
+font_size = 32
+shadow_size = 4
+shadow_color = Color(0, 0, 0, 1)
+
+[sub_resource type="LabelSettings" id="LabelSettings_3l176"]
+font = ExtResource("3_2hc4w")
 font_size = 24
+shadow_size = 4
+shadow_color = Color(0, 0, 0, 1)
+
+[sub_resource type="LabelSettings" id="LabelSettings_2saxj"]
+font = ExtResource("3_2hc4w")
+font_size = 32
+shadow_size = 4
+shadow_color = Color(0, 0, 0, 1)
+
+[sub_resource type="LabelSettings" id="LabelSettings_ul05n"]
+font = ExtResource("3_2hc4w")
+shadow_size = 4
+shadow_color = Color(0, 0, 0, 1)
 
 [node name="ActiveCharInterfaceLayer" type="Control"]
 layout_mode = 3
-anchors_preset = 15
-anchor_right = 1.0
+anchors_preset = 2
+anchor_top = 1.0
 anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
+grow_vertical = 0
 script = ExtResource("1_qyu5r")
+
+[node name="Portrait BG" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 2.0
+offset_top = -187.0
+offset_right = 152.0
+offset_bottom = -137.0
+grow_vertical = 0
+color = Color(0, 0, 0, 0.384314)
 
 [node name="Portrait" type="TextureRect" parent="."]
 layout_mode = 1
@@ -21,27 +57,71 @@ anchors_preset = 2
 anchor_top = 1.0
 anchor_bottom = 1.0
 offset_left = 2.0
-offset_top = -337.0
-offset_right = 150.0
-offset_bottom = -288.0
+offset_top = -187.0
+offset_right = 152.0
+offset_bottom = -137.0
 grow_vertical = 0
-texture = ExtResource("2_lgul8")
+texture = SubResource("AtlasTexture_65joj")
 expand_mode = 1
 
 [node name="Name" type="Label" parent="Portrait"]
 layout_mode = 0
-offset_left = 152.0
-offset_top = 5.0
-offset_right = 355.0
-offset_bottom = 45.0
-text = "Character Name"
+offset_left = 155.0
+offset_right = 358.0
+offset_bottom = 40.0
+text = "Duelist"
 label_settings = SubResource("LabelSettings_g3f1q")
+
+[node name="HP" type="Label" parent="Portrait/Name"]
+layout_mode = 0
+offset_top = 53.0
+offset_right = 33.0
+offset_bottom = 83.0
+text = "HP"
+label_settings = SubResource("LabelSettings_3l176")
+
+[node name="HP Val" type="Label" parent="Portrait/Name"]
+layout_mode = 0
+offset_left = 115.0
+offset_top = 40.0
+offset_right = 238.0
+offset_bottom = 80.0
+text = "253/253"
+label_settings = SubResource("LabelSettings_2saxj")
+horizontal_alignment = 2
+
+[node name="Poise" type="Label" parent="Portrait/Name"]
+layout_mode = 0
+offset_top = 95.0
+offset_right = 59.0
+offset_bottom = 125.0
+text = "Poise
+"
+label_settings = SubResource("LabelSettings_3l176")
+
+[node name="Poise Val" type="Label" parent="Portrait/Name"]
+layout_mode = 0
+offset_left = 115.0
+offset_top = 95.0
+offset_right = 238.0
+offset_bottom = 135.0
+text = "16/49"
+label_settings = SubResource("LabelSettings_2saxj")
+horizontal_alignment = 2
+
+[node name="\'separator\'" type="Label" parent="Portrait/Name"]
+layout_mode = 0
+offset_left = 3.0
+offset_top = 70.0
+offset_right = 240.0
+offset_bottom = 93.0
+text = "_________________________"
+label_settings = SubResource("LabelSettings_ul05n")
 
 [node name="Ability List" type="Control" parent="."]
 layout_mode = 1
-anchor_top = 1.0
-anchor_right = 0.18
-anchor_bottom = 1.0
-offset_top = -68.0
-offset_right = 0.399994
-grow_vertical = 0
+anchor_right = 0.257
+offset_left = 10.0
+offset_top = 10.0
+offset_right = 10.56
+offset_bottom = 78.0

@@ -26,6 +26,7 @@ public partial class CharacterUI : Area2D, IEventSubscriber, IEventHandler<Comba
 	private TextureRect activeConditions;
 	private TextureRect activeDebuffs;
 
+	private readonly Material selectableMaterial = GD.Load<Material>("res://Tactical/UI/Shaders/CharacterTargetable.tres");
 	private readonly PackedScene statusTooltip = GD.Load<PackedScene>("res://Tactical/UI/Tooltip.tscn");
 	private StatusTooltip statusTooltipInstance;
 
@@ -35,8 +36,7 @@ public partial class CharacterUI : Area2D, IEventSubscriber, IEventHandler<Comba
 		set {
 			_IsClickable = value; 
 			this.InputPickable = IsClickable;				// LINK - Tactical\UI\GUIOrchestrator.cs:59
-			// TODO - Don't invoke GD.Load on every reassignment to IsClickable, should preload resource instead.
-			Sprite.Material = IsClickable ? GD.Load<Material>("res://Tactical/UI/Shaders/CharacterTargetable.tres") : null;
+			Sprite.Material = IsClickable ? selectableMaterial : null;
 		}
 	}
 

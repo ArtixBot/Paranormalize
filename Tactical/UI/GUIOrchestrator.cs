@@ -7,12 +7,13 @@ using UI;
 
 public partial class GUIOrchestrator : Control, IEventSubscriber, IEventHandler<CombatEventRoundStart>, IEventHandler<CombatEventTurnStart>, IEventHandler<CombatEventClashEligible>
 {	
+	private readonly PackedScene turnNode = GD.Load<PackedScene>("res://Tactical/UI/TurnNode.tscn");
 	private TacticalScene tacticalSceneNode;
 	private ActiveCharInterfaceLayer activeCharNode;
 	private CameraController cameraNode;
 	private Label promptTextNode;
 	private Label roundCounter;
-	private Label turnList;
+	private Control turnList;
 
 	// Called when the node enters the scene tree for the first time.
 	public override void _Ready(){
@@ -22,9 +23,9 @@ public partial class GUIOrchestrator : Control, IEventSubscriber, IEventHandler<
 		cameraNode = GetNode<CameraController>("../../Camera2D");
 		promptTextNode = GetNode<Label>("Prompt Text");
 		roundCounter = GetNode<Label>("Round");
-		turnList = GetNode<Label>("Turn List");
+		turnList = GetNode<Control>("Turn List");
 
-		UpdateTurnlistText();
+		UpdateTurnlist();
 
 		InitSubscriptions();
 	}
@@ -105,14 +106,20 @@ public partial class GUIOrchestrator : Control, IEventSubscriber, IEventHandler<
 	}
 
 	
-	private void UpdateTurnlistText(){
+	private void UpdateTurnlist(){
 		CombatInstance combatInstance = CombatManager.combatInstance;
 		if (combatInstance == null) return;
-		string turnlistText = $"Remaining turns: ";
-		foreach ((AbstractCharacter info, int spd) in combatInstance.turnlist.GetQueue()){
-			turnlistText += $"{info.CHAR_NAME} ({spd}), ";
+		foreach (Node child in turnList.GetChildren().Where(child => child.GetType() == typeof(TurnNode))){
+			child.QueueFree();
 		}
-		turnList.Text = turnlistText;
+		for (int i = 0; i < combatInstance.turnlist.GetQueue().Count; i++){
+			(AbstractCharacter info, int spd) = combatInstance.turnlist[i];
+			TurnNode turnNodeInstance = (TurnNode) turnNode.Instantiate();
+			turnList.AddChild(turnNodeInstance);
+			turnNodeInstance.Character = tacticalSceneNode.characterToNodeMap[info];
+			turnNodeInstance.Speed = spd;
+			turnNodeInstance.Position = new Vector2(i * 110, 0);
+		}
 	}
 
     public void InitSubscriptions(){
@@ -127,7 +134,7 @@ public partial class GUIOrchestrator : Control, IEventSubscriber, IEventHandler<
 
     public void HandleEvent(CombatEventTurnStart eventData){
         promptTextNode.Text = "";
-		UpdateTurnlistText();
+		UpdateTurnlist();
     }
 
 	public void HandleEvent(CombatEventClashEligible eventData){

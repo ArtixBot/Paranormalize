@@ -1,0 +1,49 @@
+[gd_scene load_steps=6 format=3 uid="uid://bq61u2xwjaw53"]
+
+[ext_resource type="Script" path="res://Tactical/UI/TurnNode.cs" id="1_sn15o"]
+[ext_resource type="Texture2D" uid="uid://cjf4qextmctn1" path="res://Sprites/Characters/Duelist/icon.png" id="2_les32"]
+[ext_resource type="FontFile" uid="uid://cvwb3yt1ydxk3" path="res://Assets/Marmelad-Regular.ttf" id="3_ykb1q"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_i14yv"]
+atlas = ExtResource("2_les32")
+region = Rect2(0, 175, 600, 200)
+
+[sub_resource type="LabelSettings" id="LabelSettings_wosjj"]
+font = ExtResource("3_ykb1q")
+font_size = 36
+font_color = Color(1, 1, 0.823529, 1)
+outline_size = 4
+outline_color = Color(0, 0, 0, 1)
+shadow_size = 4
+shadow_color = Color(0, 0, 0, 1)
+
+[node name="Turn Node" type="Control"]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 100.0
+offset_bottom = 100.0
+script = ExtResource("1_sn15o")
+
+[node name="BG" type="ColorRect" parent="."]
+layout_mode = 0
+offset_right = 100.0
+offset_bottom = 40.0
+color = Color(0, 0, 0, 0.384314)
+
+[node name="TextureRect" type="TextureRect" parent="BG"]
+layout_mode = 0
+offset_right = 100.0
+offset_bottom = 40.0
+texture = SubResource("AtlasTexture_i14yv")
+expand_mode = 1
+
+[node name="SpeedLabel" type="Label" parent="BG"]
+layout_mode = 0
+offset_top = 25.0
+offset_right = 100.0
+offset_bottom = 68.0
+text = "200
+"
+label_settings = SubResource("LabelSettings_wosjj")
+horizontal_alignment = 1
+vertical_alignment = 1

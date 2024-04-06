@@ -32,25 +32,11 @@ public class TestScenario : ScenarioInfo {
 
     public TestScenario() : base(scenarioFighters){
         playerA.EquipAbility(new RelentlessStabbing());
-        playerA.EquipAbility(new TestAttack());
         playerA.EquipAbility(new Obliterate());
         playerA.EquipAbility(new Beatdown());
-        playerA.EquipAbility(new Brutalize());
-        playerA.EquipAbility(new Charge());
-        playerA.EquipAbility(new Purge());
         playerA.EquipAbility(new SecondWind());
         playerA.EquipAbility(new Indomitable());
         playerA.EquipAbility(new Knockout());
-        playerA.EquipAbility(new Preparation());
-        playerA.EquipAbility(new Assault());
-        playerA.EquipAbility(new BalestraFente());
-        playerA.EquipAbility(new Discharge());
-        playerA.EquipAbility(new IronSwan());
-        playerA.EquipAbility(new Breather());
-        playerA.EquipAbility(new Hew());
-        playerA.EquipAbility(new Break());
-        playerA.EquipAbility(new AllIn());
-        playerA.EquipAbility(new Endure());
         playerA.EquipAbility(new ShrugOff());
         playerA.MinSpd = 10;
         playerA.MaxSpd = 20;

@@ -1,16 +1,24 @@
-[gd_scene load_steps=6 format=3 uid="uid://cdon4x8pubue0"]
+[gd_scene load_steps=8 format=3 uid="uid://cdon4x8pubue0"]
 
 [ext_resource type="PackedScene" uid="uid://yyhqttdpvpjw" path="res://Tactical/UI/ActiveCharInterfaceLayer.tscn" id="1_4hy55"]
 [ext_resource type="Script" path="res://Tactical/UI/GUIOrchestrator.cs" id="1_7ak4a"]
+[ext_resource type="FontFile" uid="uid://cvwb3yt1ydxk3" path="res://Assets/Marmelad-Regular.ttf" id="4_efdxj"]
 [ext_resource type="FontFile" uid="uid://bwboh1vdh8npd" path="res://Assets/AlegreyaSans-Regular.ttf" id="6_xeyi2"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_8wxfd"]
+font = ExtResource("4_efdxj")
+font_size = 24
+shadow_color = Color(0, 0, 0, 1)
 
 [sub_resource type="LabelSettings" id="LabelSettings_a110w"]
 font = ExtResource("6_xeyi2")
 font_size = 32
 
 [sub_resource type="LabelSettings" id="LabelSettings_b8ixw"]
-font = ExtResource("6_xeyi2")
+font = ExtResource("4_efdxj")
 font_size = 46
+shadow_size = 4
+shadow_color = Color(0, 0, 0, 1)
 
 [node name="GUI" type="Control"]
 layout_mode = 3
@@ -19,6 +27,31 @@ offset_right = 40.0
 offset_bottom = 40.0
 mouse_filter = 2
 script = ExtResource("1_7ak4a")
+
+[node name="Turn List" type="Control" parent="."]
+anchors_preset = 0
+offset_left = 427.0
+offset_top = 926.0
+offset_right = 2102.0
+offset_bottom = 1040.0
+
+[node name="Label" type="Label" parent="Turn List"]
+layout_mode = 0
+offset_top = -40.0
+offset_right = 105.0
+offset_bottom = -10.0
+text = "Turnlist"
+label_settings = SubResource("LabelSettings_8wxfd")
+
+[node name="Active Character" parent="." instance=ExtResource("1_4hy55")]
+layout_mode = 1
+anchors_preset = -1
+anchor_bottom = 26.6
+offset_left = 1.0
+offset_top = 4.0
+offset_right = 1915.0
+offset_bottom = 9.0
+mouse_filter = 2
 
 [node name="Prompt Text" type="Label" parent="."]
 layout_mode = 0
@@ -32,27 +65,11 @@ horizontal_alignment = 1
 
 [node name="Round" type="Label" parent="."]
 layout_mode = 0
-offset_left = 36.0
-offset_top = 40.0
-offset_right = 193.0
-offset_bottom = 169.0
+offset_left = 1758.0
+offset_top = 935.0
+offset_right = 1915.0
+offset_bottom = 1064.0
 text = "Round
 X"
 label_settings = SubResource("LabelSettings_b8ixw")
 horizontal_alignment = 1
-
-[node name="Turn List" type="Label" parent="."]
-layout_mode = 0
-offset_left = 231.0
-offset_top = 37.0
-offset_right = 1906.0
-offset_bottom = 151.0
-text = "Turnlist: "
-
-[node name="Active Character" parent="." instance=ExtResource("1_4hy55")]
-layout_mode = 1
-offset_left = 1.0
-offset_top = 4.0
-offset_right = 1879.0
-offset_bottom = 1033.0
-mouse_filter = 2

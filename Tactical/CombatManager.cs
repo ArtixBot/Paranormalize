@@ -437,8 +437,8 @@ public static class CombatManager {
                 winningRoll -= losingRoll;
             }
             CombatEventClashComplete data = eventManager.BroadcastEvent(new CombatEventClashComplete(winningChar, losingChar, winningDie, winningRoll, losingDie, losingRoll));
-            data.winningRoll = Math.Max(winningRoll, 0);        // Cannot have dice values < 0.
-            data.losingRoll = Math.Max(losingRoll, 0);
+            data.winningRoll = Math.Max(data.winningRoll, 0);        // Cannot have dice values < 0.
+            data.losingRoll = Math.Max(data.losingRoll, 0);
 
             ResolveDieRoll(data.winningClasher, data.losingClasher, data.winningDie, winningNatRoll, data.winningRoll, rolledDuringClash: true, losingDieWasAttack: losingDie.IsAttackDie);
             try {

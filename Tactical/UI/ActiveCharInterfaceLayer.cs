@@ -8,19 +8,23 @@ public partial class ActiveCharInterfaceLayer : Control, IEventSubscriber, IEven
 	private AbstractCharacter _activeChar;
 	public AbstractCharacter ActiveChar {
 		get {return _activeChar;}
-		set {_activeChar = value; UpdateAvailableAbilities(); UpdateCharacterName();}
+		set {_activeChar = value; UpdateAvailableAbilities(); UpdateCharacterStats();}
 	}
 
 	private Label charName;
+	private Label charHP;
+	private Label charPoise;
 
 	private Control abilityListNode;
 	private readonly PackedScene abilityButton = GD.Load<PackedScene>("res://Tactical/UI/Abilities/AbilityButton.tscn");
 	private readonly PackedScene abilityDetailPanel = GD.Load<PackedScene>("res://Tactical/UI/Abilities/AbilityDetailPanel.tscn");
 
 	// Called when the node enters the scene tree for the first time.
-	public override void _Ready() {		
+	public override void _Ready() {
 		abilityListNode = GetNode<Control>("Ability List");
 		charName = GetNode<Label>("Portrait/Name");
+		charHP = charName.GetNode<Label>("HP Val");
+		charPoise = charName.GetNode<Label>("Poise Val");
 
 		InitSubscriptions();
 	}
@@ -46,7 +50,7 @@ public partial class ActiveCharInterfaceLayer : Control, IEventSubscriber, IEven
 		for(int i = 0; i < abilitiesToDisplay.Count; i++){
 			AbilityButton instance = (AbilityButton) abilityButton.Instantiate();
 			abilityButtonInstances.Add(instance);
-			instance.SetPosition(new Vector2(0, -i * instance.Size.Y));
+			instance.SetPosition(new Vector2(0, i * instance.Size.Y));
 
 			AbstractAbility ability = abilitiesToDisplay[i];
 			abilityListNode.AddChild(instance);
@@ -94,10 +98,12 @@ public partial class ActiveCharInterfaceLayer : Control, IEventSubscriber, IEven
 		}
 	}
 
-	private void UpdateCharacterName(){
+	private void UpdateCharacterStats(){
 		CombatInstance combatInstance = CombatManager.combatInstance;
 		if (combatInstance == null) return;
-		charName.Text = combatInstance.activeChar.CHAR_NAME;
+		charName.Text = ActiveChar.CHAR_NAME;
+		charHP.Text = ActiveChar.CurHP + "/" + ActiveChar.MaxHP;
+		charPoise.Text = ActiveChar.CurPoise + "/" + ActiveChar.MaxPoise;
 	}
 	
 	public virtual void InitSubscriptions(){

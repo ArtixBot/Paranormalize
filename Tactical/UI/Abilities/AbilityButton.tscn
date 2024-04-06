@@ -1,6 +1,7 @@
-[gd_scene load_steps=5 format=3 uid="uid://dnmvasqntebig"]
+[gd_scene load_steps=6 format=3 uid="uid://dnmvasqntebig"]
 
 [ext_resource type="Texture2D" uid="uid://doan60felig4d" path="res://Sprites/cooldown.png" id="1_0d473"]
+[ext_resource type="FontFile" uid="uid://cvwb3yt1ydxk3" path="res://Assets/Marmelad-Regular.ttf" id="1_3s0ha"]
 [ext_resource type="Script" path="res://Tactical/UI/Abilities/AbilityButton.cs" id="2_xwad4"]
 [ext_resource type="FontFile" uid="uid://bbbh26n3nsxrr" path="res://Assets/Jost-Medium.ttf" id="3_e7bb3"]
 
@@ -12,8 +13,9 @@ shadow_color = Color(0, 0, 0, 1)
 [node name="Ability Button" type="Button"]
 offset_right = 239.0
 offset_bottom = 42.0
-theme_override_fonts/font = ExtResource("3_e7bb3")
-text = "Ability Name"
+theme_override_fonts/font = ExtResource("1_3s0ha")
+theme_override_font_sizes/font_size = 18
+text = " Ability Name"
 alignment = 0
 text_overrun_behavior = 3
 script = ExtResource("2_xwad4")
@@ -34,3 +36,8 @@ offset_bottom = 40.0
 text = "3"
 label_settings = SubResource("LabelSettings_thm6x")
 vertical_alignment = 1
+
+[node name="ColorRect" type="ColorRect" parent="."]
+layout_mode = 0
+offset_right = 5.0
+offset_bottom = 42.0
