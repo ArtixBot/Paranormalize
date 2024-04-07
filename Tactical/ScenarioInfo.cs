@@ -35,6 +35,7 @@ public class TestScenario : ScenarioInfo {
         playerA.EquipAbility(new Obliterate());
         playerA.EquipAbility(new Beatdown());
         playerA.EquipAbility(new GallopingTilt());
+        playerA.EquipAbility(new Challenge());
         playerA.EquipAbility(new HaveAtThee());
         playerA.EquipAbility(new Brutalize());
         playerA.EquipAbility(new Charge());

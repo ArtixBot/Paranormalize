@@ -64,13 +64,13 @@ public partial class ActiveCharInterfaceLayer : Control, IEventSubscriber, IEven
 				instance.AbilitySelected += (instance) => parent._on_child_ability_selection(instance.Ability);
 			}
 
-			instance.MouseEntered += () => CreateAbilityDetailPanel(ability, false);
+			instance.MouseEntered += () => CreateAbilityDetailPanel(ability, false, instance.Position);
 			instance.Pressed += () => stickyAbilityDetailPanel = true;
 			instance.MouseExited += () => DeleteAbilityDetailPanel(false);
 		}
 	}
 
-	public void CreateAbilityDetailPanel(AbstractAbility ability, bool isOpposingAbility){
+	public void CreateAbilityDetailPanel(AbstractAbility ability, bool isOpposingAbility, Vector2 instancePosition = default){
 		if (isOpposingAbility && IsInstanceValid(opposingAbilityDetailPanelInstance)){
 			opposingAbilityDetailPanelInstance.QueueFree();
 		} else if (!isOpposingAbility && IsInstanceValid(abilityDetailPanelInstance)) {
@@ -80,7 +80,7 @@ public partial class ActiveCharInterfaceLayer : Control, IEventSubscriber, IEven
 		AbilityDetailPanel node = (AbilityDetailPanel) abilityDetailPanel.Instantiate();
 		AddChild(node);
 		node.Ability = ability;
-		node.SetPosition((!isOpposingAbility) ? new Vector2(300, 750) : new Vector2(1000, 750));
+		node.SetPosition((!isOpposingAbility) ? new Vector2(300, instancePosition.Y) : new Vector2(1000, 750));
 
 		if (!isOpposingAbility){
 			abilityDetailPanelInstance = node;
