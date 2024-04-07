@@ -10,8 +10,8 @@ public class ConditionDuelToTheDeath : AbstractStatusEffect, IEventHandler<Comba
 
     public string APPLIER_NAME = "";        // Parsed in effects.json and StatusTooltip.cs.
 
-    private AbstractCharacter applier;
-    private AbstractCharacter target;
+    private readonly AbstractCharacter applier;
+    private readonly AbstractCharacter target;
 
     public ConditionDuelToTheDeath(AbstractCharacter applier, AbstractCharacter target) : base(
         id,
@@ -34,8 +34,10 @@ public class ConditionDuelToTheDeath : AbstractStatusEffect, IEventHandler<Comba
             return;
         }
         foreach (AbstractCharacter character in data.targets){
+            GD.Print(character.CHAR_NAME, this.applier.CHAR_NAME, this.target.CHAR_NAME);
             if (character != this.applier && character != this.target){
                 // Duel to the Death is activated!
+                GD.Print("EFFECT OF DUEL TO THE DEATH SHOULD BE HAPPENING!");
                 foreach (AbstractCharacter fighter in CombatManager.combatInstance?.fighters){
                     AbstractStatusEffect ddEffect = fighter.statusEffects.Find(effect => effect.ID == "DUEL_TO_THE_DEATH");
                     if (ddEffect != default){

@@ -232,6 +232,7 @@ public class CombatEventAbilityActivated : ICombatEvent {
         this.abilityDice = abilityDice;
         this.caster = caster;
         this.target = target;
+        this.targets.Add(this.target);
     }
     
     public CombatEventAbilityActivated(AbstractCharacter caster, AbstractAbility abilityActivated, List<Die> abilityDice, List<AbstractCharacter> targets){

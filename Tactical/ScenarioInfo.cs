@@ -1,3 +1,4 @@
+using CharacterPassives;
 using Godot;
 using System;
 using System.Collections.Generic;
@@ -17,10 +18,10 @@ public class TestScenario : ScenarioInfo {
 
     private static readonly AbstractCharacter playerA = new AbstractCharacter("Duelist", CharacterFaction.PLAYER);
     private static readonly AbstractCharacter playerB = new AbstractCharacter("Cinq", CharacterFaction.PLAYER);
-    private static readonly AbstractCharacter characterB = new AbstractCharacter("Test Dummy", CharacterFaction.ENEMY);
-    private static readonly AbstractCharacter characterC = new AbstractCharacter("Test Dummy", CharacterFaction.ENEMY);
-    private static readonly AbstractCharacter characterD = new AbstractCharacter("Test Dummy", CharacterFaction.ENEMY);
-    private static readonly AbstractCharacter characterE = new AbstractCharacter("Test Dummy", CharacterFaction.ENEMY);
+    private static readonly AbstractCharacter characterB = new AbstractCharacter("Test Dummy A", CharacterFaction.ENEMY);
+    private static readonly AbstractCharacter characterC = new AbstractCharacter("Test Dummy B", CharacterFaction.ENEMY);
+    private static readonly AbstractCharacter characterD = new AbstractCharacter("Test Dummy C", CharacterFaction.ENEMY);
+    private static readonly AbstractCharacter characterE = new AbstractCharacter("Test Dummy D", CharacterFaction.ENEMY);
     private static List<(AbstractCharacter character, int position)> scenarioFighters = new(){
         (playerA, 3),
         // (playerB, 2),
@@ -44,6 +45,8 @@ public class TestScenario : ScenarioInfo {
         playerA.EquipAbility(new Indomitable());
         playerA.EquipAbility(new Knockout());
         playerA.EquipAbility(new ShrugOff());
+
+        playerA.EquipPassive(new SacredDuel());
         playerA.MinSpd = 10;
         playerA.MaxSpd = 20;
         playerA.ActionsPerTurn = 3;

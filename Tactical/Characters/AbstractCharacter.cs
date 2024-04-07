@@ -1,3 +1,4 @@
+using CharacterPassives;
 using Godot;
 using System;
 using System.Collections.Generic;
@@ -9,6 +10,7 @@ public partial class AbstractCharacter : IEventSubscriber, IEventHandler<CombatE
     public CharacterFaction CHAR_FACTION;
     public string CHAR_NAME;
 
+    public HashSet<AbstractPassive> passives = new();
     public List<AbstractAbility> abilities = new();       // At the start of combat, deep-copy everything from PERMA_ABILITIES.
     public List<AbstractAbility> AvailableAbilities {
         get {return abilities.Where(ability => ability.IsAvailable && ability.TYPE != AbilityType.SPECIAL).ToList();}
@@ -23,6 +25,7 @@ public partial class AbstractCharacter : IEventSubscriber, IEventHandler<CombatE
     public bool HasBuff { get {return statusEffects.Where(effect => effect.TYPE == StatusEffectType.BUFF).ToList().Count > 0;} }
     public bool HasCondition { get {return statusEffects.Where(effect => effect.TYPE == StatusEffectType.CONDITION).ToList().Count > 0;} }
     public bool HasDebuff { get {return statusEffects.Where(effect => effect.TYPE == StatusEffectType.DEBUFF).ToList().Count > 0;} }
+
 
     private int _CurHP, _MaxHP, _CurPoise, _MaxPoise;
     public int CurHP {
@@ -91,6 +94,16 @@ public partial class AbstractCharacter : IEventSubscriber, IEventHandler<CombatE
         return this.abilities.Remove(ability);
     }
 
+    public bool EquipPassive(AbstractPassive passive){
+        passive.OWNER = this;
+        this.passives.Add(passive);
+        return true;
+    }
+
+    public bool UnequipPassive(AbstractPassive passive){
+        return this.passives.Remove(passive);
+    }
+
     public int CountAvailableAbilities(){
         int cnt = 0;
         foreach (AbstractAbility ability in abilities){
@@ -112,6 +125,9 @@ public partial class AbstractCharacter : IEventSubscriber, IEventHandler<CombatE
         foreach (AbstractAbility ability in this.abilities){
             ability.InitSubscriptions();
         }
+        foreach (AbstractPassive passive in this.passives){
+            passive.InitSubscriptions();
+        }
     }
 
     public virtual void HandleEvent(CombatEventCharacterDeath data){
@@ -119,6 +135,9 @@ public partial class AbstractCharacter : IEventSubscriber, IEventHandler<CombatE
         // Handle death stuff.
         foreach (AbstractAbility ability in this.abilities){
             CombatManager.eventManager?.UnsubscribeAll(ability);
+        }
+        foreach (AbstractPassive passive in this.passives){
+            CombatManager.eventManager?.UnsubscribeAll(passive);
         }
         return;
     }
