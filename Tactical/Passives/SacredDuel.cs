@@ -20,6 +20,7 @@ public class SacredDuel : AbstractPassive, IEventHandler<CombatEventCombatStart>
         HashSet<AbstractCharacter> enemiesWithoutDD = enemies.Where(fighter => !fighter.statusEffects.Contains(fighter.statusEffects.Find(effect => effect.ID == "DUEL_TO_THE_DEATH"))).ToHashSet();
 
         AbstractCharacter target = enemiesWithoutDD.ElementAt(Rng.RandiRange(0, enemiesWithoutDD.Count - 1));
+        CombatManager.ExecuteAction(new ApplyStatusAction(this.OWNER, new ConditionDuelToTheDeath(target, this.OWNER), 1));
         CombatManager.ExecuteAction(new ApplyStatusAction(target, new ConditionDuelToTheDeath(this.OWNER, target), 1));
     }
 }

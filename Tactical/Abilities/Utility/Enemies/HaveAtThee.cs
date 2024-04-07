@@ -42,6 +42,7 @@ public class HaveAtThee : AbstractAbility, IEventHandler<CombatEventAbilityActiv
     public override void HandleEvent(CombatEventAbilityActivated data){
         base.HandleEvent(data);
         if (data.abilityActivated.Equals(this)){
+            CombatManager.ExecuteAction(new ApplyStatusAction(this.OWNER, new ConditionDuelToTheDeath(data.target, this.OWNER), 1));
             CombatManager.ExecuteAction(new ApplyStatusAction(data.target, new ConditionDuelToTheDeath(this.OWNER, data.target), 1));
         }
     }

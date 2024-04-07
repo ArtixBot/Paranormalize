@@ -28,23 +28,28 @@ public class ConditionDuelToTheDeath : AbstractStatusEffect, IEventHandler<Comba
         CombatManager.eventManager.Subscribe(CombatEventType.ON_ABILITY_ACTIVATED, this, CombatEventPriority.IMMEDIATELY);
     }
 
+    private void ActivateDuelToTheDeathEffect(CombatEventAbilityActivated data){
+        foreach (AbstractCharacter fighter in CombatManager.combatInstance?.fighters){
+            AbstractStatusEffect ddEffect = fighter.statusEffects.Find(effect => effect.ID == "DUEL_TO_THE_DEATH");
+            if (ddEffect != default){
+                CombatManager.ExecuteAction(new RemoveStatusAction(fighter, ddEffect));
+            }
+        }
+        CombatManager.ExecuteAction(new ApplyStatusAction(data.caster, new ConditionDishonorable(), 1));
+    }
+
     public void HandleEvent(CombatEventAbilityActivated data){
-        if (data.abilityActivated.TYPE != AbilityType.ATTACK || 
-            (data.abilityActivated.OWNER != this.applier && data.abilityActivated.OWNER != this.target)){
+        if (data.abilityActivated.TYPE != AbilityType.ATTACK){
             return;
         }
+        // If the attacker is either the applier or victim, check if the ability's targets are anyone other than the applier/victim.
+        // If the attacker is neither the applier not victim, check if the ability's targets are the applier/victim.
+        Func<AbstractCharacter, bool> condition = (data.caster == this.applier || data.caster == this.target) ?
+            (AbstractCharacter character) => character != this.applier && character != this.target : 
+            (AbstractCharacter character) => character == this.applier || character == this.target;
         foreach (AbstractCharacter character in data.targets){
-            GD.Print(character.CHAR_NAME, this.applier.CHAR_NAME, this.target.CHAR_NAME);
-            if (character != this.applier && character != this.target){
-                // Duel to the Death is activated!
-                GD.Print("EFFECT OF DUEL TO THE DEATH SHOULD BE HAPPENING!");
-                foreach (AbstractCharacter fighter in CombatManager.combatInstance?.fighters){
-                    AbstractStatusEffect ddEffect = fighter.statusEffects.Find(effect => effect.ID == "DUEL_TO_THE_DEATH");
-                    if (ddEffect != default){
-                        CombatManager.ExecuteAction(new RemoveStatusAction(fighter, ddEffect));
-                    }
-                }
-                CombatManager.ExecuteAction(new ApplyStatusAction(data.abilityActivated.OWNER, new ConditionDishonorable(), 1));
+            if (condition(character)){
+                ActivateDuelToTheDeathEffect(data);
                 return;
             }
         }

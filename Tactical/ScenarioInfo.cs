@@ -24,7 +24,7 @@ public class TestScenario : ScenarioInfo {
     private static readonly AbstractCharacter characterE = new AbstractCharacter("Test Dummy D", CharacterFaction.ENEMY);
     private static List<(AbstractCharacter character, int position)> scenarioFighters = new(){
         (playerA, 3),
-        // (playerB, 2),
+        (playerB, 2),
         (characterB, 4),
         (characterC, 5),
         (characterD, 1),
@@ -47,11 +47,14 @@ public class TestScenario : ScenarioInfo {
         playerA.EquipAbility(new ShrugOff());
 
         playerA.EquipPassive(new SacredDuel());
+        playerA.EquipPassive(new DeathBeforeDishonor());
         playerA.MinSpd = 10;
         playerA.MaxSpd = 20;
         playerA.ActionsPerTurn = 3;
         playerA.MaxHP = 100;
+        playerA.CurHP = 68;
         playerA.MaxPoise = 100;
+        playerA.CurPoise = 68;
 
         playerB.EquipAbility(new Discharge());
         playerB.EquipAbility(new Repartee());

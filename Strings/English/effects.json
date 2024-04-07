@@ -9,7 +9,7 @@
 	},
 	"DUEL_TO_THE_DEATH": {
 		"NAME": "Duel to the Death",
-		"DESC": "If {owner} and {APPLIER_NAME} attack anyone other than each other, remove Duel to the Death from EVERYONE and inflict Dishonorable to the unit that initiated the attack."
+		"DESC": "If {owner} attacks or is attacked by anyone OTHER than {APPLIER_NAME}:\n- Remove Duel to the Death from EVERYONE.\n- Inflict Dishonorable to the initiator of the attack."
 	},
 	"HASTE": {
 		"NAME": "Haste",
