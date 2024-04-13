@@ -49,6 +49,7 @@ public class TestScenario : ScenarioInfo {
         playerA.EquipPassive(new SacredDuel());
         playerA.EquipPassive(new DeathBeforeDishonor());
         playerA.EquipPassive(new CullTheDishonorable());
+        playerA.EquipPassive(new InMemoriam());
         playerA.MinSpd = 10;
         playerA.MaxSpd = 20;
         playerA.ActionsPerTurn = 3;

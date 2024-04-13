@@ -4,7 +4,7 @@ namespace CharacterPassives;
 public class CullTheDishonorable : AbstractPassive, IEventHandler<CombatEventDieRolled>, IEventHandler<CombatEventDamageDealt> {
 
     public static readonly string id = "CULL_THE_DISHONORABLE";
-    public static readonly int cost = 0;
+    public static readonly int cost = 6;
     private static readonly PassiveStrings strings = LocalizationLibrary.Instance.GetPassiveStrings(id);
     
     public CullTheDishonorable() : base(id, strings, cost){}
