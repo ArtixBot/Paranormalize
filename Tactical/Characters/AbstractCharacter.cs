@@ -23,7 +23,14 @@ public partial class AbstractCharacter : IEventSubscriber, IEventHandler<CombatE
     }
     public List<AbstractStatusEffect> statusEffects = new();
     public bool HasBuff { get {return statusEffects.Where(effect => effect.TYPE == StatusEffectType.BUFF).ToList().Count > 0;} }
-    public bool HasCondition { get {return statusEffects.Where(effect => effect.TYPE == StatusEffectType.CONDITION).ToList().Count > 0;} }
+    public bool HasCondition (string conditionID) {
+        foreach (AbstractStatusEffect effect in this.statusEffects){
+            if (effect.ID == conditionID){
+                return true;
+            }
+        }
+        return false;
+    }
     public bool HasDebuff { get {return statusEffects.Where(effect => effect.TYPE == StatusEffectType.DEBUFF).ToList().Count > 0;} }
 
 

@@ -26,9 +26,9 @@ public class TestScenario : ScenarioInfo {
         (playerA, 3),
         (playerB, 2),
         (characterB, 4),
-        (characterC, 5),
-        (characterD, 1),
-        (characterE, 2),
+        // (characterC, 5),
+        // (characterD, 1),
+        // (characterE, 2),
     };
 
     public TestScenario() : base(scenarioFighters){
@@ -48,6 +48,7 @@ public class TestScenario : ScenarioInfo {
 
         playerA.EquipPassive(new SacredDuel());
         playerA.EquipPassive(new DeathBeforeDishonor());
+        playerA.EquipPassive(new CullTheDishonorable());
         playerA.MinSpd = 10;
         playerA.MaxSpd = 20;
         playerA.ActionsPerTurn = 3;

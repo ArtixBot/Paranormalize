@@ -304,12 +304,17 @@ public class CombatEventDieRolled : ICombatEvent {
     public CombatEventType eventType {
         get {return CombatEventType.ON_DIE_ROLLED;}
     }
+    public AbstractCharacter roller;
+    public AbstractCharacter rollTarget;
     public AbstractAbility ability;     // Used for things like Strength status effect to get owner.
     public Die die;
     public int rolledValue;
 
-    public CombatEventDieRolled(AbstractAbility ability, Die die, int rolledValue){
+    public CombatEventDieRolled(AbstractAbility ability, Die die, int rolledValue, AbstractCharacter rollTarget){
         this.ability = ability;
+        this.roller = this.ability.OWNER;
+
+        this.rollTarget = rollTarget;
         this.die = die;
         this.rolledValue = rolledValue;
     }
@@ -417,11 +422,13 @@ public class CombatEventDamageDealt : ICombatEvent {
         get {return CombatEventType.ON_DEAL_DAMAGE;}
     }
     public AbstractCharacter dealer;
+    public AbstractCharacter target;
     public float damageDealt;
     public bool isPoiseDamage;
 
-    public CombatEventDamageDealt(AbstractCharacter dealer, float damageDealt, bool isPoiseDamage){
+    public CombatEventDamageDealt(AbstractCharacter dealer, float damageDealt, bool isPoiseDamage, AbstractCharacter target){
         this.dealer = dealer;
+        this.target = target;
         this.damageDealt = damageDealt;
         this.isPoiseDamage = isPoiseDamage;
     }

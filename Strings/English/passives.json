@@ -1,4 +1,8 @@
 {
+	"CULL_THE_DISHONORABLE": {
+		"NAME": "Cull the Dishonorable",
+		"DESC": "Deal double damage and gain +3 to rolls against enemies with Dishonorable."
+	},
 	"DEATH_BEFORE_DISHONOR": {
 		"NAME": "Death before Dishonor",
 		"DESC": "If this unit would gain Dishonorable, remove Dishonorable and Stagger this unit."
@@ -6,10 +10,6 @@
 	"IN_MEMORIAM": {
 		"NAME": "In Memoriam",
 		"DESC": "When a Gallant Knight is defeated, remaining Gallant Knights permanently gain an additional action per round.\nIf only one Gallant Knight remains, remove all Stagger effects from the Knight, and the Knight recovers all HP and Poise."
-	},
-	"KILL_THE_DISHONORABLE": {
-		"NAME": "Kill the Dishonorable",
-		"DESC": "Deal double damage and gain +3 to rolls against enemies with Dishonorable."
 	},
 	"SACRED_DUEL": {
 		"NAME": "Sacred Duel",
