@@ -17,6 +17,11 @@ public class EffectStrings {
     public string DESC {get; set;}
 }
 
+public class PassiveStrings {
+    public string NAME {get; set;}
+    public string DESC {get; set;}
+}
+
 /// <summary>
 /// Singleton class used for all UI-related string content.
 /// </summary>
@@ -25,6 +30,7 @@ public class LocalizationLibrary {
 
     private readonly Dictionary<string, AbilityStrings> abilityStrings;
     private readonly Dictionary<string, EffectStrings> effectStrings;
+    private readonly Dictionary<string, PassiveStrings> passiveStrings;
 
     private LocalizationLibrary(){
         string jsonString = File.ReadAllText("Strings/English/abilities.json");
@@ -32,6 +38,9 @@ public class LocalizationLibrary {
 
         jsonString = File.ReadAllText("Strings/English/effects.json");
         effectStrings = JsonSerializer.Deserialize<Dictionary<string, EffectStrings>>(jsonString);
+
+        jsonString = File.ReadAllText("Strings/English/passives.json");
+        passiveStrings = JsonSerializer.Deserialize<Dictionary<string, PassiveStrings>>(jsonString);
     }
     
     public AbilityStrings GetAbilityStrings(string abilityId){
@@ -48,6 +57,15 @@ public class LocalizationLibrary {
             return effectStrings[effectId];
         } catch (Exception){
             GD.Print($"No key found for {effectId}.");
+            return null;
+        }
+    }
+
+    public PassiveStrings GetPassiveStrings(string passiveId){
+        try {
+            return passiveStrings[passiveId];
+        } catch (Exception){
+            GD.Print($"No key found for {passiveId}.");
             return null;
         }
     }

@@ -175,7 +175,7 @@ public partial class CharacterUI : Area2D, IEventSubscriber, IEventHandler<Comba
 	}
 
 	private void UpdateConditions(){
-		if (!Character.HasCondition) {
+		if (Character.statusEffects.Where(effect => effect.TYPE == StatusEffectType.CONDITION).ToList().Count == 0) {
 			activeConditions.Visible = false;
 			return;
 		}

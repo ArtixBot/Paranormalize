@@ -1,0 +1,18 @@
+{
+	"CULL_THE_DISHONORABLE": {
+		"NAME": "Cull the Dishonorable",
+		"DESC": "Deal double damage and gain +3 to rolls against enemies with Dishonorable."
+	},
+	"DEATH_BEFORE_DISHONOR": {
+		"NAME": "Death before Dishonor",
+		"DESC": "If this unit would gain Dishonorable, remove Dishonorable and Stagger this unit."
+	},
+	"IN_MEMORIAM": {
+		"NAME": "In Memoriam",
+		"DESC": "When an ally is defeated, this unit permanently gains an additional action per round.\nIf no other allies remain, remove all Stagger effects from this unit, and this unit recovers all HP and Poise."
+	},
+	"SACRED_DUEL": {
+		"NAME": "Sacred Duel",
+		"DESC": "[color=#4cf]On combat start[/color]: Inflict Duel to the Death to a random enemy that does not have Duel to the Death."
+	}
+}

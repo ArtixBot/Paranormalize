@@ -44,6 +44,12 @@
 			"PIERCE_PULL": "[color=#4cf]On hit:[/color] Pull 1.\n[color=#4cf]On hit or clash lose:[/color] If the target is not within range 1, discard all remaining dice."
 		}
 	},
+	"CHALLENGE": {
+		"NAME": "Challenge",
+		"STRINGS": {
+			"GENERIC": "Target enemy in range.\nForward 1.\nPull 1."
+		}
+	},
 	"CHARGE": {
 		"NAME": "Charge",
 		"STRINGS": {
@@ -57,6 +63,24 @@
 		"NAME": "Endure",
 		"STRINGS": {
 			"GENERIC": "Target self.\nGain 4 Protection and 4 Poise Protection this round and next round."
+		}
+	},
+	"GALLANT_SLASHES": {
+		"NAME": "Gallant Slashes",
+		"STRINGS": {
+			"NEXT_ROUND_STR_ON_HIT": "[color=#4cf]On hit:[/color] Gain 1 Strength next round."
+		}
+	},
+	"GALLOPING_TILT": {
+		"NAME": "Galloping Tilt",
+		"STRINGS": {
+			"GENERIC": "[color=#4cf]On activate:[/color] Forward 3. Gain 2 Haste."
+		}
+	},
+	"HAVE_AT_THEE": {
+		"NAME": "Have at Thee!",
+		"STRINGS": {
+			"GENERIC": "Can only be activated when nobody is Dishonorable and this unit does not have Duel to the Death.\nTarget an enemy without Duel to the Death.\n\nInflict Duel to the Death."
 		}
 	},
 	"HEW": {
@@ -141,6 +165,18 @@
 		"NAME": "Second Wind",
 		"STRINGS": {
 			"GENERIC": "Target self.\nRecover 33% of missing HP. Recover 33% of missing Poise."
+		}
+	},
+	"VIRTUOUS_STRUGGLE": {
+		"NAME": "Virtuous Struggle",
+		"STRINGS": {
+			"GENERIC": "[color=#4cf]On activate:[/color] Gain 1 Strength next round.\n[color=#4cf]On activate:[/color] If no other allies are present, add two Blunt 4-5 dice to this ability."
+		}
+	},
+	"PARRY": {
+		"NAME": "Parry",
+		"STRINGS": {
+			"ON_CLASH_DEAL_DAMAGE": "[color=#4cf]On clash win:[/color] Deal damage equal to this die's roll."
 		}
 	},
 	"PASS": {

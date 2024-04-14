@@ -30,7 +30,7 @@ public class DamageAction : AbstractAction {
         if (this.defender == null) return;
         // Attacker can be null from status effect damage (burn, bleed, etc.)
         if (this.attacker != null) {
-            CombatEventDamageDealt dealtData = CombatManager.eventManager.BroadcastEvent(new CombatEventDamageDealt(this.attacker, this.damage, this.isPoiseDamage));
+            CombatEventDamageDealt dealtData = CombatManager.eventManager.BroadcastEvent(new CombatEventDamageDealt(this.attacker, this.damage, this.isPoiseDamage, this.defender));
             this.damage = (int) dealtData.damageDealt;
         }
 

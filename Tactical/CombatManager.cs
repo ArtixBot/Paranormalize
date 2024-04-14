@@ -300,10 +300,9 @@ public static class CombatManager {
             Die die = combatInstance.activeAbilityDice[0];
             int dieRoll = die.Roll();
             Logging.Log($"{combatInstance.activeAbility.OWNER.CHAR_NAME} rolls a(n) {die.DieType} die (range: {die.MinValue} - {die.MaxValue}, natural roll: {dieRoll}).", Logging.LogLevel.ESSENTIAL);
-           
-            int modifiedRoll = eventManager.BroadcastEvent(new CombatEventDieRolled(combatInstance.activeAbility, die, dieRoll)).rolledValue;
             
             foreach (AbstractCharacter target in combatInstance.activeAbilityTargets.ToList()){
+                int modifiedRoll = eventManager.BroadcastEvent(new CombatEventDieRolled(combatInstance.activeAbility, die, dieRoll, target)).rolledValue;
                 ResolveDieRoll(combatInstance.activeAbility.OWNER, target, die, dieRoll, modifiedRoll, rolledDuringClash: false, losingDieWasAttack: false);
             }
 
@@ -322,7 +321,7 @@ public static class CombatManager {
             Die die = combatInstance.reactAbilityDice[0];
             int dieRoll = die.Roll();
             Logging.Log($"{combatInstance.reactAbility.OWNER.CHAR_NAME} rolls a(n) {die.DieType} die (range: {die.MinValue} - {die.MaxValue}, natural roll: {dieRoll}).", Logging.LogLevel.ESSENTIAL);
-            int modifiedRoll = eventManager.BroadcastEvent(new CombatEventDieRolled(combatInstance.reactAbility, die, dieRoll)).rolledValue;
+            int modifiedRoll = eventManager.BroadcastEvent(new CombatEventDieRolled(combatInstance.reactAbility, die, dieRoll, combatInstance.activeChar)).rolledValue;
 
             GD.Print($"{combatInstance.reactAbility.OWNER.CHAR_NAME} targets {combatInstance.activeChar.CHAR_NAME}");
             ResolveDieRoll(combatInstance.reactAbility.OWNER, combatInstance.activeChar, die, dieRoll, modifiedRoll, rolledDuringClash: false, losingDieWasAttack: false);
@@ -396,8 +395,8 @@ public static class CombatManager {
             $"\n\t{combatInstance.reactAbility.OWNER.CHAR_NAME}: {reactDie.DieType} die (range {reactDie.MinValue} - {reactDie.MaxValue}, roll: {natReactRoll}))", Logging.LogLevel.ESSENTIAL);
 
             // Reassign to atkRoll/reactRoll to handle any changes in dice power.
-            int modAtkRoll = eventManager.BroadcastEvent(new CombatEventDieRolled(combatInstance.activeAbility, atkDie, natAtkRoll)).rolledValue;
-            int modReactRoll = eventManager.BroadcastEvent(new CombatEventDieRolled(combatInstance.reactAbility, reactDie, natReactRoll)).rolledValue;
+            int modAtkRoll = eventManager.BroadcastEvent(new CombatEventDieRolled(combatInstance.activeAbility, atkDie, natAtkRoll, combatInstance.reactAbility.OWNER)).rolledValue;
+            int modReactRoll = eventManager.BroadcastEvent(new CombatEventDieRolled(combatInstance.reactAbility, reactDie, natReactRoll, combatInstance.activeChar)).rolledValue;
 
             CombatEventDieClash dieClashData = eventManager.BroadcastEvent(new CombatEventDieClash(combatInstance.activeAbility, atkDie, modAtkRoll, combatInstance.reactAbility, reactDie, modReactRoll));
             modAtkRoll = dieClashData.attackerRoll;

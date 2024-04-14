@@ -106,7 +106,7 @@ public abstract class AbstractAbility : IEventSubscriber, IEventHandler<CombatEv
 
     // When an ability is activated, check the list of (lane, hash set of units in that lane).
     // This is sorted, since there's only ever 6 lanes (so constant time).
-    public List<(int lane, HashSet<AbstractCharacter> targetsInLane)> GetValidTargets(){
+    public virtual List<(int lane, HashSet<AbstractCharacter> targetsInLane)> GetValidTargets(){
         CombatInstance combatInstance = CombatManager.combatInstance;
         if (combatInstance == null){
             GD.PrintErr("CombatManager does not have a valid combat instance!");

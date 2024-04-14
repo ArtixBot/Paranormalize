@@ -14,12 +14,14 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+mouse_filter = 2
 script = ExtResource("1_gm5p2")
 
 [node name="Panel" type="Panel" parent="."]
 layout_mode = 0
 offset_right = 587.0
 offset_bottom = 335.0
+mouse_filter = 2
 
 [node name="Ability Name" type="Label" parent="."]
 layout_mode = 0
