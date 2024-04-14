@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using Godot;
 
 public class HaveAtThee : AbstractAbility, IEventHandler<CombatEventAbilityActivated> {
     public static string id = "HAVE_AT_THEE";
@@ -18,12 +19,23 @@ public class HaveAtThee : AbstractAbility, IEventHandler<CombatEventAbilityActiv
         get {
             HashSet<AbstractCharacter> fighters = CombatManager.combatInstance?.fighters;
             foreach(AbstractCharacter fighter in fighters){
+                if (fighter == this.OWNER && this.OWNER.HasCondition("DUEL_TO_THE_DEATH")) return false;
                 if (fighter.statusEffects.Find(effect => effect.ID == "DISHONORABLE") != default){
                     return false;
                 }
             }
             return IsAvailable;
         }
+    }
+
+    public override List<(int lane, HashSet<AbstractCharacter> targetsInLane)> GetValidTargets(){
+        List<(int lane, HashSet<AbstractCharacter> targetsInLane)> targets = base.GetValidTargets();
+
+        List<(int, HashSet<AbstractCharacter>)> filtered = new();
+        foreach ((int lane, HashSet<AbstractCharacter> targetsInLane) in targets){
+            filtered.Add((lane, targetsInLane.Where(target => !target.HasCondition("DUEL_TO_THE_DEATH")).ToHashSet()));
+        }
+        return filtered;
     }
 
     public HaveAtThee(): base(
