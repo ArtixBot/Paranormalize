@@ -1,3 +1,4 @@
+using Character;
 using CharacterPassives;
 using Godot;
 using System;
@@ -19,14 +20,14 @@ public class TestScenario : ScenarioInfo {
     private static readonly AbstractCharacter playerA = new AbstractCharacter("Duelist", CharacterFaction.PLAYER);
     private static readonly AbstractCharacter playerB = new AbstractCharacter("Cinq", CharacterFaction.PLAYER);
     private static readonly AbstractCharacter characterB = new AbstractCharacter("Test Dummy A", CharacterFaction.ENEMY);
-    private static readonly AbstractCharacter characterC = new AbstractCharacter("Test Dummy B", CharacterFaction.ENEMY);
+    private static readonly AbstractCharacter characterC = new GallantKnight();
     private static readonly AbstractCharacter characterD = new AbstractCharacter("Test Dummy C", CharacterFaction.ENEMY);
     private static readonly AbstractCharacter characterE = new AbstractCharacter("Test Dummy D", CharacterFaction.ENEMY);
     private static List<(AbstractCharacter character, int position)> scenarioFighters = new(){
         (playerA, 3),
         (playerB, 2),
         (characterB, 4),
-        // (characterC, 5),
+        (characterC, 5),
         // (characterD, 1),
         // (characterE, 2),
     };
@@ -48,10 +49,6 @@ public class TestScenario : ScenarioInfo {
         playerA.EquipAbility(new VirtuousStruggle());
         playerA.EquipAbility(new Parry());
 
-        playerA.EquipPassive(new SacredDuel());
-        playerA.EquipPassive(new DeathBeforeDishonor());
-        playerA.EquipPassive(new CullTheDishonorable());
-        playerA.EquipPassive(new InMemoriam());
         playerA.MinSpd = 10;
         playerA.MaxSpd = 20;
         playerA.ActionsPerTurn = 3;
@@ -76,7 +73,7 @@ public class TestScenario : ScenarioInfo {
         // characterB.EquipAbility(new Discharge());
         characterB.ActionsPerTurn = 1;
         characterB.Behavior = new AiBehaviorPureRandom(characterB);
-        characterC.ActionsPerTurn = 0;
+        characterC.ActionsPerTurn = 2;
         characterC.MaxHP = 100;
         characterC.CurHP = 100;
         characterD.ActionsPerTurn = 0;
