@@ -24,7 +24,7 @@ public class TestScenario : ScenarioInfo {
     private static readonly AbstractCharacter characterE = new AbstractCharacter("Test Dummy D", CharacterFaction.ENEMY);
     private static List<(AbstractCharacter character, int position)> scenarioFighters = new(){
         (playerA, 3),
-        (playerB, 2),
+        // (playerB, 2),
         (characterB, 4),
         // (characterC, 5),
         // (characterD, 1),
@@ -45,6 +45,8 @@ public class TestScenario : ScenarioInfo {
         playerA.EquipAbility(new Indomitable());
         playerA.EquipAbility(new Knockout());
         playerA.EquipAbility(new ShrugOff());
+        playerA.EquipAbility(new VirtuousStruggle());
+        playerA.EquipAbility(new Parry());
 
         playerA.EquipPassive(new SacredDuel());
         playerA.EquipPassive(new DeathBeforeDishonor());
@@ -69,6 +71,7 @@ public class TestScenario : ScenarioInfo {
         characterB.CurPoise = 60;
         characterB.MaxSpd = 1;
         characterB.EquipAbility(new Thwack());
+        characterB.EquipAbility(new Parry());
         // characterB.EquipAbility(new Discharge());
         characterB.ActionsPerTurn = 1;
         characterB.Behavior = new AiBehaviorPureRandom(characterB);

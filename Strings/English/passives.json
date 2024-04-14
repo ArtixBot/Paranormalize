@@ -9,7 +9,7 @@
 	},
 	"IN_MEMORIAM": {
 		"NAME": "In Memoriam",
-		"DESC": "When a Gallant Knight is defeated, remaining Gallant Knights permanently gain an additional action per round.\nIf only one Gallant Knight remains, remove all Stagger effects from the Knight, and the Knight recovers all HP and Poise."
+		"DESC": "When an ally is defeated, this unit permanently gains an additional action per round.\nIf no other allies remain, remove all Stagger effects from this unit, and this unit recovers all HP and Poise."
 	},
 	"SACRED_DUEL": {
 		"NAME": "Sacred Duel",
