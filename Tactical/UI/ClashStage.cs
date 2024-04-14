@@ -152,7 +152,8 @@ public partial class ClashStage : Control {
 	}
 
 	public void QueueAnimation(AbstractCharacter character, string poseToSwapTo){
-		Sprite2D charSprite = dataToSpriteMap[character.CHAR_NAME];
+		Sprite2D charSprite = dataToSpriteMap.GetValueOrDefault(character.CHAR_NAME);
+		if (charSprite == default) return;
 		Texture2D newPose;
 		try {
 			newPose = tacticalSceneNode.characterToPoseMap[character][poseToSwapTo];
