@@ -1,4 +1,4 @@
-[gd_scene load_steps=12 format=3 uid="uid://cjjgiqf177w3q"]
+[gd_scene load_steps=13 format=3 uid="uid://cjjgiqf177w3q"]
 
 [ext_resource type="Script" path="res://Tactical/UI/Characters/CharacterUI.cs" id="1_rw5qx"]
 [ext_resource type="Material" uid="uid://bmjyff6utlk6r" path="res://Tactical/UI/Shaders/CharacterTargetable.tres" id="2_1jib3"]
@@ -9,6 +9,7 @@
 [ext_resource type="Texture2D" uid="uid://2oes3g44121k" path="res://Sprites/buff-icon.png" id="7_huj51"]
 [ext_resource type="Texture2D" uid="uid://p0tetgbis0m4" path="res://Sprites/condition-icon.png" id="8_8d0wf"]
 [ext_resource type="Texture2D" uid="uid://cecycdocqfraa" path="res://Sprites/debuff-icon.png" id="8_24fsp"]
+[ext_resource type="Texture2D" uid="uid://cqebbqtric72l" path="res://Sprites/passives-icon.png" id="10_layh4"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_d4mqg"]
 size = Vector2(160, 219)
@@ -100,6 +101,13 @@ offset_right = 73.0
 offset_bottom = 195.0
 texture = ExtResource("8_24fsp")
 
+[node name="Passives" type="TextureRect" parent="Sprite2D"]
+offset_left = 79.0
+offset_top = 62.0
+offset_right = 127.0
+offset_bottom = 110.0
+texture = ExtResource("10_layh4")
+
 [connection signal="input_event" from="." to="." method="_on_input_event"]
 [connection signal="mouse_entered" from="." to="." method="_on_mouse_entered"]
 [connection signal="mouse_exited" from="." to="." method="_on_mouse_exited"]
@@ -110,3 +118,5 @@ texture = ExtResource("8_24fsp")
 [connection signal="mouse_exited" from="Sprite2D/Active Conditions" to="." method="_on_active_conditions_mouse_exited"]
 [connection signal="mouse_entered" from="Sprite2D/Active Debuffs" to="." method="_on_active_debuffs_mouse_entered"]
 [connection signal="mouse_exited" from="Sprite2D/Active Debuffs" to="." method="_on_active_debuffs_mouse_exited"]
+[connection signal="mouse_entered" from="Sprite2D/Passives" to="." method="_on_passives_mouse_entered"]
+[connection signal="mouse_exited" from="Sprite2D/Passives" to="." method="_on_passives_mouse_exited"]

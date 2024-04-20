@@ -1,8 +1,11 @@
+using CharacterPassives;
 using Godot;
+using Microsoft.VisualBasic;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection.Metadata;
+using System.Text.RegularExpressions;
 
 namespace UI;
 
@@ -10,6 +13,12 @@ public partial class CharacterUI : Area2D, IEventSubscriber, IEventHandler<Comba
 {
 	[Signal]
 	public delegate void CharacterSelectedEventHandler(CharacterUI character);
+
+	private readonly Dictionary<StatusEffectType, string> statusToColorMap = new(){
+        {StatusEffectType.BUFF, "#4cf"},
+        {StatusEffectType.CONDITION, "#ffae00"},
+        {StatusEffectType.DEBUFF, "#f74040"}
+    };
 
 	private AbstractCharacter _character;
 	public AbstractCharacter Character {
@@ -25,10 +34,11 @@ public partial class CharacterUI : Area2D, IEventSubscriber, IEventHandler<Comba
 	private TextureRect activeBuffs;
 	private TextureRect activeConditions;
 	private TextureRect activeDebuffs;
+	private TextureRect passives;
 
 	private readonly Material selectableMaterial = GD.Load<Material>("res://Tactical/UI/Shaders/CharacterTargetable.tres");
-	private readonly PackedScene statusTooltip = GD.Load<PackedScene>("res://Tactical/UI/Tooltip.tscn");
-	private StatusTooltip statusTooltipInstance;
+	private readonly PackedScene tooltip = GD.Load<PackedScene>("res://Tactical/UI/Tooltip.tscn");
+	private Tooltip tooltipInstance;
 
 	private bool _IsClickable;
 	public bool IsClickable {
@@ -49,10 +59,12 @@ public partial class CharacterUI : Area2D, IEventSubscriber, IEventHandler<Comba
 		activeBuffs = GetNode<TextureRect>("Sprite2D/Active Buffs");
 		activeConditions = GetNode<TextureRect>("Sprite2D/Active Conditions");
 		activeDebuffs = GetNode<TextureRect>("Sprite2D/Active Debuffs");
+		passives = GetNode<TextureRect>("Sprite2D/Passives");
 
 		IsClickable = false;
 
 		UpdateSprite();
+		UpdatePassives();	// A character can't gain/lose passives in the middle of combat, so this can be done in ready.
 		InitSubscriptions();
 	}
 
@@ -82,45 +94,85 @@ public partial class CharacterUI : Area2D, IEventSubscriber, IEventHandler<Comba
 	}
 
 	public void _on_active_buffs_mouse_entered(){
-		StatusTooltip tooltipNode = (StatusTooltip) statusTooltip.Instantiate();
+		Tooltip tooltipNode = (Tooltip) tooltip.Instantiate();
 		AddChild(tooltipNode);
-		tooltipNode.Effects = this.Character.statusEffects.Where(effect => effect.TYPE == StatusEffectType.BUFF).ToList();
-		tooltipNode.SetPosition(new Vector2(100, 300));
+		List<string> strings = new();
+		foreach (AbstractStatusEffect effect in this.Character.statusEffects.Where(effect => effect.TYPE == StatusEffectType.BUFF)){
+			string parsedName = ParseString(effect.NAME, effect);
+            string parsedDesc = ParseString(effect.DESC, effect);
+			string effectString = $"[color={statusToColorMap[effect.TYPE]}]{parsedName}[/color]\n{parsedDesc}";
+			strings.Add(effectString);
+		}
+		tooltipNode.Strings = strings;
+		tooltipNode.SetPosition(new Vector2(100, 0));
 
-		statusTooltipInstance = tooltipNode;
+		tooltipInstance = tooltipNode;
 	}
 
 	public void _on_active_conditions_mouse_entered(){
-		StatusTooltip tooltipNode = (StatusTooltip) statusTooltip.Instantiate();
+		Tooltip tooltipNode = (Tooltip) tooltip.Instantiate();
 		AddChild(tooltipNode);
-		tooltipNode.Effects = this.Character.statusEffects.Where(effect => effect.TYPE == StatusEffectType.CONDITION).ToList();
-		tooltipNode.SetPosition(new Vector2(100, 300));
+		List<string> strings = new();
+		foreach (AbstractStatusEffect effect in this.Character.statusEffects.Where(effect => effect.TYPE == StatusEffectType.CONDITION)){
+			string parsedName = ParseString(effect.NAME, effect);
+            string parsedDesc = ParseString(effect.DESC, effect);
+			string effectString = $"[color={statusToColorMap[effect.TYPE]}]{parsedName}[/color]\n{parsedDesc}";
+			strings.Add(effectString);
+		}
+		tooltipNode.Strings = strings;
+		tooltipNode.SetPosition(new Vector2(100, 0));
 
-		statusTooltipInstance = tooltipNode;
+		tooltipInstance = tooltipNode;
 	}
 
 	public void _on_active_debuffs_mouse_entered(){
-		StatusTooltip tooltipNode = (StatusTooltip) statusTooltip.Instantiate();
+		Tooltip tooltipNode = (Tooltip) tooltip.Instantiate();
 		AddChild(tooltipNode);
-		tooltipNode.Effects = this.Character.statusEffects.Where(effect => effect.TYPE == StatusEffectType.DEBUFF).ToList();
-		tooltipNode.SetPosition(new Vector2(100, 300));
+		List<string> strings = new();
+		foreach (AbstractStatusEffect effect in this.Character.statusEffects.Where(effect => effect.TYPE == StatusEffectType.CONDITION)){
+			string parsedName = ParseString(effect.NAME, effect);
+            string parsedDesc = ParseString(effect.DESC, effect);
+			string effectString = $"[color={statusToColorMap[effect.TYPE]}]{parsedName}[/color]\n{parsedDesc}";
+			strings.Add(effectString);
+		}
+		tooltipNode.Strings = strings;
+		tooltipNode.SetPosition(new Vector2(100, 0));
 
-		statusTooltipInstance = tooltipNode;
+		tooltipInstance = tooltipNode;
+	}
+
+	public void _on_passives_mouse_entered(){
+		Tooltip tooltipNode = (Tooltip) tooltip.Instantiate();
+		AddChild(tooltipNode);
+		List<string> strings = new();
+		foreach (AbstractPassive passive in this.Character.passives){
+			string effectString = $"{passive.NAME}\n{passive.DESC}";
+			strings.Add(effectString);
+		}
+		tooltipNode.Strings = strings;
+		tooltipNode.SetPosition(new Vector2(100, 0));
+
+		tooltipInstance = tooltipNode;
 	}
 
 	public void _on_active_buffs_mouse_exited(){
-		if (!IsInstanceValid(statusTooltipInstance)){ return; }
-		statusTooltipInstance.QueueFree();
+		if (!IsInstanceValid(tooltipInstance)){ return; }
+		tooltipInstance.QueueFree();
 	}
 
 	public void _on_active_conditions_mouse_exited(){
-		if (!IsInstanceValid(statusTooltipInstance)){ return; }
-		statusTooltipInstance.QueueFree();
+		if (!IsInstanceValid(tooltipInstance)){ return; }
+		tooltipInstance.QueueFree();
 	}
 
 	public void _on_active_debuffs_mouse_exited(){
-		if (!IsInstanceValid(statusTooltipInstance)){ return; }
-		statusTooltipInstance.QueueFree();
+		if (!IsInstanceValid(tooltipInstance)){ return; }
+		tooltipInstance.QueueFree();
+	}
+
+	public void _on_passives_mouse_exited(){
+		if (!IsInstanceValid(tooltipInstance)){ return; }
+		tooltipInstance.QueueFree();
 	}
 
 	private void UpdateStatsText(){
@@ -183,6 +235,14 @@ public partial class CharacterUI : Area2D, IEventSubscriber, IEventHandler<Comba
 		// TODO: Add on-hover functionality.
 	}
 
+	private void UpdatePassives(){
+		if (Character.passives.Count == 0) {
+			passives.Visible = false;
+			return;
+		}
+		passives.Visible = true;
+	}
+
 	public virtual void InitSubscriptions(){
 		// TODO: Change this to something like ON_TAKE_DAMAGE or ON_HP_CHANGED instead.
 		CombatManager.eventManager?.Subscribe(CombatEventType.ON_TURN_END, this, CombatEventPriority.UI);
@@ -198,5 +258,25 @@ public partial class CharacterUI : Area2D, IEventSubscriber, IEventHandler<Comba
 		UpdateBuffs();
 		UpdateDebuffs();
 		UpdateConditions();
+    }
+
+	string ParseString(string s, AbstractStatusEffect effect){
+        MatchCollection matches = new Regex(@"(?<=\{)(.*?)(?=\})").Matches(s);
+        string prefix = $"[color={statusToColorMap[effect.TYPE]}]";
+        string suffix = "[/color]";
+        for (int i = 0; i < matches.Count; i++){
+            Match match = matches[i];
+            
+            if (match.Value.Contains("stacks")){
+                s = s.Replace("{" + match.Value + "}", prefix + effect.STACKS + suffix);
+            }
+            else if (match.Value.Contains("owner")){
+                s = s.Replace("{" + match.Value + "}", effect.OWNER.CHAR_NAME);
+            } else {    // Check for custom field w/ reflection. E.g. staggered condition uses "UNSTAGGER_ROUND" in effects.json. Check for an equivalent in ConditionStaggered.
+                string customValue = effect.GetType().GetField(match.Value).GetValue(effect).ToString();
+                s = s.Replace("{" + match.Value + "}", customValue);
+            }
+        }
+        return s;
     }
 }

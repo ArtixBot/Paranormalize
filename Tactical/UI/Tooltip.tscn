@@ -1,6 +1,6 @@
 [gd_scene load_steps=3 format=3 uid="uid://bagrxejfq7hk6"]
 
-[ext_resource type="Script" path="res://Tactical/UI/StatusTooltip.cs" id="1_ceteo"]
+[ext_resource type="Script" path="res://Tactical/UI/Tooltip.cs" id="1_ceteo"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_8ciiv"]
 content_margin_left = 10.0
