@@ -1,30 +1,31 @@
-[gd_scene load_steps=3 format=3 uid="uid://bagrxejfq7hk6"]
+[gd_scene load_steps=5 format=3 uid="uid://iyl6u3mg1kjt"]
 
 [ext_resource type="Script" path="res://Tactical/UI/Tooltip.cs" id="1_ceteo"]
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_8ciiv"]
-content_margin_left = 10.0
-content_margin_top = 10.0
-content_margin_right = 10.0
-content_margin_bottom = 10.0
-bg_color = Color(0.0980392, 0.0980392, 0.0980392, 0.698039)
-corner_radius_top_left = 5
-corner_radius_top_right = 5
-corner_radius_bottom_right = 5
-corner_radius_bottom_left = 5
-corner_detail = 5
+[sub_resource type="Gradient" id="Gradient_l8w37"]
+offsets = PackedFloat32Array(0.2, 0.9)
+colors = PackedColorArray(0.0784314, 0.0784314, 0.0784314, 1, 0.0784314, 0.0784314, 0.0784314, 0)
+metadata/_snap_enabled = true
+
+[sub_resource type="GradientTexture1D" id="GradientTexture1D_1a2hn"]
+gradient = SubResource("Gradient_l8w37")
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_b82al"]
+texture = SubResource("GradientTexture1D_1a2hn")
+texture_margin_left = 8.0
+texture_margin_top = 8.0
+texture_margin_right = 8.0
+texture_margin_bottom = 8.0
 
 [node name="Tooltip" type="PanelContainer"]
-offset_right = 450.0
-offset_bottom = 500.0
-theme_override_styles/panel = SubResource("StyleBoxFlat_8ciiv")
+anchors_preset = -1
+anchor_right = 0.3
+anchor_bottom = 0.036
+grow_horizontal = 2
+theme_override_styles/panel = SubResource("StyleBoxTexture_b82al")
 script = ExtResource("1_ceteo")
 
-[node name="Text" type="RichTextLabel" parent="."]
+[node name="Content" type="RichTextLabel" parent="."]
 layout_mode = 2
 bbcode_enabled = true
-text = "[font_size=30]Buffs[/font_size]
-
-[color=green]Haste[/color]: On round start, increase the Speed of all actions by {stacks}.
-
-MAKE SURE TO ATTACH A *TOOLTIP.CS SCRIPT TO THE TOOLTIP NODE!"
+fit_content = true

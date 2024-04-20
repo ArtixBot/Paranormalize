@@ -1,9 +1,6 @@
 using Godot;
 using System;
 using System.Collections.Generic;
-using System.Text.RegularExpressions;
-using System.Reflection;
-using Localization;
 
 public partial class Tooltip : PanelContainer
 {
@@ -20,12 +17,13 @@ public partial class Tooltip : PanelContainer
         foreach (String str in strings){
             tooltipText += $"{str}\n\n";
         }
+        tooltipText = tooltipText.StripEdges();
         rtlNode.Text = "[font n='res://Assets/Inter-Regular.ttf' s=16]" + tooltipText + "[/font]";
+        SetDeferred("size", new Vector2(450, 0));
 	}
 
 	// Called when the node enters the scene tree for the first time.
 	public override void _Ready() {
-		rtlNode = GetNode<RichTextLabel>("Text");
-        this.Size = new Vector2(450, 500);
+		rtlNode = GetNode<RichTextLabel>("Content");
 	}
 }
