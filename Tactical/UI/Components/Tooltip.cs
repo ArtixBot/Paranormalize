@@ -5,7 +5,7 @@ using System.Collections.Generic;
 public partial class Tooltip : PanelContainer
 {
 	public RichTextLabel rtlNode;
-    private List<string> _strings;
+    private List<string> _strings = new();
     public List<string> Strings {
         get {return _strings;}
 		set {_strings = value; UpdateText(_strings);}
@@ -15,10 +15,9 @@ public partial class Tooltip : PanelContainer
         if (strings == null || !IsInstanceValid(rtlNode)) return;
         string tooltipText = "";
         foreach (String str in strings){
-            tooltipText += $"{str}\n\n";
+            tooltipText += $"{str}";
         }
-        tooltipText = tooltipText.StripEdges();
-        rtlNode.Text = "[font n='res://Assets/Inter-Regular.ttf' s=16]" + tooltipText + "[/font]";
+        rtlNode.Text = tooltipText;
         SetDeferred("size", new Vector2(450, 0));
 	}
 

@@ -37,8 +37,8 @@ public partial class CharacterUI : Area2D, IEventSubscriber, IEventHandler<Comba
 	private TextureRect passives;
 
 	private readonly Material selectableMaterial = GD.Load<Material>("res://Tactical/UI/Shaders/CharacterTargetable.tres");
-	private readonly PackedScene tooltip = GD.Load<PackedScene>("res://Tactical/UI/Tooltip.tscn");
-	private Tooltip tooltipInstance;
+	private readonly PackedScene tooltip = GD.Load<PackedScene>("res://Tactical/UI/Components/Tooltip.tscn");
+	private List<Tooltip> hoverTooltips = new();
 
 	private bool _IsClickable;
 	public bool IsClickable {
@@ -94,85 +94,114 @@ public partial class CharacterUI : Area2D, IEventSubscriber, IEventHandler<Comba
 	}
 
 	public void _on_active_buffs_mouse_entered(){
-		Tooltip tooltipNode = (Tooltip) tooltip.Instantiate();
-		AddChild(tooltipNode);
-		List<string> strings = new();
-		foreach (AbstractStatusEffect effect in this.Character.statusEffects.Where(effect => effect.TYPE == StatusEffectType.BUFF)){
-			string parsedName = ParseString(effect.NAME, effect);
-            string parsedDesc = ParseString(effect.DESC, effect);
-			string effectString = $"[color={statusToColorMap[effect.TYPE]}]{parsedName}[/color]\n{parsedDesc}";
-			strings.Add(effectString);
-		}
-		tooltipNode.Strings = strings;
-		tooltipNode.SetPosition(new Vector2(100, 0));
+		var buffs = this.Character.statusEffects.Where(effect => effect.TYPE == StatusEffectType.BUFF).ToList();
+		int offsetY = 0;
+		for (int i = 0; i < buffs.Count; i++){
+			AbstractStatusEffect buff = buffs[i];
 
-		tooltipInstance = tooltipNode;
+			string parsedName = ParseString(buff.NAME, buff);
+            string parsedDesc = ParseString(buff.DESC, buff);
+			string effectString = $"[color={statusToColorMap[buff.TYPE]}]{parsedName}[/color]\n{parsedDesc}";
+
+			Tooltip tooltipNode = (Tooltip) tooltip.Instantiate();
+			AddChild(tooltipNode);
+			tooltipNode.Strings = new List<string>{effectString};
+			hoverTooltips.Add(tooltipNode);
+			tooltipNode.SetPosition(new Vector2(100, offsetY));
+			tooltipNode.AddThemeStyleboxOverride("panel", GD.Load<StyleBoxTexture>("res://Tactical/UI/Components/BuffGradientBG.tres"));
+
+			// 10 padding + 16 for margins for tooltip
+			offsetY += 26 + tooltipNode.rtlNode.GetContentHeight();
+		}
 	}
 
 	public void _on_active_conditions_mouse_entered(){
-		Tooltip tooltipNode = (Tooltip) tooltip.Instantiate();
-		AddChild(tooltipNode);
-		List<string> strings = new();
-		foreach (AbstractStatusEffect effect in this.Character.statusEffects.Where(effect => effect.TYPE == StatusEffectType.CONDITION)){
-			string parsedName = ParseString(effect.NAME, effect);
-            string parsedDesc = ParseString(effect.DESC, effect);
-			string effectString = $"[color={statusToColorMap[effect.TYPE]}]{parsedName}[/color]\n{parsedDesc}";
-			strings.Add(effectString);
-		}
-		tooltipNode.Strings = strings;
-		tooltipNode.SetPosition(new Vector2(100, 0));
+		var conditions = this.Character.statusEffects.Where(effect => effect.TYPE == StatusEffectType.CONDITION).ToList();
+		int offsetY = 0;
+		for (int i = 0; i < conditions.Count; i++){
+			AbstractStatusEffect condition = conditions[i];
 
-		tooltipInstance = tooltipNode;
+			string parsedName = ParseString(condition.NAME, condition);
+            string parsedDesc = ParseString(condition.DESC, condition);
+			string effectString = $"[color={statusToColorMap[condition.TYPE]}]{parsedName}[/color]\n{parsedDesc}";
+
+			Tooltip tooltipNode = (Tooltip) tooltip.Instantiate();
+			AddChild(tooltipNode);
+			tooltipNode.Strings = new List<string>{effectString};
+			hoverTooltips.Add(tooltipNode);
+			tooltipNode.SetPosition(new Vector2(100, offsetY));
+			tooltipNode.AddThemeStyleboxOverride("panel", GD.Load<StyleBoxTexture>("res://Tactical/UI/Components/ConditionGradientBG.tres"));
+
+			// 10 padding + 16 for margins for tooltip
+			offsetY += 26 + tooltipNode.rtlNode.GetContentHeight();
+		}
 	}
 
 	public void _on_active_debuffs_mouse_entered(){
-		Tooltip tooltipNode = (Tooltip) tooltip.Instantiate();
-		AddChild(tooltipNode);
-		List<string> strings = new();
-		foreach (AbstractStatusEffect effect in this.Character.statusEffects.Where(effect => effect.TYPE == StatusEffectType.CONDITION)){
-			string parsedName = ParseString(effect.NAME, effect);
-            string parsedDesc = ParseString(effect.DESC, effect);
-			string effectString = $"[color={statusToColorMap[effect.TYPE]}]{parsedName}[/color]\n{parsedDesc}";
-			strings.Add(effectString);
-		}
-		tooltipNode.Strings = strings;
-		tooltipNode.SetPosition(new Vector2(100, 0));
+		var debuffs = this.Character.statusEffects.Where(effect => effect.TYPE == StatusEffectType.DEBUFF).ToList();
+		int offsetY = 0;
+		for (int i = 0; i < debuffs.Count; i++){
+			AbstractStatusEffect debuff = debuffs[i];
 
-		tooltipInstance = tooltipNode;
+			string parsedName = ParseString(debuff.NAME, debuff);
+            string parsedDesc = ParseString(debuff.DESC, debuff);
+			string effectString = $"[color={statusToColorMap[debuff.TYPE]}]{parsedName}[/color]\n{parsedDesc}";
+
+			Tooltip tooltipNode = (Tooltip) tooltip.Instantiate();
+			AddChild(tooltipNode);
+			tooltipNode.Strings = new List<string>{effectString};
+			hoverTooltips.Add(tooltipNode);
+			tooltipNode.SetPosition(new Vector2(100, offsetY));
+			tooltipNode.AddThemeStyleboxOverride("panel", GD.Load<StyleBoxTexture>("res://Tactical/UI/Components/DebuffGradientBG.tres"));
+
+			// 10 padding + 16 for margins for tooltip
+			offsetY += 26 + tooltipNode.rtlNode.GetContentHeight();
+		}
 	}
 
 	public void _on_passives_mouse_entered(){
-		Tooltip tooltipNode = (Tooltip) tooltip.Instantiate();
-		AddChild(tooltipNode);
-		List<string> strings = new();
-		foreach (AbstractPassive passive in this.Character.passives){
+		var passives = this.Character.passives;
+		int offsetY = 0;
+		foreach (AbstractPassive passive in passives){
 			string effectString = $"{passive.NAME}\n{passive.DESC}";
-			strings.Add(effectString);
-		}
-		tooltipNode.Strings = strings;
-		tooltipNode.SetPosition(new Vector2(100, 0));
 
-		tooltipInstance = tooltipNode;
+			Tooltip tooltipNode = (Tooltip) tooltip.Instantiate();
+			AddChild(tooltipNode);
+			tooltipNode.Strings = new List<string>{effectString};
+			hoverTooltips.Add(tooltipNode);
+			tooltipNode.SetPosition(new Vector2(-600, offsetY));
+
+			// 10 padding + 16 for margins for tooltip
+			offsetY += 26 + tooltipNode.rtlNode.GetContentHeight();
+		}
 	}
 
 	public void _on_active_buffs_mouse_exited(){
-		if (!IsInstanceValid(tooltipInstance)){ return; }
-		tooltipInstance.QueueFree();
+		foreach (Tooltip tooltip in hoverTooltips){
+			tooltip.QueueFree();
+		}
+		hoverTooltips.Clear();
 	}
 
 	public void _on_active_conditions_mouse_exited(){
-		if (!IsInstanceValid(tooltipInstance)){ return; }
-		tooltipInstance.QueueFree();
+		foreach (Tooltip tooltip in hoverTooltips){
+			tooltip.QueueFree();
+		}
+		hoverTooltips.Clear();
 	}
 
 	public void _on_active_debuffs_mouse_exited(){
-		if (!IsInstanceValid(tooltipInstance)){ return; }
-		tooltipInstance.QueueFree();
+		foreach (Tooltip tooltip in hoverTooltips){
+			tooltip.QueueFree();
+		}
+		hoverTooltips.Clear();
 	}
 
 	public void _on_passives_mouse_exited(){
-		if (!IsInstanceValid(tooltipInstance)){ return; }
-		tooltipInstance.QueueFree();
+		foreach (Tooltip tooltip in hoverTooltips){
+			tooltip.QueueFree();
+		}
+		hoverTooltips.Clear();
 	}
 
 	private void UpdateStatsText(){
