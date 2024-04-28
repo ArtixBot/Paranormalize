@@ -18,7 +18,6 @@ public partial class Tooltip : PanelContainer
             tooltipText += $"{str}";
         }
         rtlNode.Text = tooltipText;
-        SetDeferred("size", new Vector2(450, 0));
 	}
 
 	// Called when the node enters the scene tree for the first time.

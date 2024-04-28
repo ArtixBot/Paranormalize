@@ -173,11 +173,12 @@ public partial class CharacterUI : Area2D, IEventSubscriber, IEventHandler<Comba
 
 			Tooltip tooltipNode = (Tooltip) tooltip.Instantiate();
 			AddChild(tooltipNode);
-			tooltipNode.Strings = new List<string>{effectString};
 			hoverTooltips.Add(tooltipNode);
+
+			tooltipNode.Strings = new List<string>{effectString};
 			tooltipNode.SetPosition(new Godot.Vector2(100, offsetY));
-			TooltipFade(tooltipNode);
 			tooltipNode.AddThemeStyleboxOverride("panel", GD.Load<StyleBoxTexture>("res://Tactical/UI/Components/DebuffGradientBG.tres"));
+			TooltipFade(tooltipNode);
 
 			// 10 padding + 16 for margins for tooltip
 			offsetY += 26 + tooltipNode.rtlNode.GetContentHeight();
@@ -186,19 +187,20 @@ public partial class CharacterUI : Area2D, IEventSubscriber, IEventHandler<Comba
 
 	public void _on_passives_mouse_entered(){
 		var passives = this.Character.passives;
-        List<int> offsets = new(){0};
+		int offsetY = 0;
 		foreach (AbstractPassive passive in passives){
 			string effectString = $"[b]{passive.NAME}[/b]\n{passive.DESC}";
 
 			Tooltip tooltipNode = (Tooltip) tooltip.Instantiate();
 			AddChild(tooltipNode);
-			tooltipNode.Strings = new List<string>{effectString};
 			hoverTooltips.Add(tooltipNode);
-			GD.Print(tooltipNode.rtlNode.GetLineCount(), "/", tooltipNode.rtlNode.GetContentHeight());
+			
+			tooltipNode.SetPosition(new Godot.Vector2(-600, offsetY));
+			tooltipNode.Strings = new List<string>{effectString};
 			TooltipFade(tooltipNode);
-
+			
 			// 10 padding + 16 for margins for tooltip
-			offsets.Add(26 + tooltipNode.rtlNode.GetContentHeight());
+			offsetY += 26 + tooltipNode.rtlNode.GetContentHeight();
 		}
 	}
 

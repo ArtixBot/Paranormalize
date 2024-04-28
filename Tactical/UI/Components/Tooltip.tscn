@@ -9,9 +9,10 @@
 PanelContainer/styles/panel = ExtResource("1_dr20v")
 
 [node name="Tooltip" type="PanelContainer"]
+z_index = 1
+custom_minimum_size = Vector2(450, 0)
 anchors_preset = -1
 anchor_right = 0.3
-offset_bottom = 56.0
 grow_horizontal = 2
 theme = SubResource("Theme_nwxe7")
 script = ExtResource("1_ceteo")
@@ -26,6 +27,4 @@ theme_override_fonts/normal_font = ExtResource("3_5tm2v")
 theme_override_fonts/bold_font = ExtResource("4_22m6w")
 theme_override_font_sizes/normal_font_size = 16
 bbcode_enabled = true
-text = "Effect
-When this effect is active, something happens."
 fit_content = true
