@@ -1,8 +1,8 @@
 [gd_resource type="StyleBoxTexture" load_steps=3 format=3 uid="uid://8rqtslw5x0aw"]
 
 [sub_resource type="Gradient" id="Gradient_l8w37"]
-offsets = PackedFloat32Array(0.2, 0.8)
-colors = PackedColorArray(0, 0.294118, 0.505882, 1, 0, 0.215686, 0.380392, 0)
+offsets = PackedFloat32Array(0.5, 0.9)
+colors = PackedColorArray(0, 0.219608, 0.384314, 1, 0, 0.219608, 0.384314, 0)
 metadata/_snap_enabled = true
 
 [sub_resource type="GradientTexture1D" id="GradientTexture1D_1a2hn"]

@@ -5,7 +5,7 @@
 	},
 	"DISHONORABLE": {
 		"NAME": "Dishonorable",
-		"DESC": "A sacred duel has been broken!\nEnemies will prioritize attacking this unit until it dies."
+		"DESC": "A sacred duel has been broken! Enemies will prioritize attacking this unit until it dies."
 	},
 	"DUEL_TO_THE_DEATH": {
 		"NAME": "Duel to the Death",

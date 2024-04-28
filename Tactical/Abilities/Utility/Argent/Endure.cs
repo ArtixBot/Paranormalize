@@ -30,7 +30,6 @@ public class Endure : AbstractAbility, IEventHandler<CombatEventAbilityActivated
         if (data.abilityActivated.Equals(this)){
             CombatManager.ExecuteAction(new ApplyStatusAction(this.OWNER, new BuffProtection(), STACKS_TO_GAIN));
             CombatManager.ExecuteAction(new ApplyStatusAction(this.OWNER, new BuffPoiseProtection(), STACKS_TO_GAIN));
-            CombatManager.ExecuteAction(new ApplyStatusAction(this.OWNER, new DebuffSlow(), STACKS_TO_GAIN));
             CombatManager.ExecuteAction(new ApplyStatusAction(this.OWNER, new ConditionNextRoundStatusGain(new BuffProtection()), STACKS_TO_GAIN));
             CombatManager.ExecuteAction(new ApplyStatusAction(this.OWNER, new ConditionNextRoundStatusGain(new BuffPoiseProtection()), STACKS_TO_GAIN));
         }

@@ -30,14 +30,13 @@ public partial class AbilityDetailPanel : Control
 		abilityName = GetNode<Label>("Ability Name");
 	}
 
-	private async void UpdateDescriptions(){
+	private void UpdateDescriptions(){
 		abilityName.Text = _ability.NAME;
 		string rangeText = (_ability.TYPE == AbilityType.REACTION) ? "" : $"\t\t[img=24]res://Sprites/range.png[/img] {_ability.MIN_RANGE} - {_ability.MAX_RANGE}";
 		abilityInfo.Text = $"[font n='res://Assets/Jost-Medium.ttf' s=16]{_ability.TYPE}"  + $"\t\t[img=24]res://Sprites/cooldown.png[/img] {_ability.BASE_CD}" + rangeText;
 		AbilityDesc = "[font n='res://Assets/Inter-Regular.ttf' s=16]" + _ability.STRINGS.GetValueOrDefault("GENERIC", "") + "[/font]";
 
-		await ToSignal(GetTree(), SceneTree.SignalName.ProcessFrame);	// RTL node does not update size until after delay.
-		int offsetY = 100 + (int)_abilityDesc.Size.Y;	// Starts at +100 for earlier content (title, range/cooldown).
+		int offsetY = 100 + (int)_abilityDesc.GetContentHeight();	// Starts at +100 for earlier content (title, range/cooldown).
 
 		for (int i = 0; i < _ability.BASE_DICE.Count; i++){
             AbilityDie node = (AbilityDie) abilityDie.Instantiate();

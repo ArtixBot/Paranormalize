@@ -14,7 +14,7 @@ public partial class Tooltip : PanelContainer
 	private void UpdateText(List<string> strings){
         if (strings == null || !IsInstanceValid(rtlNode)) return;
         string tooltipText = "";
-        foreach (String str in strings){
+        foreach (string str in strings){
             tooltipText += $"{str}";
         }
         rtlNode.Text = tooltipText;

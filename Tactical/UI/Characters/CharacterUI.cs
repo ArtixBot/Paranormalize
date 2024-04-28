@@ -1,11 +1,11 @@
 using CharacterPassives;
 using Godot;
-using Microsoft.VisualBasic;
+using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Reflection.Metadata;
+using System.Numerics;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 
 namespace UI;
 
@@ -38,6 +38,8 @@ public partial class CharacterUI : Area2D, IEventSubscriber, IEventHandler<Comba
 
 	private readonly Material selectableMaterial = GD.Load<Material>("res://Tactical/UI/Shaders/CharacterTargetable.tres");
 	private readonly PackedScene tooltip = GD.Load<PackedScene>("res://Tactical/UI/Components/Tooltip.tscn");
+
+	private static double tooltipFadeDuration = 0.15;
 	private List<Tooltip> hoverTooltips = new();
 
 	private bool _IsClickable;
@@ -93,7 +95,27 @@ public partial class CharacterUI : Area2D, IEventSubscriber, IEventHandler<Comba
 		CombatManager.eventManager?.UnsubscribeAll(this);
 	}
 
-	public void _on_active_buffs_mouse_entered(){
+	public async void TooltipFade(Control node){
+		float currentTime = 0f;
+		Godot.Vector2 startPos = node.Position;
+		Godot.Vector2 endPos = node.Position + new Godot.Vector2(20, 0);
+
+		// Use vectors so we can use Godot's in-built Lerp function.
+		Godot.Vector2 startBlurRadius = new Godot.Vector2(0.0f, 0.0f);
+		Godot.Vector2 endBlurRadius = new Godot.Vector2(1.0f, 0.0f);
+
+		while (currentTime <= tooltipFadeDuration){
+			if (!IsInstanceValid(node)) { return; }
+            float normalized = Math.Min((float)(currentTime / tooltipFadeDuration), 1.0f);
+			node.Position = startPos.Lerp(endPos, Lerpables.EaseOut(normalized, 5));
+			node.Modulate = new Color(node.Modulate.R, node.Modulate.G, node.Modulate.B, startBlurRadius.Lerp(endBlurRadius, Lerpables.EaseOut(normalized, 5)).X);
+
+			await Task.Delay(1);
+            currentTime += (float)GetProcessDeltaTime();		// Not using PhysicsProcess since this is graphical effect only.
+        }
+	}
+
+	public  void _on_active_buffs_mouse_entered(){
 		var buffs = this.Character.statusEffects.Where(effect => effect.TYPE == StatusEffectType.BUFF).ToList();
 		int offsetY = 0;
 		for (int i = 0; i < buffs.Count; i++){
@@ -101,13 +123,14 @@ public partial class CharacterUI : Area2D, IEventSubscriber, IEventHandler<Comba
 
 			string parsedName = ParseString(buff.NAME, buff);
             string parsedDesc = ParseString(buff.DESC, buff);
-			string effectString = $"[color={statusToColorMap[buff.TYPE]}]{parsedName}[/color]\n{parsedDesc}";
+			string effectString = $"[color={statusToColorMap[buff.TYPE]}][b]{parsedName}[/b][/color]\n{parsedDesc}";
 
 			Tooltip tooltipNode = (Tooltip) tooltip.Instantiate();
 			AddChild(tooltipNode);
 			tooltipNode.Strings = new List<string>{effectString};
 			hoverTooltips.Add(tooltipNode);
-			tooltipNode.SetPosition(new Vector2(100, offsetY));
+			tooltipNode.SetPosition(new Godot.Vector2(100, offsetY));
+			TooltipFade(tooltipNode);
 			tooltipNode.AddThemeStyleboxOverride("panel", GD.Load<StyleBoxTexture>("res://Tactical/UI/Components/BuffGradientBG.tres"));
 
 			// 10 padding + 16 for margins for tooltip
@@ -123,13 +146,14 @@ public partial class CharacterUI : Area2D, IEventSubscriber, IEventHandler<Comba
 
 			string parsedName = ParseString(condition.NAME, condition);
             string parsedDesc = ParseString(condition.DESC, condition);
-			string effectString = $"[color={statusToColorMap[condition.TYPE]}]{parsedName}[/color]\n{parsedDesc}";
+			string effectString = $"[color={statusToColorMap[condition.TYPE]}][b]{parsedName}[/b][/color]\r\n{parsedDesc}";
 
 			Tooltip tooltipNode = (Tooltip) tooltip.Instantiate();
 			AddChild(tooltipNode);
 			tooltipNode.Strings = new List<string>{effectString};
 			hoverTooltips.Add(tooltipNode);
-			tooltipNode.SetPosition(new Vector2(100, offsetY));
+			tooltipNode.SetPosition(new Godot.Vector2(100, offsetY));
+			TooltipFade(tooltipNode);
 			tooltipNode.AddThemeStyleboxOverride("panel", GD.Load<StyleBoxTexture>("res://Tactical/UI/Components/ConditionGradientBG.tres"));
 
 			// 10 padding + 16 for margins for tooltip
@@ -145,13 +169,14 @@ public partial class CharacterUI : Area2D, IEventSubscriber, IEventHandler<Comba
 
 			string parsedName = ParseString(debuff.NAME, debuff);
             string parsedDesc = ParseString(debuff.DESC, debuff);
-			string effectString = $"[color={statusToColorMap[debuff.TYPE]}]{parsedName}[/color]\n{parsedDesc}";
+			string effectString = $"[color={statusToColorMap[debuff.TYPE]}][b]{parsedName}[/b][/color]\n{parsedDesc}";
 
 			Tooltip tooltipNode = (Tooltip) tooltip.Instantiate();
 			AddChild(tooltipNode);
 			tooltipNode.Strings = new List<string>{effectString};
 			hoverTooltips.Add(tooltipNode);
-			tooltipNode.SetPosition(new Vector2(100, offsetY));
+			tooltipNode.SetPosition(new Godot.Vector2(100, offsetY));
+			TooltipFade(tooltipNode);
 			tooltipNode.AddThemeStyleboxOverride("panel", GD.Load<StyleBoxTexture>("res://Tactical/UI/Components/DebuffGradientBG.tres"));
 
 			// 10 padding + 16 for margins for tooltip
@@ -161,18 +186,19 @@ public partial class CharacterUI : Area2D, IEventSubscriber, IEventHandler<Comba
 
 	public void _on_passives_mouse_entered(){
 		var passives = this.Character.passives;
-		int offsetY = 0;
+        List<int> offsets = new(){0};
 		foreach (AbstractPassive passive in passives){
-			string effectString = $"{passive.NAME}\n{passive.DESC}";
+			string effectString = $"[b]{passive.NAME}[/b]\n{passive.DESC}";
 
 			Tooltip tooltipNode = (Tooltip) tooltip.Instantiate();
 			AddChild(tooltipNode);
 			tooltipNode.Strings = new List<string>{effectString};
 			hoverTooltips.Add(tooltipNode);
-			tooltipNode.SetPosition(new Vector2(-600, offsetY));
+			GD.Print(tooltipNode.rtlNode.GetLineCount(), "/", tooltipNode.rtlNode.GetContentHeight());
+			TooltipFade(tooltipNode);
 
 			// 10 padding + 16 for margins for tooltip
-			offsetY += 26 + tooltipNode.rtlNode.GetContentHeight();
+			offsets.Add(26 + tooltipNode.rtlNode.GetContentHeight());
 		}
 	}
 

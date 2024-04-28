@@ -9,7 +9,7 @@
 	},
 	"IN_MEMORIAM": {
 		"NAME": "In Memoriam",
-		"DESC": "When an ally is defeated, this unit permanently gains an additional action per round.\n\nIf no other allies remain, remove all Stagger effects from this unit, and this unit recovers all HP and Poise."
+		"DESC": "When an ally is defeated, this unit permanently gains an additional action per round.\nIf no allies remain, remove all Stagger effects from this unit, and this unit recovers all HP and Poise."
 	},
 	"SACRED_DUEL": {
 		"NAME": "Sacred Duel",

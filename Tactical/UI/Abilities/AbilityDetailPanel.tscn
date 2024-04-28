@@ -1,10 +1,11 @@
-[gd_scene load_steps=4 format=3 uid="uid://d2hqnmxninkp4"]
+[gd_scene load_steps=5 format=3 uid="uid://d2hqnmxninkp4"]
 
 [ext_resource type="Script" path="res://Tactical/UI/Abilities/AbilityDetailPanel.cs" id="1_gm5p2"]
-[ext_resource type="FontFile" uid="uid://bwboh1vdh8npd" path="res://Assets/AlegreyaSans-Regular.ttf" id="2_3awiy"]
+[ext_resource type="FontFile" uid="uid://cvwb3yt1ydxk3" path="res://Assets/Marmelad-Regular.ttf" id="2_s243k"]
+[ext_resource type="FontFile" uid="uid://bugyrdkg8kxaf" path="res://Assets/Inter-Regular.ttf" id="3_mlbxq"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_1n826"]
-font = ExtResource("2_3awiy")
+font = ExtResource("2_s243k")
 font_size = 48
 
 [node name="AbilityDetailPanel" type="Control"]
@@ -36,9 +37,10 @@ text_overrun_behavior = 3
 [node name="Ability Info" type="RichTextLabel" parent="."]
 layout_mode = 0
 offset_left = 15.0
-offset_top = 62.0
+offset_top = 65.0
 offset_right = 278.0
-offset_bottom = 88.0
+offset_bottom = 92.0
+theme_override_fonts/normal_font = ExtResource("3_mlbxq")
 bbcode_enabled = true
 text = "Attack		[img=24]res://Sprites/cooldown.png[/img] 2		[img=24]res://Sprites/range.png[/img] 0 - 2"
 

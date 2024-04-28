@@ -1,8 +1,9 @@
-[gd_scene load_steps=5 format=3 uid="uid://iyl6u3mg1kjt"]
+[gd_scene load_steps=6 format=3 uid="uid://iyl6u3mg1kjt"]
 
 [ext_resource type="Script" path="res://Tactical/UI/Components/Tooltip.cs" id="1_ceteo"]
 [ext_resource type="StyleBox" uid="uid://bp6vu63jmsceo" path="res://Tactical/UI/Components/BlackGradientBG.tres" id="1_dr20v"]
 [ext_resource type="FontFile" uid="uid://bugyrdkg8kxaf" path="res://Assets/Inter-Regular.ttf" id="3_5tm2v"]
+[ext_resource type="FontFile" uid="uid://dbgm5vftssfsb" path="res://Assets/Inter-Bold.ttf" id="4_22m6w"]
 
 [sub_resource type="Theme" id="Theme_nwxe7"]
 PanelContainer/styles/panel = ExtResource("1_dr20v")
@@ -10,6 +11,7 @@ PanelContainer/styles/panel = ExtResource("1_dr20v")
 [node name="Tooltip" type="PanelContainer"]
 anchors_preset = -1
 anchor_right = 0.3
+offset_bottom = 56.0
 grow_horizontal = 2
 theme = SubResource("Theme_nwxe7")
 script = ExtResource("1_ceteo")
@@ -21,6 +23,7 @@ theme_override_constants/shadow_offset_x = 1
 theme_override_constants/shadow_offset_y = 1
 theme_override_constants/shadow_outline_size = 2
 theme_override_fonts/normal_font = ExtResource("3_5tm2v")
+theme_override_fonts/bold_font = ExtResource("4_22m6w")
 theme_override_font_sizes/normal_font_size = 16
 bbcode_enabled = true
 text = "Effect
