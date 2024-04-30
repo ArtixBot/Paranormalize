@@ -18,6 +18,7 @@ public partial class Tooltip : PanelContainer
             tooltipText += $"{str}";
         }
         rtlNode.Text = tooltipText;
+        // Note that GetCotnentHeight and GetLineCount are *inaccurate* until the next frame...
 	}
 
 	// Called when the node enters the scene tree for the first time.

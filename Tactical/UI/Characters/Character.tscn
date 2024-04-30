@@ -108,6 +108,16 @@ offset_right = 127.0
 offset_bottom = 110.0
 texture = ExtResource("10_layh4")
 
+[node name="Tooltip Container" type="ScrollContainer" parent="."]
+custom_minimum_size = Vector2(450, 600)
+offset_left = 219.0
+offset_right = 669.0
+offset_bottom = 600.0
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Tooltip Container"]
+layout_mode = 2
+theme_override_constants/separation = 14
+
 [connection signal="input_event" from="." to="." method="_on_input_event"]
 [connection signal="mouse_entered" from="." to="." method="_on_mouse_entered"]
 [connection signal="mouse_exited" from="." to="." method="_on_mouse_exited"]
