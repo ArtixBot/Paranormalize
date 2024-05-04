@@ -21,9 +21,9 @@ public partial class AbilityDie : Control
 
 	public override void _Ready() {
 		// Note: Children _Ready() callbacks are always triggered first, see https://docs.godotengine.org/en/3.2/classes/class_node.html#class-node-method-ready
-		DieImage = (TextureRect) GetNode("TextureRect");
-		DieRange = (Label) GetNode("Roll Range");
-		_dieDesc = (RichTextLabel) GetNodeOrNull("Description");
+		DieImage = (TextureRect) GetNode("HBoxContainer/Icon");
+		DieRange = (Label) GetNode("HBoxContainer/Die Range");
+		_dieDesc = (RichTextLabel) GetNodeOrNull("Die Desc");
 	}
 
 	private void UpdateImage(){

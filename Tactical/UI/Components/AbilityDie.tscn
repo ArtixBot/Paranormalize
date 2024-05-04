@@ -1,0 +1,44 @@
+[gd_scene load_steps=5 format=3 uid="uid://11i1cmgl3gkt"]
+
+[ext_resource type="Script" path="res://Tactical/UI/Components/AbilityDie.cs" id="1_aov74"]
+[ext_resource type="Texture2D" uid="uid://djwb05ps35ght" path="res://Sprites/die - block.png" id="1_sgivn"]
+[ext_resource type="FontFile" uid="uid://bbbh26n3nsxrr" path="res://Assets/Jost-Medium.ttf" id="2_1hydr"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_trqps"]
+font = ExtResource("2_1hydr")
+font_size = 18
+shadow_color = Color(0, 0, 0, 1)
+shadow_offset = Vector2(0, 1)
+
+[node name="HSplitContainer" type="HSplitContainer"]
+custom_minimum_size = Vector2(400, 0)
+offset_right = 718.0
+offset_bottom = 60.0
+split_offset = 120
+dragger_visibility = 1
+script = ExtResource("1_aov74")
+
+[node name="HBoxContainer" type="HBoxContainer" parent="."]
+layout_mode = 2
+size_flags_vertical = 0
+
+[node name="Icon" type="TextureRect" parent="HBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 0
+texture = ExtResource("1_sgivn")
+stretch_mode = 2
+
+[node name="Die Range" type="Label" parent="HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 1
+text = "4 - 60"
+label_settings = SubResource("LabelSettings_trqps")
+vertical_alignment = 1
+
+[node name="Die Desc" type="RichTextLabel" parent="."]
+custom_minimum_size = Vector2(7.755, 0)
+layout_mode = 2
+bbcode_enabled = true
+text = "[font n='res://Assets/Inter-Regular.ttf' s=16]On activate: Some stuff happens. This also causes more stuff to happen. We now have a long description. What happens if the description gets TOO long? Well some cool things happen I guess."
+fit_content = true

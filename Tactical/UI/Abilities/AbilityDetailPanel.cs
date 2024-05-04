@@ -19,15 +19,17 @@ public partial class AbilityDetailPanel : Control
 		set {_abilityDesc.Text = value;}
 	}
 	
-	private readonly PackedScene abilityDie = GD.Load<PackedScene>("res://Tactical/UI/Abilities/AbilityDie.tscn");
-
+	private readonly PackedScene abilityDie = GD.Load<PackedScene>("res://Tactical/UI/Components/AbilityDie.tscn");
+	private Control nodeToAddDiceTo;
 	private RichTextLabel abilityInfo;
 	private Label abilityName;
 	// Called when the node enters the scene tree for the first time.
 	public override void _Ready(){
-		_abilityDesc = GetNode<RichTextLabel>("Ability Desc");
-		abilityInfo = GetNode<RichTextLabel>("Ability Info");
-		abilityName = GetNode<Label>("Ability Name");
+		_abilityDesc = GetNode<RichTextLabel>("VBoxContainer/Ability Desc");
+		abilityInfo = GetNode<RichTextLabel>("VBoxContainer/Ability Info");
+		abilityName = GetNode<Label>("VBoxContainer/Ability Name");
+
+		nodeToAddDiceTo = GetNode<Control>("VBoxContainer/ScrollContainer/VBoxContainer");
 	}
 
 	private void UpdateDescriptions(){
@@ -36,18 +38,12 @@ public partial class AbilityDetailPanel : Control
 		abilityInfo.Text = $"[font n='res://Assets/Jost-Medium.ttf' s=16]{_ability.TYPE}"  + $"\t\t[img=24]res://Sprites/cooldown.png[/img] {_ability.BASE_CD}" + rangeText;
 		AbilityDesc = "[font n='res://Assets/Inter-Regular.ttf' s=16]" + _ability.STRINGS.GetValueOrDefault("GENERIC", "") + "[/font]";
 
-		int offsetY = 100 + (int)_abilityDesc.GetContentHeight();	// Starts at +100 for earlier content (title, range/cooldown).
-
 		for (int i = 0; i < _ability.BASE_DICE.Count; i++){
             AbilityDie node = (AbilityDie) abilityDie.Instantiate();
-			AddChild(node);
-			node.SetPosition(new Vector2(10, offsetY));
+			nodeToAddDiceTo.AddChild(node);
 
 			node.Die = _ability.BASE_DICE[i];
 			node.DieDesc = "[font n='res://Assets/Inter-Regular.ttf' s=16]" + _ability.STRINGS.GetValueOrDefault(node.Die.DieId, "") + "[/font]";
-
-			// Auto-calculate based on line count since that doesn't invoke a GUI delay when DieDesc is updated.
-			offsetY += (int)Math.Max(50, node._dieDesc.GetLineCount() * 20);
 		}
 	}
 }
