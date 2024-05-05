@@ -39,6 +39,8 @@ vertical_alignment = 1
 [node name="Die Desc" type="RichTextLabel" parent="."]
 custom_minimum_size = Vector2(7.755, 0)
 layout_mode = 2
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 1)
+theme_override_constants/shadow_outline_size = 2
 bbcode_enabled = true
 text = "[font n='res://Assets/Inter-Regular.ttf' s=16]On activate: Some stuff happens. This also causes more stuff to happen. We now have a long description. What happens if the description gets TOO long? Well some cool things happen I guess."
 fit_content = true

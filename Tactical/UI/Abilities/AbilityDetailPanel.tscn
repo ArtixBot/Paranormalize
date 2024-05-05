@@ -37,6 +37,8 @@ fit_content = true
 
 [node name="Ability Desc" type="RichTextLabel" parent="VBoxContainer"]
 layout_mode = 2
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 1)
+theme_override_constants/shadow_outline_size = 2
 bbcode_enabled = true
 text = "On activate: Something happens."
 fit_content = true
