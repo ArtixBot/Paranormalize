@@ -1,9 +1,7 @@
 using CharacterPassives;
 using Godot;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Numerics;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
@@ -98,26 +96,6 @@ public partial class CharacterUI : Area2D, IEventSubscriber, IEventHandler<Comba
 		CombatManager.eventManager?.UnsubscribeAll(this);
 	}
 
-	public async void TooltipFade(Control node){
-		float currentTime = 0f;
-		Godot.Vector2 startPos = node.Position;
-		Godot.Vector2 endPos = node.Position + new Godot.Vector2(20, 0);
-
-		// Use vectors so we can use Godot's in-built Lerp function.
-		Godot.Vector2 startBlurRadius = new Godot.Vector2(0.0f, 0.0f);
-		Godot.Vector2 endBlurRadius = new Godot.Vector2(1.0f, 0.0f);
-
-		while (currentTime <= tooltipFadeDuration){
-			if (!IsInstanceValid(node)) { return; }
-            float normalized = Math.Min((float)(currentTime / tooltipFadeDuration), 1.0f);
-			node.Position = startPos.Lerp(endPos, Lerpables.EaseOut(normalized, 5));
-			node.Modulate = new Color(node.Modulate.R, node.Modulate.G, node.Modulate.B, startBlurRadius.Lerp(endBlurRadius, Lerpables.EaseOut(normalized, 5)).X);
-
-			await Task.Delay(1);
-            currentTime += (float)GetProcessDeltaTime();		// Not using PhysicsProcess since this is graphical effect only.
-        }
-	}
-
 	public async void _on_active_buffs_mouse_entered(){
 		var buffs = this.Character.statusEffects.Where(effect => effect.TYPE == StatusEffectType.BUFF).ToList();
 		for (int i = 0; i < buffs.Count; i++){
@@ -138,8 +116,7 @@ public partial class CharacterUI : Area2D, IEventSubscriber, IEventHandler<Comba
 		// Wait 1ms for positions to be updated, then play fade-in.
 		await Task.Delay(1);
 		foreach (Control node in tooltipContainerNode.GetChildren().Cast<Control>()){
-			node.Modulate = new Color(1, 1, 1, 1);
-			TooltipFade(node);
+			Lerpables.FadeIn(node, tooltipFadeDuration);
 		}
 	}
 
@@ -163,8 +140,7 @@ public partial class CharacterUI : Area2D, IEventSubscriber, IEventHandler<Comba
 		// Wait 1ms for positions to be updated, then play fade-in.
 		await Task.Delay(1);
 		foreach (Control node in tooltipContainerNode.GetChildren().Cast<Control>()){
-			node.Modulate = new Color(1, 1, 1, 1);
-			TooltipFade(node);
+			Lerpables.FadeIn(node, tooltipFadeDuration);
 		}
 	}
 
@@ -188,8 +164,7 @@ public partial class CharacterUI : Area2D, IEventSubscriber, IEventHandler<Comba
 		// Wait 1ms for positions to be updated, then play fade-in.
 		await Task.Delay(1);
 		foreach (Control node in tooltipContainerNode.GetChildren().Cast<Control>()){
-			node.Modulate = new Color(1, 1, 1, 1);
-			TooltipFade(node);
+			Lerpables.FadeIn(node, tooltipFadeDuration);
 		}
 	}
 
@@ -208,8 +183,7 @@ public partial class CharacterUI : Area2D, IEventSubscriber, IEventHandler<Comba
 		// Wait 1ms for positions to be updated, then play fade-in.
 		await Task.Delay(1);
 		foreach (Control node in tooltipContainerNode.GetChildren().Cast<Control>()){
-			node.Modulate = new Color(1, 1, 1, 1);
-			TooltipFade(node);
+			Lerpables.FadeIn(node, tooltipFadeDuration);
 		}
 	}
 
