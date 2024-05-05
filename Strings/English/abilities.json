@@ -113,6 +113,12 @@
 			"PIERCE_PULL": "[color=#4cf]On hit:[/color] Pull 3.\n[color=#4cf]On hit or clash lose:[/color] If the target is not within range 1, discard all remaining dice."
 		}
 	},
+	"PARRY": {
+		"NAME": "Parry",
+		"STRINGS": {
+			"ON_CLASH_DEAL_DAMAGE": "[color=#4cf]On clash win:[/color] Deal damage equal to this die's roll.\n[color=#4cf]On clash tie:[/color] Deal damage and Poise damage equal to twice this die's roll."
+		}
+	},
 	"PREPARATION": {
 		"NAME": "Preparation",
 		"STRINGS": {
@@ -171,12 +177,6 @@
 		"NAME": "Virtuous Struggle",
 		"STRINGS": {
 			"GENERIC": "[color=#4cf]On activate:[/color] Gain 1 Strength next round.\n[color=#4cf]On activate:[/color] If no other allies are present, add two Blunt 4-5 dice to this ability."
-		}
-	},
-	"PARRY": {
-		"NAME": "Parry",
-		"STRINGS": {
-			"ON_CLASH_DEAL_DAMAGE": "[color=#4cf]On clash win:[/color] Deal damage equal to this die's roll."
 		}
 	},
 	"PASS": {

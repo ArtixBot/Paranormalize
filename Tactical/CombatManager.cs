@@ -405,7 +405,7 @@ public static class CombatManager {
             // On tie, remove both dice.
             if (modAtkRoll == modReactRoll){
                 combatInstance.abilityItrCount += 1;
-                eventManager.BroadcastEvent(new CombatEventClashTie(atkDie, reactDie));
+                eventManager.BroadcastEvent(new CombatEventClashTie(combatInstance.activeAbility.OWNER, combatInstance.reactAbility.OWNER, atkDie, reactDie, modAtkRoll));
                 try {
                     combatInstance.activeAbilityDice.RemoveAt(0);
                 } catch (ArgumentOutOfRangeException){

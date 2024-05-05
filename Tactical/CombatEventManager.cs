@@ -456,12 +456,18 @@ public class CombatEventClashTie : ICombatEvent {
         get {return CombatEventType.ON_CLASH_TIE;}
     }
 
+    public AbstractCharacter attackingClasher;
+    public AbstractCharacter reactingClasher;
     public Die atkDie;
     public Die reactDie;
+    public int tiedRoll;
 
-    public CombatEventClashTie(Die atkDie, Die reactDie){
+    public CombatEventClashTie(AbstractCharacter attackingCharacter, AbstractCharacter reactingCharacter, Die atkDie, Die reactDie, int tiedRoll){
+        this.attackingClasher = attackingCharacter;
         this.atkDie = atkDie;
+        this.reactingClasher = reactingCharacter;
         this.reactDie = reactDie;
+        this.tiedRoll = tiedRoll;
     }
 }
 
