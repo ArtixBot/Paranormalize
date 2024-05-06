@@ -1,9 +1,10 @@
-[gd_scene load_steps=6 format=3 uid="uid://d2hqnmxninkp4"]
+[gd_scene load_steps=7 format=3 uid="uid://d2hqnmxninkp4"]
 
 [ext_resource type="StyleBox" uid="uid://bp6vu63jmsceo" path="res://Tactical/UI/Components/BlackGradientBG.tres" id="1_f3t1v"]
 [ext_resource type="Script" path="res://Tactical/UI/Abilities/AbilityDetailPanel.cs" id="1_gm5p2"]
 [ext_resource type="FontFile" uid="uid://cvwb3yt1ydxk3" path="res://Assets/Marmelad-Regular.ttf" id="2_s243k"]
 [ext_resource type="FontFile" uid="uid://bugyrdkg8kxaf" path="res://Assets/Inter-Regular.ttf" id="3_mlbxq"]
+[ext_resource type="FontFile" uid="uid://dbgm5vftssfsb" path="res://Assets/Inter-Bold.ttf" id="5_djarj"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_1n826"]
 font = ExtResource("2_s243k")
@@ -39,6 +40,10 @@ fit_content = true
 layout_mode = 2
 theme_override_colors/font_shadow_color = Color(0, 0, 0, 1)
 theme_override_constants/shadow_outline_size = 2
+theme_override_fonts/normal_font = ExtResource("3_mlbxq")
+theme_override_fonts/bold_font = ExtResource("5_djarj")
+theme_override_font_sizes/normal_font_size = 16
+theme_override_font_sizes/bold_font_size = 16
 bbcode_enabled = true
 text = "On activate: Something happens."
 fit_content = true
