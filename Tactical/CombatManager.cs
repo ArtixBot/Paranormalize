@@ -297,7 +297,7 @@ public static class CombatManager {
         int i = 0;      // There should never be more than 100 iterations but if somehow there were an infinite Cycle loop, this should break that.
         while (combatInstance.activeAbilityDice?.Count > 0 && i < 100){
             combatInstance.abilityItrCount += 1;
-            Die die = combatInstance.activeAbilityDice[0];
+            Die die = eventManager.BroadcastEvent(new CombatEventBeforeDieRolled(combatInstance.activeAbility, combatInstance.activeAbilityTargets.ToList().First(), combatInstance.activeAbilityDice[0])).die;
             int dieRoll = die.Roll();
             Logging.Log($"{combatInstance.activeAbility.OWNER.CHAR_NAME} rolls a(n) {die.DieType} die (range: {die.MinValue} - {die.MaxValue}, natural roll: {dieRoll}).", Logging.LogLevel.ESSENTIAL);
             
@@ -318,7 +318,7 @@ public static class CombatManager {
         i = 0;
         while (combatInstance.reactAbilityDice?.Count > 0 && i < 100){
             combatInstance.abilityItrCount += 1;
-            Die die = combatInstance.reactAbilityDice[0];
+            Die die = eventManager.BroadcastEvent(new CombatEventBeforeDieRolled(combatInstance.reactAbility, combatInstance.activeChar, combatInstance.reactAbilityDice[0])).die;
             int dieRoll = die.Roll();
             Logging.Log($"{combatInstance.reactAbility.OWNER.CHAR_NAME} rolls a(n) {die.DieType} die (range: {die.MinValue} - {die.MaxValue}, natural roll: {dieRoll}).", Logging.LogLevel.ESSENTIAL);
             int modifiedRoll = eventManager.BroadcastEvent(new CombatEventDieRolled(combatInstance.reactAbility, die, dieRoll, combatInstance.activeChar)).rolledValue;
@@ -387,7 +387,8 @@ public static class CombatManager {
         while (combatInstance.activeAbilityDice.Count > 0 && combatInstance.reactAbilityDice.Count > 0 && i < 100){
             combatInstance.abilityItrCount += 1;
 
-            Die atkDie = combatInstance.activeAbilityDice[0], reactDie = combatInstance.reactAbilityDice[0];
+            Die atkDie = eventManager.BroadcastEvent(new CombatEventBeforeDieRolled(combatInstance.activeAbility, combatInstance.reactAbility.OWNER, combatInstance.activeAbilityDice[0])).die;
+            Die reactDie = eventManager.BroadcastEvent(new CombatEventBeforeDieRolled(combatInstance.reactAbility, combatInstance.activeChar, combatInstance.reactAbilityDice[0])).die;
             int natAtkRoll = atkDie.Roll(), natReactRoll = reactDie.Roll();
 
             Logging.Log($"Clash {i+1}:" +

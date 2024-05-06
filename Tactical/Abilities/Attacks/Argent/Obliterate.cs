@@ -44,7 +44,7 @@ public class Obliterate : AbstractAbility, IEventHandler<CombatEventDieHit>, IEv
                 if (this == CombatManager.combatInstance.activeAbility){
                     CombatManager.combatInstance.activeAbilityDice.Clear();
                 } else if (this == CombatManager.combatInstance.reactAbility){
-                    CombatManager.combatInstance.activeAbilityDice.Clear();
+                    CombatManager.combatInstance.reactAbilityDice.Clear();
                 }
             }
         }
@@ -56,7 +56,7 @@ public class Obliterate : AbstractAbility, IEventHandler<CombatEventDieHit>, IEv
                 if (this == CombatManager.combatInstance.activeAbility){
                     CombatManager.combatInstance.activeAbilityDice.Clear();
                 } else if (this == CombatManager.combatInstance.reactAbility){
-                    CombatManager.combatInstance.activeAbilityDice.Clear();
+                    CombatManager.combatInstance.reactAbilityDice.Clear();
                 }
             }
         }

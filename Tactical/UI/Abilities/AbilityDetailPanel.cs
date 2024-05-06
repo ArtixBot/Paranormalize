@@ -43,7 +43,7 @@ public partial class AbilityDetailPanel : Control
 			nodeToAddDiceTo.AddChild(node);
 
 			node.Die = _ability.BASE_DICE[i];
-			node.DieDesc = "[font n='res://Assets/Inter-Regular.ttf' s=16]" + _ability.STRINGS.GetValueOrDefault(node.Die.DieId, "") + "[/font]";
+			node.DieDesc =  _ability.STRINGS.GetValueOrDefault(node.Die.DieId, "");
 		}
 	}
 }

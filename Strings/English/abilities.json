@@ -116,7 +116,8 @@
 	"PARRY": {
 		"NAME": "Parry",
 		"STRINGS": {
-			"ON_CLASH_DEAL_DAMAGE": "[color=#4cf]On clash win:[/color] Deal damage equal to this die's roll.\n[color=#4cf]On clash tie:[/color] Deal damage and Poise damage equal to twice this die's roll."
+			"ON_CLASH_DEAL_DAMAGE": "[color=#4cf]On clash win:[/color] Deal damage equal to this die's roll.\n[color=#4cf]On clash tie:[/color] Deal damage and Poise damage equal to twice this die's roll.",
+			"MAY_BE_CONVERTED": "If the target is Staggered, convert this to a [b]Slash 9-13[/b] die."
 		}
 	},
 	"PREPARATION": {
