@@ -27,7 +27,7 @@ public partial class AbilityDetailPanel : Control
 	private Label abilityName;
 	// Called when the node enters the scene tree for the first time.
 	public override void _Ready(){
-		_abilityDesc = GetNode<RichTextLabel>("VBoxContainer/Ability Desc");
+		_abilityDesc = GetNode<RichTextLabel>("VBoxContainer/ScrollContainer/VBoxContainer/Ability Desc");
 		abilityInfo = GetNode<RichTextLabel>("VBoxContainer/Ability Info");
 		abilityName = GetNode<Label>("VBoxContainer/Ability Name");
 

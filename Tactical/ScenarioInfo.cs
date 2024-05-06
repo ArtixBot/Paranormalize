@@ -47,9 +47,9 @@ public class TestScenario : ScenarioInfo {
         // playerA.EquipAbility(new SecondWind());
         // playerA.EquipAbility(new Indomitable());
         // playerA.EquipAbility(new Knockout());
-        // playerA.EquipAbility(new ShrugOff());
-        // playerA.EquipAbility(new Endure());
-        // playerA.EquipAbility(new VirtuousStruggle());
+        playerA.EquipAbility(new ShrugOff());
+        playerA.EquipAbility(new Endure());
+        playerA.EquipAbility(new VirtuousStruggle());
 
         playerA.MinSpd = 10;
         playerA.MaxSpd = 20;
