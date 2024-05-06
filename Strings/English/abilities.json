@@ -104,7 +104,7 @@
 	"KNOCKOUT": {
 		"NAME": "Knockout",
 		"STRINGS": {
-			"GENERIC": "{Cond|On activate}: If the target started this round in a different lane, add a Blunt 8-10 die to this ability."
+			"GENERIC": "{Cond|On activate}: If the target started this round in a different lane, add a {Blunt|8-10} die to this ability."
 		}
 	},
 	"OBLITERATE": {
