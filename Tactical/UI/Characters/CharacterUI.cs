@@ -26,8 +26,9 @@ public partial class CharacterUI : Area2D, IEventSubscriber, IEventHandler<Comba
 
 	public Dictionary<string, Texture2D> Poses = new();
 	public Sprite2D Sprite;
-	private Label HPStat;
-	private Label PoiseStat;
+
+	private RichTextLabel HPStat;
+	private RichTextLabel PoiseStat;
 	
 	private TextureRect activeBuffs;
 	private TextureRect activeConditions;
@@ -54,8 +55,8 @@ public partial class CharacterUI : Area2D, IEventSubscriber, IEventHandler<Comba
 	// Called when the node enters the scene tree for the first time.
 	public override void _Ready() {
 		Sprite = GetNode<Sprite2D>("Sprite2D");
-		HPStat = GetNode<Label>("Sprite2D/HP/Label");
-		PoiseStat = GetNode<Label>("Sprite2D/Poise/Label");
+		HPStat = GetNode<RichTextLabel>("Sprite2D/HP/Label");
+		PoiseStat = GetNode<RichTextLabel>("Sprite2D/Poise/Label");
 
 		activeBuffs = GetNode<TextureRect>("Sprite2D/Active Buffs");
 		activeConditions = GetNode<TextureRect>("Sprite2D/Active Conditions");
@@ -218,7 +219,7 @@ public partial class CharacterUI : Area2D, IEventSubscriber, IEventHandler<Comba
 	private void UpdateStatsText(){
 		if (Character == null || HPStat == null || PoiseStat == null) {return;}
 		HPStat.Text = $"{Character.CurHP}";
-		PoiseStat.Text = $"{Character.CurPoise}";
+		PoiseStat.Text = $"[center]{Character.CurPoise}";
 	}
 
 	private void UpdateSprite(){

@@ -39,6 +39,7 @@ public class Parry : AbstractAbility, IEventSubscriber, IEventHandler<CombatEven
 
     public virtual void HandleEvent(CombatEventBeforeDieRolled data){
         if (data.die == this.blockDieB && data.rollTarget.HasCondition("STAGGERED") && !data.dieHasBeenConverted){
+            Logging.Log("Target is Staggered; converting Parry's Block die to Slash die.", Logging.LogLevel.ESSENTIAL);
             data.die = this.slashDie;
             data.dieHasBeenConverted = true;
         }
