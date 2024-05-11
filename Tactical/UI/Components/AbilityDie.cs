@@ -1,3 +1,4 @@
+using System.Runtime.Serialization.Formatters;
 using Godot;
 
 namespace UI;
@@ -21,9 +22,10 @@ public partial class AbilityDie : Control
 
 	public override void _Ready() {
 		// Note: Children _Ready() callbacks are always triggered first, see https://docs.godotengine.org/en/3.2/classes/class_node.html#class-node-method-ready
-		DieImage = (TextureRect) GetNode("TextureRect");
-		DieRange = (Label) GetNode("Roll Range");
-		_dieDesc = (RichTextLabel) GetNodeOrNull("Description");
+																				// Former for AbilityDie.tscn, latter for ClashStageDie.tscn.
+		DieImage = (TextureRect) ((GetNodeOrNull("HBoxContainer/Icon") != null) ? GetNode("HBoxContainer/Icon") : GetNode("TextureRect"));
+		DieRange = (Label) ((GetNodeOrNull("HBoxContainer/Die Range") != null) ? GetNode("HBoxContainer/Die Range") : GetNode("Roll Range"));
+		_dieDesc = (RichTextLabel) GetNodeOrNull("Die Desc");
 	}
 
 	private void UpdateImage(){

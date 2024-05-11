@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://bisbqr3ii2nmn"
-path="res://.godot/imported/hp-icon.png-d32587619d7648724dab63e182fe053a.ctex"
+uid="uid://cqebbqtric72l"
+path="res://.godot/imported/passives-icon.png-62acf0be2f9d5aa911eaa454ef2a5e03.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Sprites/hp-icon.png"
-dest_files=["res://.godot/imported/hp-icon.png-d32587619d7648724dab63e182fe053a.ctex"]
+source_file="res://Sprites/passives-icon.png"
+dest_files=["res://.godot/imported/passives-icon.png-62acf0be2f9d5aa911eaa454ef2a5e03.ctex"]
 
 [params]
 

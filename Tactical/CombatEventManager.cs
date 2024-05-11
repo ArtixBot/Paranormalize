@@ -24,6 +24,7 @@ public enum CombatEventType {
     // Attacks will always trigger ON_DEAL_DAMAGE, then ON_TAKE_DAMAGE. Status effects like burn/bleed will only trigger ON_TAKE_DAMAGE.
     ON_DEAL_DAMAGE, ON_TAKE_DAMAGE,
     ON_CHARACTER_DEATH,
+    BEFORE_DIE_ROLLED,
     ON_DIE_ROLLED, ON_DIE_HIT, ON_DIE_BLOCKED, ON_DIE_EVADED,
     ON_CLASH_ELIGIBLE, ON_DIE_CLASH, ON_CLASH, ON_CLASH_TIE, ON_CLASH_COMPLETE,
     ON_UNIT_MOVED,
@@ -300,6 +301,30 @@ public class CombatEventDieClash : ICombatEvent {
     }
 }
 
+/// <summary>
+/// Used for conversion events, e.g. "If the target is Staggered, convert this die to a Slash 9-13 die."
+/// Conversion priority should be: dice-local effects *first*, then *status effects*, then *passives*.
+/// </summary>
+public class CombatEventBeforeDieRolled : ICombatEvent {
+    public CombatEventType eventType {
+        get {return CombatEventType.BEFORE_DIE_ROLLED;}
+    }
+    public AbstractCharacter roller;
+    public AbstractCharacter rollTarget;
+    public AbstractAbility ability;     // Used for things like Strength status effect to get owner.
+    public Die die;
+
+    public bool dieHasBeenConverted = false;    // To prevent an infinite loop, once a conversion occurs, a die can no longer be converted.
+
+    public CombatEventBeforeDieRolled(AbstractAbility ability, AbstractCharacter rollTarget, Die die){
+        this.ability = ability;
+        this.roller = this.ability.OWNER;
+
+        this.rollTarget = rollTarget;
+        this.die = die;
+    }
+}
+
 public class CombatEventDieRolled : ICombatEvent {
     public CombatEventType eventType {
         get {return CombatEventType.ON_DIE_ROLLED;}
@@ -456,12 +481,18 @@ public class CombatEventClashTie : ICombatEvent {
         get {return CombatEventType.ON_CLASH_TIE;}
     }
 
+    public AbstractCharacter attackingClasher;
+    public AbstractCharacter reactingClasher;
     public Die atkDie;
     public Die reactDie;
+    public int tiedRoll;
 
-    public CombatEventClashTie(Die atkDie, Die reactDie){
+    public CombatEventClashTie(AbstractCharacter attackingCharacter, AbstractCharacter reactingCharacter, Die atkDie, Die reactDie, int tiedRoll){
+        this.attackingClasher = attackingCharacter;
         this.atkDie = atkDie;
+        this.reactingClasher = reactingCharacter;
         this.reactDie = reactDie;
+        this.tiedRoll = tiedRoll;
     }
 }
 

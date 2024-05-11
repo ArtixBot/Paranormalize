@@ -80,7 +80,10 @@ public partial class ActiveCharInterfaceLayer : Control, IEventSubscriber, IEven
 		AbilityDetailPanel node = (AbilityDetailPanel) abilityDetailPanel.Instantiate();
 		AddChild(node);
 		node.Ability = ability;
+		node.SetSize(new Vector2(600, 400));		// This should be unnecessary but not including it makes the container stretch vertically?
 		node.SetPosition((!isOpposingAbility) ? new Vector2(300, instancePosition.Y) : new Vector2(1000, 750));
+
+		Lerpables.FadeIn(node, 0.15);
 
 		if (!isOpposingAbility){
 			abilityDetailPanelInstance = node;

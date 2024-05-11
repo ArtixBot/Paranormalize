@@ -33,7 +33,7 @@ public class ShrugOff : AbstractAbility, IEventSubscriber, IEventHandler<CombatE
     }
 
     public virtual void HandleEvent(CombatEventClashComplete data){
-        if (data.winningDie.IsAttackDie && data.winningRoll <= 4){
+        if (data.winningDie.IsAttackDie && data.winningRoll <= 4 && data.losingDie == this.blockDie){
             Logging.Log($"Opposing attack roll had a value <= 4; {this.OWNER.CHAR_NAME} shrugs off the attack!", Logging.LogLevel.ESSENTIAL);
             data.winningRoll = 0;
         }

@@ -1,0 +1,52 @@
+[gd_scene load_steps=7 format=3 uid="uid://11i1cmgl3gkt"]
+
+[ext_resource type="Script" path="res://Tactical/UI/Components/AbilityDie.cs" id="1_aov74"]
+[ext_resource type="Texture2D" uid="uid://djwb05ps35ght" path="res://Sprites/die - block.png" id="1_sgivn"]
+[ext_resource type="FontFile" uid="uid://bbbh26n3nsxrr" path="res://Assets/Jost-Medium.ttf" id="2_1hydr"]
+[ext_resource type="FontFile" uid="uid://bugyrdkg8kxaf" path="res://Assets/Inter-Regular.ttf" id="4_ibb2k"]
+[ext_resource type="FontFile" uid="uid://dbgm5vftssfsb" path="res://Assets/Inter-Bold.ttf" id="5_r608y"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_trqps"]
+font = ExtResource("2_1hydr")
+font_size = 18
+shadow_color = Color(0, 0, 0, 1)
+shadow_offset = Vector2(0, 1)
+
+[node name="HSplitContainer" type="HSplitContainer"]
+custom_minimum_size = Vector2(400, 0)
+offset_right = 718.0
+offset_bottom = 60.0
+split_offset = 120
+dragger_visibility = 1
+script = ExtResource("1_aov74")
+
+[node name="HBoxContainer" type="HBoxContainer" parent="."]
+layout_mode = 2
+size_flags_vertical = 0
+
+[node name="Icon" type="TextureRect" parent="HBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 0
+texture = ExtResource("1_sgivn")
+stretch_mode = 2
+
+[node name="Die Range" type="Label" parent="HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 1
+text = "4 - 60"
+label_settings = SubResource("LabelSettings_trqps")
+vertical_alignment = 1
+
+[node name="Die Desc" type="RichTextLabel" parent="."]
+custom_minimum_size = Vector2(7.755, 0)
+layout_mode = 2
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 1)
+theme_override_constants/shadow_outline_size = 2
+theme_override_fonts/normal_font = ExtResource("4_ibb2k")
+theme_override_fonts/bold_font = ExtResource("5_r608y")
+theme_override_font_sizes/normal_font_size = 16
+theme_override_font_sizes/bold_font_size = 16
+bbcode_enabled = true
+text = "On activate: Some stuff happens. This also causes more stuff to happen. We now have a long description. What happens if the description gets TOO long? Well some cool things happen I guess."
+fit_content = true

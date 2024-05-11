@@ -1,53 +1,61 @@
-[gd_scene load_steps=4 format=3 uid="uid://d2hqnmxninkp4"]
+[gd_scene load_steps=7 format=3 uid="uid://d2hqnmxninkp4"]
 
+[ext_resource type="StyleBox" uid="uid://bp6vu63jmsceo" path="res://Tactical/UI/Components/BlackGradientBG.tres" id="1_f3t1v"]
 [ext_resource type="Script" path="res://Tactical/UI/Abilities/AbilityDetailPanel.cs" id="1_gm5p2"]
-[ext_resource type="FontFile" uid="uid://bwboh1vdh8npd" path="res://Assets/AlegreyaSans-Regular.ttf" id="2_3awiy"]
+[ext_resource type="FontFile" uid="uid://cvwb3yt1ydxk3" path="res://Assets/Marmelad-Regular.ttf" id="2_s243k"]
+[ext_resource type="FontFile" uid="uid://bugyrdkg8kxaf" path="res://Assets/Inter-Regular.ttf" id="3_mlbxq"]
+[ext_resource type="FontFile" uid="uid://dbgm5vftssfsb" path="res://Assets/Inter-Bold.ttf" id="5_djarj"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_1n826"]
-font = ExtResource("2_3awiy")
+font = ExtResource("2_s243k")
 font_size = 48
 
-[node name="AbilityDetailPanel" type="Control"]
-layout_mode = 3
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
+[node name="AbilityDetailPanel" type="PanelContainer"]
+clip_contents = true
+offset_right = 600.0
+offset_bottom = 400.0
 mouse_filter = 2
+theme_override_styles/panel = ExtResource("1_f3t1v")
 script = ExtResource("1_gm5p2")
 
-[node name="Panel" type="Panel" parent="."]
-layout_mode = 0
-offset_right = 587.0
-offset_bottom = 335.0
-mouse_filter = 2
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+layout_mode = 2
+theme_override_constants/separation = 8
 
-[node name="Ability Name" type="Label" parent="."]
-layout_mode = 0
-offset_left = 10.0
-offset_top = 10.0
-offset_right = 539.0
-offset_bottom = 68.0
+[node name="Ability Name" type="Label" parent="VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 0
 text = "Balestra Fente"
 label_settings = SubResource("LabelSettings_1n826")
 text_overrun_behavior = 3
 
-[node name="Ability Info" type="RichTextLabel" parent="."]
-layout_mode = 0
-offset_left = 15.0
-offset_top = 62.0
-offset_right = 278.0
-offset_bottom = 88.0
+[node name="Ability Info" type="RichTextLabel" parent="VBoxContainer"]
+layout_mode = 2
+theme_override_fonts/normal_font = ExtResource("3_mlbxq")
 bbcode_enabled = true
 text = "Attack		[img=24]res://Sprites/cooldown.png[/img] 2		[img=24]res://Sprites/range.png[/img] 0 - 2"
-
-[node name="Ability Desc" type="RichTextLabel" parent="."]
-layout_mode = 0
-offset_left = 15.0
-offset_top = 94.0
-offset_right = 581.0
-offset_bottom = 94.0
-bbcode_enabled = true
 fit_content = true
-autowrap_mode = 2
+
+[node name="ScrollContainer" type="ScrollContainer" parent="VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+vertical_scroll_mode = 3
+
+[node name="VBoxContainer" type="VBoxContainer" parent="VBoxContainer/ScrollContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_constants/separation = 12
+
+[node name="Ability Desc" type="RichTextLabel" parent="VBoxContainer/ScrollContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 0
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 1)
+theme_override_constants/shadow_outline_size = 2
+theme_override_fonts/normal_font = ExtResource("3_mlbxq")
+theme_override_fonts/bold_font = ExtResource("5_djarj")
+theme_override_font_sizes/normal_font_size = 16
+theme_override_font_sizes/bold_font_size = 16
+bbcode_enabled = true
+text = "On activate: Something happens."
+fit_content = true

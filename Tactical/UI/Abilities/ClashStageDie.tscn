@@ -1,6 +1,6 @@
 [gd_scene load_steps=5 format=3 uid="uid://8gqwukk6oa27"]
 
-[ext_resource type="Script" path="res://Tactical/UI/Abilities/AbilityDie.cs" id="1_0odu8"]
+[ext_resource type="Script" path="res://Tactical/UI/Components/AbilityDie.cs" id="1_0odu8"]
 [ext_resource type="Texture2D" uid="uid://be2dx8wnx2c1" path="res://Sprites/die - evade.png" id="2_umkbt"]
 [ext_resource type="FontFile" uid="uid://bbbh26n3nsxrr" path="res://Assets/Jost-Medium.ttf" id="3_mkura"]
 

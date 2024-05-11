@@ -24,12 +24,12 @@ public class TestScenario : ScenarioInfo {
     private static readonly AbstractCharacter characterD = new AbstractCharacter("Test Dummy C", CharacterFaction.ENEMY);
     private static readonly AbstractCharacter characterE = new AbstractCharacter("Test Dummy D", CharacterFaction.ENEMY);
     private static List<(AbstractCharacter character, int position)> scenarioFighters = new(){
-        (playerA, 3),
-        (playerB, 2),
         (characterB, 4),
         (characterC, 5),
         // (characterD, 1),
         // (characterE, 2),
+        // (playerB, 2),
+        (playerA, 3),
     };
 
     public TestScenario() : base(scenarioFighters){
@@ -38,16 +38,18 @@ public class TestScenario : ScenarioInfo {
         playerA.EquipAbility(new Beatdown());
         playerA.EquipAbility(new GallopingTilt());
         playerA.EquipAbility(new Challenge());
+        playerA.EquipAbility(new Discharge());
         playerA.EquipAbility(new HaveAtThee());
-        playerA.EquipAbility(new Brutalize());
-        playerA.EquipAbility(new Charge());
-        playerA.EquipAbility(new Purge());
-        playerA.EquipAbility(new SecondWind());
-        playerA.EquipAbility(new Indomitable());
-        playerA.EquipAbility(new Knockout());
-        playerA.EquipAbility(new ShrugOff());
-        playerA.EquipAbility(new VirtuousStruggle());
         playerA.EquipAbility(new Parry());
+        // playerA.EquipAbility(new Brutalize());
+        // playerA.EquipAbility(new Charge());
+        // playerA.EquipAbility(new Purge());
+        // playerA.EquipAbility(new SecondWind());
+        // playerA.EquipAbility(new Indomitable());
+        // playerA.EquipAbility(new Knockout());
+        playerA.EquipAbility(new ShrugOff());
+        playerA.EquipAbility(new Endure());
+        playerA.EquipAbility(new VirtuousStruggle());
 
         playerA.MinSpd = 10;
         playerA.MaxSpd = 20;

@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using Godot;
 
 public static class GameVariables {
@@ -49,4 +50,25 @@ public static class Lerpables {
 	public static float EaseOut(float t, int power = 3){
 		return Flip((float)Math.Pow(Flip(t), power));
 	}
+
+    public static async void FadeIn(Control node, double duration){
+		float currentTime = 0f;
+        Vector2 startPos = node.Position;
+        Vector2 endPos = node.Position + new Vector2(20, 0);
+
+        // Use vectors so we can use Godot's in-built Lerp function.
+        Vector2 startBlurRadius = new Vector2(0.0f, 0.0f);
+        Vector2 endBlurRadius = new Vector2(1.0f, 0.0f);
+
+		while (currentTime <= duration){
+			if (!GodotObject.IsInstanceValid(node)) { return; }
+            float normalized = Math.Min((float)(currentTime / duration), 1.0f);
+			node.Position = startPos.Lerp(endPos, EaseOut(normalized, 5));
+			node.Modulate = new Color(1, 1, 1, startBlurRadius.Lerp(endBlurRadius, EaseOut(normalized, 5)).X);
+
+			await node.ToSignal(node.GetTree(), SceneTree.SignalName.ProcessFrame);
+            currentTime += (float)node.GetProcessDeltaTime();		// Not using PhysicsProcess since this is graphical effect only.
+        }
+	}
+
 }
