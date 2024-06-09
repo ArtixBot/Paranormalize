@@ -29,6 +29,7 @@ public enum CombatEventType {
     ON_CLASH_ELIGIBLE, ON_DIE_CLASH, ON_CLASH, ON_CLASH_TIE, ON_CLASH_COMPLETE,
     ON_UNIT_MOVED,
     ON_STATUS_APPLIED, ON_STATUS_EXPIRED,
+    UI_EVENT_POST_DIE_ROLLED,
 }
 
 // Higher numbers execute first.
@@ -467,12 +468,14 @@ public class CombatEventDamageTaken : ICombatEvent {
     public DamageType damageType;
     public float damageTaken;
     public bool isPoiseDamage;
+    public int clashIteration;      // Used for UI data (possibly other passives in the future?).
 
-    public CombatEventDamageTaken(AbstractCharacter target, DamageType damageType, float damageTaken, bool isPoiseDamage){
+    public CombatEventDamageTaken(AbstractCharacter target, DamageType damageType, float damageTaken, bool isPoiseDamage, int clashIteration = 0){
         this.target = target;
         this.damageType = damageType;
         this.damageTaken = damageTaken;
         this.isPoiseDamage = isPoiseDamage;
+        this.clashIteration = clashIteration;
     }
 }
 
@@ -555,5 +558,18 @@ public class CombatEventClashEligible : ICombatEvent {
         this.attackerAbility = attackerAbility;
         this.defender = defender;
         this.reactableAbilities = reactableAbilities;
+    }
+}
+
+public class CombatUiEventPostDieRolled : ICombatEvent {
+
+    public CombatEventType eventType {
+        get {return CombatEventType.UI_EVENT_POST_DIE_ROLLED;}
+    }
+
+    public int clashIteration;
+    
+    public CombatUiEventPostDieRolled(int clashIteration){
+        this.clashIteration = clashIteration;
     }
 }

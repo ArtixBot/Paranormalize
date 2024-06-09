@@ -6,112 +6,145 @@ using System.Threading.Tasks;
 
 public partial class ClashStage : Control {
 
-	public AbstractCharacter initiatorData;
+	public AbstractCharacter initiator;
+	public AbstractAbility initiatorAbility;
+	public Queue<Die[]> initiatorQueuedDice = new();
+	private bool initiatorOnLeftHalf;
+
 	public List<AbstractCharacter> targetData;
+	public AbstractAbility targetAbility;
+	public Queue<Die[]> targetQueuedDice = new();
+
+	private int curStep;
+	private int stepCount;		// The clash stage has X steps, and renders different stuff at each step.
+								// Note that stepCount can be zero (e.g. a utility ability is activated), in which case the animation is pretty short.
 
 	public TacticalScene tacticalSceneNode;
 
-	public Sprite2D initiator;
-	public List<Sprite2D> targets = new();
+	public Sprite2D initatorSprite;
+	public List<Sprite2D> targetSprites = new();
 	public Dictionary<string, Sprite2D> dataToSpriteMap = new();
 	public Dictionary<Sprite2D, List<Texture2D>> spriteQueuedPoses = new();
-	public List<Die[]> initiatorQueuedDice = new();
-	public List<Die[]> defenderQueuedDice = new();
 
 	public RichTextLabel lhsAbilityTitle;
 	public RichTextLabel rhsAbilityTitle;
 	public Control lhsDice;
 	public Control rhsDice;
 
+	public float delayBetweenPoses;
 	public readonly PackedScene clashStageDie = GD.Load<PackedScene>("res://Tactical/UI/Abilities/ClashStageDie.tscn");
-
-	public float delayBetweenPoses = 0.5f;
-	private float timeSinceDelay;
-
-	private bool initiatorOnLeftHalf;
-	private bool isSetup = false;
 	
 	// Called when the node enters the scene tree for the first time.
 	public override void _Ready(){
-		initiator = GetNode<Sprite2D>("Initiator");
+		initatorSprite = GetNode<Sprite2D>("Initiator");
 		lhsAbilityTitle = GetNode<RichTextLabel>("Clash BG/LHS Ability Title");
 		rhsAbilityTitle = GetNode<RichTextLabel>("Clash BG/RHS Ability Title");
 		lhsDice = GetNode<Control>("Clash BG/LHS Ability Dice");
 		rhsDice = GetNode<Control>("Clash BG/RHS Ability Dice");
+
+		curStep = 0;
+		stepCount = Math.Max(initiatorQueuedDice.Count, targetQueuedDice.Count);
+		// If the majority of targetSprites are to the right of the initiator, place the initiator on the left side; and vice-versa.
+		// If initiator + all targetSprites are in the same lane, place the initiator on the left if the initiator is a player, else on the right for an enemy.
+		int initiatorPos = initiator.Position;
+		double targetAvgPos = targetData.Select(_ => _.Position).Average();
+		initiatorOnLeftHalf = initiatorPos < targetAvgPos || (initiatorPos == targetAvgPos && initiator.CHAR_FACTION == CharacterFaction.PLAYER);
+
+		// Utility abilities last slightly longer in rendering.
+		delayBetweenPoses = (stepCount == 0) ? 1.0f : 0.5f;
 	}
 
 	// Called every frame. 'delta' is the elapsed time since the previous frame.
-	public override async void _Process(double delta){
+	private float timeSinceDelay;
+	public override void _Process(double delta){
+		if (curStep > stepCount) {
+			this.QueueFree();
+			return;
+		}
 		timeSinceDelay += (float) delta;
-		if (timeSinceDelay >= delayBetweenPoses) {
+		if ((curStep == 0 && delayBetweenPoses != 1.0f) || timeSinceDelay >= delayBetweenPoses) {
 			timeSinceDelay = 0.0f;
-			
-			RenderDice();
-			// Default to deleting once all animations have played out.
-			bool stageCompleted = true; 
-			foreach (KeyValuePair<Sprite2D, List<Texture2D>> spritePose in spriteQueuedPoses){
-				if (spritePose.Value.Count == 0) continue;
-                _ = SpawnAfterimg(spritePose.Key, 0.25f);
-				spritePose.Key.Texture = spritePose.Value[0];
-				spritePose.Value.RemoveAt(0);
-				stageCompleted = false;		// If an animation played, don't delete the animations yet.
-			}
-			if (stageCompleted) {
-				initiatorQueuedDice.Clear();
-				defenderQueuedDice.Clear();
-				await Task.Delay(TimeSpan.FromSeconds(0.5f));		// linger effect
-				try {
-					CanvasLayer animationStage = (CanvasLayer) GetParent();
-					animationStage.Visible = false;
-					QueueFree();
-				} catch (Exception){
-					Logging.Log("Could not get parent / queue free (clash stage itself was likely removed)", Logging.LogLevel.DEBUG);
+			GD.Print($"Rendering step {curStep+1}:");
+			if (initiatorQueuedDice.TryDequeue(out Die[] initatorDice)){
+				string content = "";
+				foreach (Die die in initatorDice){
+					content += $"{die.DieType} ({die.MinValue} - {die.MaxValue}) | ";
 				}
+				GD.Print("\tInitiator dice: " + content);
 			}
+			if (targetQueuedDice.TryDequeue(out Die[] targetDice)){
+				string content = "";
+				foreach (Die die in targetDice){
+					content += $"{die.DieType} ({die.MinValue} - {die.MaxValue}) | ";
+				}
+				GD.Print("\tTarget dice: " + content);
+			}
+			curStep += 1;
 		}
+		// 	RenderDice();
+		// 	// Default to deleting once all animations have played out.
+		// 	bool stageCompleted = true; 
+		// 	foreach (KeyValuePair<Sprite2D, List<Texture2D>> spritePose in spriteQueuedPoses){
+		// 		if (spritePose.Value.Count == 0) continue;
+        //         _ = SpawnAfterimg(spritePose.Key, 0.25f);
+		// 		spritePose.Key.Texture = spritePose.Value[0];
+		// 		spritePose.Value.RemoveAt(0);
+		// 		stageCompleted = false;		// If an animation played, don't delete the animations yet.
+		// 	}
+		// 	if (stageCompleted) {
+		// 		initiatorQueuedDice.Clear();
+		// 		targetQueuedDice.Clear();
+		// 		await Task.Delay(TimeSpan.FromSeconds(0.5f));		// linger effect
+		// 		try {
+		// 			CanvasLayer animationStage = (CanvasLayer) GetParent();
+		// 			animationStage.Visible = false;
+		// 			QueueFree();
+		// 		} catch (Exception){
+		// 			Logging.Log("Could not get parent / queue free (clash stage itself was likely removed)", Logging.LogLevel.DEBUG);
+		// 		}
+		// 	}
 	}
 
-	public void SetupStage(){
-		if (initiatorData == null) return;
-		tacticalSceneNode = (TacticalScene) GetParent().GetParent();
-		if (!IsInstanceValid(tacticalSceneNode)) return;
-
-		dataToSpriteMap[initiatorData.CHAR_NAME] = initiator;
-
-		foreach(AbstractCharacter target in targetData){
-			if (target == initiatorData) continue;
-            Sprite2D targetSprite = new(){
-                Texture = tacticalSceneNode.characterToPoseMap[target].GetValueOrDefault("preclash", GD.Load<Texture2D>("res://Sprites/Characters/no pose found.png"))
-            };
-            AddChild(targetSprite);
-			targets.Add(targetSprite);
-			dataToSpriteMap[target.CHAR_NAME] = targetSprite;
-		}
-
-		initiator.Texture = tacticalSceneNode.characterToPoseMap[initiatorData].GetValueOrDefault("preclash", GD.Load<Texture2D>("res://Sprites/Characters/no pose found.png"));
-		// If the majority of targets are to the right of the initiator, place the initiator on the left side; and vice-versa.
-		// If initiator + all targets are in the same lane, place the initiator on the left if the initiator is a player, else on the right for an enemy.
-		int initiatorPos = initiatorData.Position;
-		double targetAvgPos = targetData.Select(_ => _.Position).Average();
-		initiatorOnLeftHalf = initiatorPos < targetAvgPos || (initiatorPos == targetAvgPos && initiatorData.CHAR_FACTION == CharacterFaction.PLAYER);
-
-		initiator.Position = initiatorOnLeftHalf ? new Vector2(510, 400) : new Vector2(1510, 400);
-		initiator.FlipH = !initiatorOnLeftHalf;
-		if (initiatorOnLeftHalf){
-			lhsAbilityTitle.Text = "[right][font n=Assets/AlegreyaSans-Regular.ttf s=42]" + CombatManager.combatInstance?.activeAbility.NAME + "[/font][/right]";
-			rhsAbilityTitle.Text = (CombatManager.combatInstance?.reactAbility != null) ? "[font n=Assets/AlegreyaSans-Regular.ttf s=42]" + CombatManager.combatInstance.reactAbility.NAME + "[/font]" : "";
-		} else {
-			rhsAbilityTitle.Text = "[font n=Assets/AlegreyaSans-Regular.ttf s=42]" + CombatManager.combatInstance?.activeAbility.NAME + "[/font]";
-			lhsAbilityTitle.Text = (CombatManager.combatInstance?.reactAbility != null) ? "[right][font n=Assets/AlegreyaSans-Regular.ttf s=42]" + CombatManager.combatInstance.reactAbility.NAME + "[/font][/right]" : "";
-		}
-		for (int i = 0; i < targets.Count; i++){
-			targets[i].Position = initiatorOnLeftHalf ? new Vector2(1510 + (100 * i), 400) : new Vector2(510 + (100 * i), 400);
-			targets[i].FlipH = initiatorOnLeftHalf;
-		}
-
-		RenderDice();
-		isSetup = true;
-	}
+	// public void SetupStage(){
+		// if (initiator == null) return;
+		// tacticalSceneNode = (TacticalScene) GetParent().GetParent();
+		// if (!IsInstanceValid(tacticalSceneNode)) return;
+// 
+		// dataToSpriteMap[initiator.CHAR_NAME] = initatorSprite;
+// 
+		// foreach(AbstractCharacter target in targetData){
+		// 	if (target == initiator) continue;
+        //     Sprite2D targetSprite = new(){
+        //         Texture = tacticalSceneNode.characterToPoseMap[target].GetValueOrDefault("preclash", GD.Load<Texture2D>("res://Sprites/Characters/no pose found.png"))
+        //     };
+        //     AddChild(targetSprite);
+		// 	targetSprites.Add(targetSprite);
+		// 	dataToSpriteMap[target.CHAR_NAME] = targetSprite;
+		// }
+// 
+		// initatorSprite.Texture = tacticalSceneNode.characterToPoseMap[initiator].GetValueOrDefault("preclash", GD.Load<Texture2D>("res://Sprites/Characters/no pose found.png"));
+		// If the majority of targetSprites are to the right of the initiator, place the initiator on the left side; and vice-versa.
+		// If initiator + all targetSprites are in the same lane, place the initiator on the left if the initiator is a player, else on the right for an enemy.
+		// int initiatorPos = initiator.Position;
+		// double targetAvgPos = targetData.Select(_ => _.Position).Average();
+		// initiatorOnLeftHalf = initiatorPos < targetAvgPos || (initiatorPos == targetAvgPos && initiator.CHAR_FACTION == CharacterFaction.PLAYER);
+// 
+		// initatorSprite.Position = initiatorOnLeftHalf ? new Vector2(510, 400) : new Vector2(1510, 400);
+		// initatorSprite.FlipH = !initiatorOnLeftHalf;
+		// if (initiatorOnLeftHalf){
+		// 	lhsAbilityTitle.Text = "[right][font n=Assets/AlegreyaSans-Regular.ttf s=42]" + CombatManager.combatInstance?.activeAbility.NAME + "[/font][/right]";
+		// 	rhsAbilityTitle.Text = (CombatManager.combatInstance?.reactAbility != null) ? "[font n=Assets/AlegreyaSans-Regular.ttf s=42]" + CombatManager.combatInstance.reactAbility.NAME + "[/font]" : "";
+		// } else {
+		// 	rhsAbilityTitle.Text = "[font n=Assets/AlegreyaSans-Regular.ttf s=42]" + CombatManager.combatInstance?.activeAbility.NAME + "[/font]";
+		// 	lhsAbilityTitle.Text = (CombatManager.combatInstance?.reactAbility != null) ? "[right][font n=Assets/AlegreyaSans-Regular.ttf s=42]" + CombatManager.combatInstance.reactAbility.NAME + "[/font][/right]" : "";
+		// }
+		// for (int i = 0; i < targetSprites.Count; i++){
+		// 	targetSprites[i].Position = initiatorOnLeftHalf ? new Vector2(1510 + (100 * i), 400) : new Vector2(510 + (100 * i), 400);
+		// 	targetSprites[i].FlipH = initiatorOnLeftHalf;
+		// }
+// 
+	// 	RenderDice();
+	// }
 
 	public void RenderDice(){
 		foreach (Node n in lhsDice.GetChildren() + rhsDice.GetChildren()){
@@ -119,9 +152,9 @@ public partial class ClashStage : Control {
 		}
 
 		Die[] initiatorDiceData = initiatorQueuedDice.ElementAtOrDefault(0);
-		Die[] defenderDiceData = defenderQueuedDice.ElementAtOrDefault(0);
-		initiatorQueuedDice.Remove(initiatorDiceData);
-		defenderQueuedDice.Remove(defenderDiceData);
+		Die[] defenderDiceData = targetQueuedDice.ElementAtOrDefault(0);
+		// initiatorQueuedDice.Remove(initiatorDiceData);
+		// targetQueuedDice.Remove(defenderDiceData);
 
 		Control initiatorSide = initiatorOnLeftHalf ? lhsDice : rhsDice;
 		Control defenderSide = initiatorOnLeftHalf ? rhsDice : lhsDice;

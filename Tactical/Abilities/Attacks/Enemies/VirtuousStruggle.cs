@@ -37,8 +37,8 @@ public class VirtuousStruggle : AbstractAbility, IEventHandler<CombatEventAbilit
     public override void HandleEvent(CombatEventAbilityActivated data){
         base.HandleEvent(data);
         if (data.abilityActivated == this){
-            CombatManager.ExecuteAction(new ApplyStatusAction(this.OWNER, new ConditionNextRoundStatusGain(new BuffStrength()), 1));
             if (CombatManager.combatInstance.fighters.Where(character => character.CHAR_FACTION == this.OWNER.CHAR_FACTION).Count() == 1){
+                CombatManager.ExecuteAction(new ApplyStatusAction(this.OWNER, new ConditionNextRoundStatusGain(new BuffStrength()), 1));
                 data.abilityDice.Add(bluntDieBonus);
                 data.abilityDice.Add(bluntDieBonus);
             }

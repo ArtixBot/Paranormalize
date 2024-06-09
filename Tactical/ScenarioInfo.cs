@@ -42,7 +42,7 @@ public class TestScenario : ScenarioInfo {
         playerA.EquipAbility(new HaveAtThee());
         playerA.EquipAbility(new Parry());
         // playerA.EquipAbility(new Brutalize());
-        // playerA.EquipAbility(new Charge());
+        playerA.EquipAbility(new Hew());
         // playerA.EquipAbility(new Purge());
         // playerA.EquipAbility(new SecondWind());
         // playerA.EquipAbility(new Indomitable());

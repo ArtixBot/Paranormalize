@@ -7,12 +7,13 @@ using UI;
 
 public partial class TacticalScene : Node2D,
 									 IEventSubscriber,
+									 IEventHandler<CombatEventAbilityActivated>,
 									 IEventHandler<CombatEventDamageTaken>,
 									 IEventHandler<CombatEventUnitMoved>,
 									 IEventHandler<CombatEventCombatStart>,
 									 IEventHandler<CombatEventCombatStateChanged>,
 									 IEventHandler<CombatEventCharacterDeath>,
-									 IEventHandler<CombatEventDieRolled>,
+									 IEventHandler<CombatUiEventPostDieRolled>,
 									 IEventHandler<CombatEventDieHit>,
 									 IEventHandler<CombatEventDieBlocked>,
 									 IEventHandler<CombatEventDieEvaded>,
@@ -28,6 +29,17 @@ public partial class TacticalScene : Node2D,
 	public Dictionary<int, Lane> laneToNodeMap = new();
 
 	private GUIOrchestrator GUIOrchestratorNode;
+
+	// Render combat stages in sequence. This queue only has one scene in it when it's the player's turn,
+	// but it can have multiple in a row if enemy actions are consecutive (e.g. an opponent activates multiple Utility abilities in a row;
+	// or an opponent attacks a character multiple times with non-clashable attacks.)
+	private Queue<ClashStage> queuedClashes = new();
+	private ClashStage currentClash = null;
+	private ClashStage clashToAnimate {
+		get {
+			return queuedClashes.LastOrDefault();
+		}
+	}
 
 	private CanvasLayer animationStage;
 
@@ -45,18 +57,46 @@ public partial class TacticalScene : Node2D,
 		CombatManager.ChangeCombatState(CombatState.COMBAT_START);
 	}
 
-	public virtual void InitSubscriptions(){
+	private float timeSinceDelay;
+	// Called every frame. 'delta' is the elapsed time since the previous frame.
+	public override void _Process(double delta){
+		// Pick up next clash from queue if one exists.
+		if (!IsInstanceValid(currentClash) && queuedClashes.Count() > 0){
+			currentClash = queuedClashes.Dequeue();
+			GD.Print($"New clash character: {currentClash.initiator.CHAR_NAME}");
+			GD.Print($"New clash target: {currentClash.targetData.First().CHAR_NAME}");
+
+			animationStage.AddChild(currentClash);
+		}
+
+		// if (IsInstanceValid(currentClash)){
+		// 	timeSinceDelay += (float) delta;
+		// 	if (timeSinceDelay >= 1.0f){
+		// 		timeSinceDelay = 0.0f;
+		// 		currentClash?.QueueFree();
+		// 	}
+		// }
+	}
+
+    public virtual void InitSubscriptions(){
+		// Spawn lanes.
 		CombatManager.eventManager.Subscribe(CombatEventType.ON_COMBAT_START, this, CombatEventPriority.UI);
-		CombatManager.eventManager.Subscribe(CombatEventType.ON_CHARACTER_DEATH, this, CombatEventPriority.UI);
+		// Move units.
 		CombatManager.eventManager.Subscribe(CombatEventType.ON_UNIT_MOVED, this, CombatEventPriority.UI);
+		// Clash scene-related event handling.
+		CombatManager.eventManager.Subscribe(CombatEventType.ON_DIE_CLASH, this, CombatEventPriority.UI);
+		CombatManager.eventManager.Subscribe(CombatEventType.ON_ABILITY_ACTIVATED, this, CombatEventPriority.UI);
+		CombatManager.eventManager.Subscribe(CombatEventType.ON_CHARACTER_DEATH, this, CombatEventPriority.UI);
 		CombatManager.eventManager.Subscribe(CombatEventType.ON_TAKE_DAMAGE, this, CombatEventPriority.UI);
-		CombatManager.eventManager.Subscribe(CombatEventType.ON_DIE_ROLLED, this, CombatEventPriority.UI);
 		CombatManager.eventManager.Subscribe(CombatEventType.ON_DIE_HIT, this, CombatEventPriority.UI);
 		CombatManager.eventManager.Subscribe(CombatEventType.ON_DIE_BLOCKED, this, CombatEventPriority.UI);
 		CombatManager.eventManager.Subscribe(CombatEventType.ON_DIE_EVADED, this, CombatEventPriority.UI);
 		CombatManager.eventManager.Subscribe(CombatEventType.ON_CLASH_TIE, this, CombatEventPriority.UI);
 		CombatManager.eventManager.Subscribe(CombatEventType.ON_COMBAT_STATE_CHANGE, this, CombatEventPriority.UI);
+
+		CombatManager.eventManager.Subscribe(CombatEventType.UI_EVENT_POST_DIE_ROLLED, this, CombatEventPriority.UI);
     }
+
 
 	public void HandleEvent(CombatEventCombatStart data){
 		for (int i = GameVariables.MIN_LANES; i <= GameVariables.MAX_LANES; i++){
@@ -87,29 +127,7 @@ public partial class TacticalScene : Node2D,
 		}
 	}
 
-	public void HandleEvent(CombatEventCombatStateChanged data){
-		if (data.newState == CombatState.RESOLVE_ABILITIES){
-			if (CombatManager.combatInstance == null) { return; }
-			if (CombatManager.combatInstance?.activeAbility.TYPE == AbilityType.SPECIAL){ return; }
-			if (!IsInstanceValid(animationStage)){ return; }
-
-			ClashStage clashStage = (ClashStage) clashScene.Instantiate();
-			clashStage.Name = "Clash Stage";
-			animationStage.AddChild(clashStage);
-
-			clashStage.initiatorData = CombatManager.combatInstance.activeChar;
-			clashStage.initiatorQueuedDice.Add(CombatManager.combatInstance.activeAbilityDice.ToArray());
-			clashStage.targetData = CombatManager.combatInstance.activeAbilityTargets;
-			clashStage.defenderQueuedDice.Add(CombatManager.combatInstance.reactAbilityDice?.ToArray());
-
-			clashStage.SetupStage();
-			animationStage.Visible = true;
-		}
-	}
-
 	public async void HandleEvent(CombatEventUnitMoved data){
-		// TODO: 0.5f is a static value used because Clash Stage currently has anims set to 0.5 seconds. Define this someplace better.
-		float? delay = CombatManager.combatInstance?.abilityItrCount * 0.5f;
 		CharacterUI charNode = characterToNodeMap.GetValueOrDefault(data.movedUnit);
 		if (!IsInstanceValid(charNode)) return;
 
@@ -119,7 +137,9 @@ public partial class TacticalScene : Node2D,
 		Vector2 newPos = new(150 + (newLane - 1) * 300, 500);
 
 		float currentTime = 0f;
-		await Task.Delay(TimeSpan.FromSeconds((double)delay));
+		// TODO: 0.5f is a static value used because Clash Stage currently has anims set to 0.5 seconds. Define this someplace better.
+		// float? delay = CombatManager.combatInstance?.abilityItrCount * 0.5f;
+		// await Task.Delay(TimeSpan.FromSeconds((double)delay));
 		while (currentTime <= 0.25f){
             float normalized = Math.Min((float)(currentTime / 0.25f), 1.0f);
 			charNode.Position = oldPos.Lerp(newPos, Lerpables.EaseOut(normalized, 5));
@@ -129,37 +149,64 @@ public partial class TacticalScene : Node2D,
         }
 	}
 
+	public void HandleEvent(CombatEventCombatStateChanged data){
+		if (data.newState == CombatState.RESOLVE_ABILITIES){
+			if (CombatManager.combatInstance == null) { return; }
+			if (CombatManager.combatInstance?.activeAbility.TYPE == AbilityType.SPECIAL){ return; }
+			if (!IsInstanceValid(animationStage)){ return; }
+
+			ClashStage clashStage = (ClashStage) clashScene.Instantiate();
+
+			clashStage.initiator = CombatManager.combatInstance.activeChar;
+			queuedClashes.Enqueue(clashStage);
+		}
+	}
+
+	public void HandleEvent(CombatEventAbilityActivated data){
+		if (!IsInstanceValid(this.clashToAnimate)) {return;}		// Pass and Move don't queue a clash to animate.
+		if (data.caster == this.clashToAnimate.initiator){
+			this.clashToAnimate.initiatorAbility = data.abilityActivated;
+			this.clashToAnimate.targetData = data.targets;
+			if (data.abilityDice.Count != 0){
+				this.clashToAnimate.initiatorQueuedDice.Enqueue(CombatManager.combatInstance.activeAbilityDice.ToArray());
+			}
+		} else if (data.caster != this.clashToAnimate.initiator){
+			this.clashToAnimate.targetAbility = data.abilityActivated;
+			this.clashToAnimate.targetQueuedDice.Enqueue(CombatManager.combatInstance.reactAbilityDice?.ToArray());
+		}
+	}
+
 	public async void HandleEvent(CombatEventDamageTaken data){
 		// TODO: 0.5f is a static value used because Clash Stage currently has anims set to 0.5 seconds. Define this someplace better.
-		float? delay = CombatManager.combatInstance?.abilityItrCount * 0.5f;
-		await Task.Delay(TimeSpan.FromSeconds((double)delay));
+		// float? delay = CombatManager.combatInstance?.abilityItrCount * 0.5f;
+		// await Task.Delay(TimeSpan.FromSeconds((double)delay));
 
-		string colorPrefix = data.isPoiseDamage ? "[color=#ffba44]" : "[color=#ff4444]";
+		// string colorPrefix = data.isPoiseDamage ? "[color=#ffba44]" : "[color=#ff4444]";
 
-        RichTextLabel damageNumber = new(){
-			BbcodeEnabled = true,
-			Size = new Vector2(100, 100),
-			Position = data.isPoiseDamage ? new Vector2(50, 50) : new Vector2(0, 0),
-			MouseFilter = Control.MouseFilterEnum.Ignore,
-			// Int-cast; DamageAction does an int cast before dealing final damage.
-            Text = colorPrefix + $"[font n=Assets/RobotoSlab-VariableFont_wght.ttf s=64][outline_size=12][outline_color=black]{(int)data.damageTaken}[/outline_color][/outline_size][/font][/color]"
-        };
-		float lifetime = 0.5f;
+        // RichTextLabel damageNumber = new(){
+		// 	BbcodeEnabled = true,
+		// 	Size = new Vector2(100, 100),
+		// 	Position = data.isPoiseDamage ? new Vector2(50, 50) : new Vector2(0, 0),
+		// 	MouseFilter = Control.MouseFilterEnum.Ignore,
+		// 	// Int-cast; DamageAction does an int cast before dealing final damage.
+        //     Text = colorPrefix + $"[font n=Assets/RobotoSlab-VariableFont_wght.ttf s=64][outline_size=12][outline_color=black]{(int)data.damageTaken}[/outline_color][/outline_size][/font][/color]"
+        // };
+		// float lifetime = 0.5f;
 
-		ClashStage clashStage = (ClashStage) animationStage.GetNodeOrNull("Clash Stage");
-        if (IsInstanceValid(clashStage)){
-			Sprite2D hitUnit = clashStage.dataToSpriteMap[data.target.CHAR_NAME];
-			damageNumber.Position -= new Vector2(300, 300);		// Move damage number off the sprite itself.
-			hitUnit.AddChild(damageNumber);
-		} else {
-			AbstractCharacter damagedCharacter = data.target;
-			CharacterUI charNode = characterToNodeMap.GetValueOrDefault(damagedCharacter);
-			if (!IsInstanceValid(charNode)) return;
-        	// A character can take damage outside the clash stage (e.g. status effects). If the clash stage isn't active, damage numbers go above the sprite instead.
-			charNode.AddChild(damageNumber);
-		}
-		await Task.Delay(TimeSpan.FromSeconds((double)lifetime));
-		damageNumber.QueueFree();
+		// ClashStage clashStage = (ClashStage) animationStage.GetNodeOrNull("Clash Stage");
+        // if (IsInstanceValid(clashStage)){
+		// 	Sprite2D hitUnit = clashStage.dataToSpriteMap[data.target.CHAR_NAME];
+		// 	damageNumber.Position -= new Vector2(300, 300);		// Move damage number off the sprite itself.
+		// 	hitUnit.AddChild(damageNumber);
+		// } else {
+		// 	AbstractCharacter damagedCharacter = data.target;
+		// 	CharacterUI charNode = characterToNodeMap.GetValueOrDefault(damagedCharacter);
+		// 	if (!IsInstanceValid(charNode)) return;
+        // 	// A character can take damage outside the clash stage (e.g. status effects). If the clash stage isn't active, damage numbers go above the sprite instead.
+		// 	charNode.AddChild(damageNumber);
+		// }
+		// await Task.Delay(TimeSpan.FromSeconds((double)lifetime));
+		// damageNumber.QueueFree();
 	}
 
 	public void HandleEvent(CombatEventDieHit data){
@@ -222,25 +269,14 @@ public partial class TacticalScene : Node2D,
 		clashStage.QueueAnimation(defender, "preclash");
 	}
 
-	public void HandleEvent(CombatEventDieRolled data){
-		ClashStage clashStage = (ClashStage) animationStage.GetNodeOrNull("Clash Stage");
-		if (!IsInstanceValid(clashStage)) return;
-
+	public void HandleEvent(CombatUiEventPostDieRolled data){
+		if (!IsInstanceValid(this.clashToAnimate)) {return;}
 		// Add to render queues for clashStage. Apparently casting ToArray() prevents the items from becoming null when activeAbilityDice is null??
 		if (CombatManager.combatInstance.activeAbilityDice != null){
-			if (CombatManager.combatInstance.activeAbilityDice.Count > 0){
-				// TODO: temporary
-				clashStage.initiatorQueuedDice.Add(CombatManager.combatInstance.activeAbilityDice.Skip(1).ToArray());
-			} else {
-				clashStage.initiatorQueuedDice.Add(CombatManager.combatInstance.activeAbilityDice.ToArray());
-			}
+			this.clashToAnimate.initiatorQueuedDice.Enqueue(CombatManager.combatInstance.activeAbilityDice.ToArray());
 		}
 		if (CombatManager.combatInstance.reactAbilityDice != null){
-			if (CombatManager.combatInstance.reactAbilityDice.Count > 0){
-				clashStage.defenderQueuedDice.Add(CombatManager.combatInstance.reactAbilityDice.Skip(1).ToArray());
-			} else {
-				clashStage.defenderQueuedDice.Add(CombatManager.combatInstance.reactAbilityDice.ToArray());
-			}
+			this.clashToAnimate.targetQueuedDice.Enqueue(CombatManager.combatInstance.reactAbilityDice.ToArray());
 		}
 	}
 
