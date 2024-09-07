@@ -24,7 +24,7 @@ public partial class ClashStage : Control {
 
 	public TacticalScene tacticalSceneNode;
 
-	public Sprite2D initatorSprite;
+	public Sprite2D initiatorSprite;
 	public List<Sprite2D> targetSprites = new();
 	public Dictionary<string, Sprite2D> dataToSpriteMap = new();
 	public Dictionary<Sprite2D, List<Texture2D>> spriteQueuedPoses = new();
@@ -42,7 +42,9 @@ public partial class ClashStage : Control {
 	
 	// Called when the node enters the scene tree for the first time.
 	public override void _Ready(){
-		initatorSprite = GetNode<Sprite2D>("Initiator");
+		Node2D leftSpawn = GetNode<Node2D>("Left Spawn Point");
+		Node2D rightSpawn = GetNode<Node2D>("Right Spawn Point");
+
 		lhsAbilityTitle = GetNode<RichTextLabel>("Clash BG/LHS Ability Title");
 		rhsAbilityTitle = GetNode<RichTextLabel>("Clash BG/RHS Ability Title");
 		lhsDice = GetNode<Control>("Clash BG/LHS Ability Dice");
@@ -67,6 +69,29 @@ public partial class ClashStage : Control {
 			reactorAbilityTitle.Text = "";
 		} else {
 			reactorAbilityTitle.Text = initiatorOnLeftHalf ? targetAbility.NAME : "[right]" + targetAbility.NAME;
+		}
+
+		// Initialize sprites + positions.
+		tacticalSceneNode = (TacticalScene) GetParent().GetParent();
+		initiatorSprite = new(){
+			Texture = tacticalSceneNode.characterToPoseMap[initiator].GetValueOrDefault("clash_windup", GD.Load<Texture2D>("res://Sprites/Characters/no pose found.png"))
+		};
+		AddChild(initiatorSprite);
+		initiatorSprite.Position = initiatorOnLeftHalf ? leftSpawn.Position : rightSpawn.Position;
+		initiatorSprite.FlipH = !initiatorOnLeftHalf;
+
+		foreach(AbstractCharacter target in targetData){
+			if (target == initiator) continue;
+            Sprite2D targetSprite = new(){
+                Texture = tacticalSceneNode.characterToPoseMap[target].GetValueOrDefault("clash_windup", GD.Load<Texture2D>("res://Sprites/Characters/no pose found.png"))
+            };
+            AddChild(targetSprite);
+			targetSprites.Add(targetSprite);
+		}
+
+		for (int i = 0; i < targetSprites.Count; i++){
+			targetSprites[i].Position = initiatorOnLeftHalf ? rightSpawn.Position - new Vector2(100 * i, 0) : leftSpawn.Position + new Vector2(100 * i, 0);
+			targetSprites[i].FlipH = initiatorOnLeftHalf;
 		}
 	}
 
@@ -108,27 +133,6 @@ public partial class ClashStage : Control {
 			}
 			curStep += 1;
 		}
-		// 	// Default to deleting once all animations have played out.
-		// 	bool stageCompleted = true; 
-		// 	foreach (KeyValuePair<Sprite2D, List<Texture2D>> spritePose in spriteQueuedPoses){
-		// 		if (spritePose.Value.Count == 0) continue;
-        //         _ = SpawnAfterimg(spritePose.Key, 0.25f);
-		// 		spritePose.Key.Texture = spritePose.Value[0];
-		// 		spritePose.Value.RemoveAt(0);
-		// 		stageCompleted = false;		// If an animation played, don't delete the animations yet.
-		// 	}
-		// 	if (stageCompleted) {
-		// 		initiatorQueuedDice.Clear();
-		// 		targetQueuedDice.Clear();
-		// 		await Task.Delay(TimeSpan.FromSeconds(0.5f));		// linger effect
-		// 		try {
-		// 			CanvasLayer animationStage = (CanvasLayer) GetParent();
-		// 			animationStage.Visible = false;
-		// 			QueueFree();
-		// 		} catch (Exception){
-		// 			Logging.Log("Could not get parent / queue free (clash stage itself was likely removed)", Logging.LogLevel.DEBUG);
-		// 		}
-		// 	}
 	}
 
 	// public void SetupStage(){

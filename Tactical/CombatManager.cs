@@ -30,7 +30,7 @@ public class CombatInstance {
     public List<Die> reactAbilityDice;
 
     // TODO: Consider making this an combat event property instead of directly accessing this value.
-    public int abilityItrCount = 0;     // Used only for UI purposes to determine when to play events like push/pull/forward/back, which could occur on later dice.
+    public int abilityItrCount = 0;     // Used only for UI purposes to determine when to play events like push/pull/forward/back, which could occur on later dice, or passives that trigger on "On third or fourth clash"
 
 	public CombatInstance(ScenarioInfo info){
         CombatManager.eventManager = new CombatEventManager();
@@ -319,7 +319,7 @@ public static class CombatManager {
                 GD.Print("Attempted to remove dice at position zero but no dice existed, as all targets were staggered/died and thus dice were preemptively removed.");
             }
             i += 1;
-            eventManager.BroadcastEvent(new CombatUiEventPostDieRolled(combatInstance.abilityItrCount));
+            eventManager.BroadcastEvent(new CombatUiEventPostDieRolled());
         }
 
         i = 0;
@@ -340,7 +340,7 @@ public static class CombatManager {
                 GD.Print("Attempted to remove dice at position zero but no dice existed, as the attacker was staggered/died and thus dice were preemptively removed.");
             }
             i += 1;
-            eventManager.BroadcastEvent(new CombatUiEventPostDieRolled(combatInstance.abilityItrCount));
+            eventManager.BroadcastEvent(new CombatUiEventPostDieRolled());
         }
     }
 
@@ -413,7 +413,7 @@ public static class CombatManager {
                     GD.Print("Attempted to remove defender dice at position zero, but dice were preemptively removed since either the defender was staggered or the attacker was killed.");
                 }
                 i += 1;
-                eventManager.BroadcastEvent(new CombatUiEventPostDieRolled(combatInstance.abilityItrCount));
+                eventManager.BroadcastEvent(new CombatUiEventPostDieRolled());
                 continue;
             }
 
@@ -449,7 +449,7 @@ public static class CombatManager {
             }
 
             i += 1;
-            eventManager.BroadcastEvent(new CombatUiEventPostDieRolled(combatInstance.abilityItrCount));
+            eventManager.BroadcastEvent(new CombatUiEventPostDieRolled());
         }
         ResolveUnopposedAbility();      // After one of the two clashing die queues is empty, just invoke ResolveUnopposedAbility.
     }

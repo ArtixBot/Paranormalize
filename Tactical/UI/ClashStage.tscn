@@ -1,7 +1,6 @@
-[gd_scene load_steps=10 format=3 uid="uid://c3lqs0jnxwurh"]
+[gd_scene load_steps=5 format=3 uid="uid://c3lqs0jnxwurh"]
 
 [ext_resource type="Script" path="res://Tactical/UI/ClashStage.cs" id="1_7vhj7"]
-[ext_resource type="Texture2D" uid="uid://buo3g2eppj3vc" path="res://Sprites/Characters/Duelist/clash_windup.png" id="2_lwiga"]
 [ext_resource type="Shader" path="res://Tactical/UI/Shaders/CameraBlur.gdshader" id="2_rdan6"]
 [ext_resource type="FontFile" uid="uid://bwboh1vdh8npd" path="res://Assets/AlegreyaSans-Regular.ttf" id="4_xxvei"]
 
@@ -10,60 +9,6 @@ shader = ExtResource("2_rdan6")
 shader_parameter/blur_amount = 1.0
 shader_parameter/mix_amount = 0.14
 shader_parameter/color_over = Color(0, 0, 0, 0)
-
-[sub_resource type="Animation" id="Animation_kph4i"]
-length = 0.001
-tracks/0/type = "value"
-tracks/0/imported = false
-tracks/0/enabled = true
-tracks/0/path = NodePath(".:position")
-tracks/0/interp = 1
-tracks/0/loop_wrap = true
-tracks/0/keys = {
-"times": PackedFloat32Array(0),
-"transitions": PackedFloat32Array(1),
-"update": 0,
-"values": [Vector2(510, 396)]
-}
-
-[sub_resource type="Animation" id="Animation_d5qav"]
-resource_name = "blunt_attack"
-length = 0.3
-tracks/0/type = "value"
-tracks/0/imported = false
-tracks/0/enabled = true
-tracks/0/path = NodePath(".:position")
-tracks/0/interp = 2
-tracks/0/loop_wrap = true
-tracks/0/keys = {
-"times": PackedFloat32Array(0, 0.3),
-"transitions": PackedFloat32Array(1, 3),
-"update": 0,
-"values": [Vector2(500, 350), Vector2(550, 350)]
-}
-
-[sub_resource type="Animation" id="Animation_6hckc"]
-resource_name = "fade_out"
-length = 0.25
-tracks/0/type = "value"
-tracks/0/imported = false
-tracks/0/enabled = true
-tracks/0/path = NodePath(".:modulate")
-tracks/0/interp = 1
-tracks/0/loop_wrap = true
-tracks/0/keys = {
-"times": PackedFloat32Array(0, 0.25),
-"transitions": PackedFloat32Array(1, 1),
-"update": 0,
-"values": [Color(1, 1, 1, 1), Color(0.333333, 0.333333, 0.333333, 0)]
-}
-
-[sub_resource type="AnimationLibrary" id="AnimationLibrary_1rda7"]
-_data = {
-"RESET": SubResource("Animation_kph4i"),
-"blunt_attack": SubResource("Animation_d5qav"),
-"fade_out": SubResource("Animation_6hckc")
-}
 
 [node name="Clash Stage" type="Control"]
 layout_mode = 3
@@ -85,15 +30,11 @@ grow_horizontal = 2
 grow_vertical = 2
 color = Color(1, 1, 1, 0.333333)
 
-[node name="Initiator" type="Sprite2D" parent="."]
-position = Vector2(510, 396)
-scale = Vector2(1.39185, 1.10219)
-texture = ExtResource("2_lwiga")
+[node name="Left Spawn Point" type="Node2D" parent="."]
+position = Vector2(477, 443)
 
-[node name="AnimationPlayer" type="AnimationPlayer" parent="Initiator"]
-libraries = {
-"": SubResource("AnimationLibrary_1rda7")
-}
+[node name="Right Spawn Point" type="Node2D" parent="."]
+position = Vector2(1439, 443)
 
 [node name="Clash BG" type="ColorRect" parent="."]
 layout_mode = 1

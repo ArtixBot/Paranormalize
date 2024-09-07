@@ -571,7 +571,7 @@ public class CombatUiEventPostDieRolled : ICombatEvent {
 
     public int clashIteration;
     
-    public CombatUiEventPostDieRolled(int clashIteration){
-        this.clashIteration = clashIteration;
+    public CombatUiEventPostDieRolled(){
+        this.clashIteration = CombatManager.combatInstance.abilityItrCount;
     }
 }
