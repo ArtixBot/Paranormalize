@@ -14,7 +14,6 @@ public class HaveAtThee : AbstractAbility, IEventHandler<CombatEventAbilityActiv
 
     // Override IsActivatable - this ability cannot be used while characters have the Dishonorable effect.
     // TODO: Better UI handling for when this is available, but not activatable.
-    // TODO: Prevent targeting of units that already have the DUEL_TO_THE_DEATH status effect.
     public override bool IsActivatable {
         get {
             HashSet<AbstractCharacter> fighters = CombatManager.combatInstance?.fighters;

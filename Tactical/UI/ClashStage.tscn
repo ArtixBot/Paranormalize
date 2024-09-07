@@ -1,8 +1,9 @@
-[gd_scene load_steps=9 format=3 uid="uid://c3lqs0jnxwurh"]
+[gd_scene load_steps=10 format=3 uid="uid://c3lqs0jnxwurh"]
 
 [ext_resource type="Script" path="res://Tactical/UI/ClashStage.cs" id="1_7vhj7"]
-[ext_resource type="Texture2D" uid="uid://buo3g2eppj3vc" path="res://Sprites/Characters/Duelist/preclash.png" id="2_lwiga"]
+[ext_resource type="Texture2D" uid="uid://buo3g2eppj3vc" path="res://Sprites/Characters/Duelist/clash_windup.png" id="2_lwiga"]
 [ext_resource type="Shader" path="res://Tactical/UI/Shaders/CameraBlur.gdshader" id="2_rdan6"]
+[ext_resource type="FontFile" uid="uid://bwboh1vdh8npd" path="res://Assets/AlegreyaSans-Regular.ttf" id="4_xxvei"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_2psho"]
 shader = ExtResource("2_rdan6")
@@ -111,8 +112,10 @@ offset_left = 315.0
 offset_top = 15.0
 offset_right = 932.0
 offset_bottom = 90.0
+theme_override_fonts/normal_font = ExtResource("4_xxvei")
+theme_override_font_sizes/normal_font_size = 42
 bbcode_enabled = true
-text = "[right][font n=Assets/AlegreyaSans-Regular.ttf s=42]Relentless Stabbing[/font][/right]"
+text = "[right]Relentless Stabbing[/right]"
 fit_content = true
 
 [node name="RHS Ability Title" type="RichTextLabel" parent="Clash BG"]
@@ -125,8 +128,10 @@ offset_top = 15.0
 offset_right = -320.0
 offset_bottom = 90.0
 grow_horizontal = 0
+theme_override_fonts/normal_font = ExtResource("4_xxvei")
+theme_override_font_sizes/normal_font_size = 42
 bbcode_enabled = true
-text = "[font n=Assets/AlegreyaSans-Regular.ttf s=42]Relentless Stabbing[/font]"
+text = "Relentless Stabbing"
 fit_content = true
 
 [node name="Divider" type="ColorRect" parent="Clash BG"]

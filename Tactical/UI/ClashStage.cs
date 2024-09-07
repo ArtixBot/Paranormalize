@@ -15,6 +15,9 @@ public partial class ClashStage : Control {
 	public AbstractAbility targetAbility;
 	public Queue<Die[]> targetQueuedDice = new();
 
+	public Queue<(int step, CombatEventDieRolled dieRolled)> dieRollResultQueue = new();
+	public Queue<(int step, CombatEventDamageTaken damageTaken)> damageRenderQueue = new();
+
 	private int curStep;
 	private int stepCount;		// The clash stage has X steps, and renders different stuff at each step.
 								// Note that stepCount can be zero (e.g. a utility ability is activated), in which case the animation is pretty short.
@@ -33,6 +36,9 @@ public partial class ClashStage : Control {
 
 	public float delayBetweenPoses;
 	public readonly PackedScene clashStageDie = GD.Load<PackedScene>("res://Tactical/UI/Abilities/ClashStageDie.tscn");
+
+	private float UTILITY_ABILITY_STEP_DURATION = 2.0f;
+	private float ABILITY_STEP_DURATION = 0.5f; 
 	
 	// Called when the node enters the scene tree for the first time.
 	public override void _Ready(){
@@ -44,14 +50,24 @@ public partial class ClashStage : Control {
 
 		curStep = 0;
 		stepCount = Math.Max(initiatorQueuedDice.Count, targetQueuedDice.Count);
+		// Utility abilities last slightly longer in rendering.
+		delayBetweenPoses = (stepCount == 0) ? UTILITY_ABILITY_STEP_DURATION : ABILITY_STEP_DURATION;
+		
 		// If the majority of targetSprites are to the right of the initiator, place the initiator on the left side; and vice-versa.
 		// If initiator + all targetSprites are in the same lane, place the initiator on the left if the initiator is a player, else on the right for an enemy.
 		int initiatorPos = initiator.Position;
 		double targetAvgPos = targetData.Select(_ => _.Position).Average();
 		initiatorOnLeftHalf = initiatorPos < targetAvgPos || (initiatorPos == targetAvgPos && initiator.CHAR_FACTION == CharacterFaction.PLAYER);
 
-		// Utility abilities last slightly longer in rendering.
-		delayBetweenPoses = (stepCount == 0) ? 1.0f : 0.5f;
+		RichTextLabel initiatorAbilityTitle = initiatorOnLeftHalf ? lhsAbilityTitle : rhsAbilityTitle;
+		RichTextLabel reactorAbilityTitle = initiatorOnLeftHalf ? rhsAbilityTitle : lhsAbilityTitle;
+
+		initiatorAbilityTitle.Text = initiatorOnLeftHalf ? "[right]" + initiatorAbility.NAME : initiatorAbility.NAME;
+		if (targetAbility == null){
+			reactorAbilityTitle.Text = "";
+		} else {
+			reactorAbilityTitle.Text = initiatorOnLeftHalf ? targetAbility.NAME : "[right]" + targetAbility.NAME;
+		}
 	}
 
 	// Called every frame. 'delta' is the elapsed time since the previous frame.
@@ -62,26 +78,36 @@ public partial class ClashStage : Control {
 			return;
 		}
 		timeSinceDelay += (float) delta;
-		if ((curStep == 0 && delayBetweenPoses != 1.0f) || timeSinceDelay >= delayBetweenPoses) {
+		if ((curStep == 0 && delayBetweenPoses != UTILITY_ABILITY_STEP_DURATION) || timeSinceDelay >= delayBetweenPoses) {
 			timeSinceDelay = 0.0f;
-			GD.Print($"Rendering step {curStep+1}:");
+			RenderDice();
+			RenderPoses();
+			// Logging info.
+			Logging.Log($"Rendering step {curStep+1}:", Logging.LogLevel.INFO);
 			if (initiatorQueuedDice.TryDequeue(out Die[] initatorDice)){
 				string content = "";
 				foreach (Die die in initatorDice){
 					content += $"{die.DieType} ({die.MinValue} - {die.MaxValue}) | ";
 				}
-				GD.Print("\tInitiator dice: " + content);
+				Logging.Log("\tInitiator dice: " + content, Logging.LogLevel.INFO);
 			}
 			if (targetQueuedDice.TryDequeue(out Die[] targetDice)){
 				string content = "";
 				foreach (Die die in targetDice){
 					content += $"{die.DieType} ({die.MinValue} - {die.MaxValue}) | ";
 				}
-				GD.Print("\tTarget dice: " + content);
+				Logging.Log("\tTarget dice: " + content, Logging.LogLevel.INFO);
+			}
+			while (dieRollResultQueue.Count > 0 && dieRollResultQueue.First().step == curStep){
+				(int _, CombatEventDieRolled dieRollResultEvent) = dieRollResultQueue.Dequeue();
+				Logging.Log($"\tDie roll: {dieRollResultEvent.roller.CHAR_NAME} rolled a {dieRollResultEvent.rolledValue} on a(n) {dieRollResultEvent.die.DieType.ToString()} die.", Logging.LogLevel.INFO);
+			}
+			while (damageRenderQueue.Count > 0 && damageRenderQueue.First().step == curStep){
+				(int _, CombatEventDamageTaken dmgEvent) = damageRenderQueue.Dequeue();
+				Logging.Log($"\tCombat event: {dmgEvent.target.CHAR_NAME} took {(int)dmgEvent.damageTaken} damage (was Poise damage: {dmgEvent.isPoiseDamage}).", Logging.LogLevel.INFO);
 			}
 			curStep += 1;
 		}
-		// 	RenderDice();
 		// 	// Default to deleting once all animations have played out.
 		// 	bool stageCompleted = true; 
 		// 	foreach (KeyValuePair<Sprite2D, List<Texture2D>> spritePose in spriteQueuedPoses){
@@ -146,15 +172,13 @@ public partial class ClashStage : Control {
 	// 	RenderDice();
 	// }
 
-	public void RenderDice(){
+	private void RenderDice(){
 		foreach (Node n in lhsDice.GetChildren() + rhsDice.GetChildren()){
 			n.QueueFree();
 		}
 
 		Die[] initiatorDiceData = initiatorQueuedDice.ElementAtOrDefault(0);
 		Die[] defenderDiceData = targetQueuedDice.ElementAtOrDefault(0);
-		// initiatorQueuedDice.Remove(initiatorDiceData);
-		// targetQueuedDice.Remove(defenderDiceData);
 
 		Control initiatorSide = initiatorOnLeftHalf ? lhsDice : rhsDice;
 		Control defenderSide = initiatorOnLeftHalf ? rhsDice : lhsDice;
@@ -182,6 +206,10 @@ public partial class ClashStage : Control {
 				dieNode.Die = defenderDiceData[i];
 			}
 		}
+	}
+
+	private void RenderPoses(){
+
 	}
 
 	public void QueueAnimation(AbstractCharacter character, string poseToSwapTo){

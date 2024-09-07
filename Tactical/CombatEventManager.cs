@@ -335,6 +335,7 @@ public class CombatEventDieRolled : ICombatEvent {
     public AbstractAbility ability;     // Used for things like Strength status effect to get owner.
     public Die die;
     public int rolledValue;
+    public int clashIteration;      // Used for UI data (possibly other passives in the future?).
 
     public CombatEventDieRolled(AbstractAbility ability, Die die, int rolledValue, AbstractCharacter rollTarget){
         this.ability = ability;
@@ -343,6 +344,7 @@ public class CombatEventDieRolled : ICombatEvent {
         this.rollTarget = rollTarget;
         this.die = die;
         this.rolledValue = rolledValue;
+        this.clashIteration = CombatManager.combatInstance.abilityItrCount;
     }
 }
 
@@ -470,12 +472,12 @@ public class CombatEventDamageTaken : ICombatEvent {
     public bool isPoiseDamage;
     public int clashIteration;      // Used for UI data (possibly other passives in the future?).
 
-    public CombatEventDamageTaken(AbstractCharacter target, DamageType damageType, float damageTaken, bool isPoiseDamage, int clashIteration = 0){
+    public CombatEventDamageTaken(AbstractCharacter target, DamageType damageType, float damageTaken, bool isPoiseDamage){
         this.target = target;
         this.damageType = damageType;
         this.damageTaken = damageTaken;
         this.isPoiseDamage = isPoiseDamage;
-        this.clashIteration = clashIteration;
+        this.clashIteration = CombatManager.combatInstance.abilityItrCount;
     }
 }
 

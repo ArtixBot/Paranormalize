@@ -230,7 +230,7 @@ public partial class CharacterUI : Area2D, IEventSubscriber, IEventHandler<Comba
 		if (Character.CHAR_FACTION == CharacterFaction.ENEMY){
 			Sprite.Texture = ResourceLoader.Load<Texture2D>("res://Sprites/Characters/Test Dummy/idle.png");
 		}
-		// TODO: Preload this during game instead of doing this here.
+		// TODO: Preload this during game (?) instead of doing this here.
 		using var dir = DirAccess.Open($"res://Sprites/Characters/{Character.CHAR_NAME}");
 		if (dir != null){
 			dir.ListDirBegin();
@@ -242,6 +242,7 @@ public partial class CharacterUI : Area2D, IEventSubscriber, IEventHandler<Comba
 				}
 				Poses[fileName.TrimSuffix(".png")] = GD.Load<Texture2D>($"res://Sprites/Characters/{Character.CHAR_NAME}/{fileName}");
 				fileName = dir.GetNext();
+				GD.Print($"Importing pose {fileName} for {Character.CHAR_NAME}");
 			}
 		}
 	}

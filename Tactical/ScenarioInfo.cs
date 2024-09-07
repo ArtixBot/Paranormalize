@@ -25,7 +25,7 @@ public class TestScenario : ScenarioInfo {
     private static readonly AbstractCharacter characterE = new AbstractCharacter("Test Dummy D", CharacterFaction.ENEMY);
     private static List<(AbstractCharacter character, int position)> scenarioFighters = new(){
         (characterB, 4),
-        (characterC, 5),
+        // (characterC, 4),
         // (characterD, 1),
         // (characterE, 2),
         // (playerB, 2),
@@ -53,7 +53,7 @@ public class TestScenario : ScenarioInfo {
 
         playerA.MinSpd = 10;
         playerA.MaxSpd = 20;
-        playerA.ActionsPerTurn = 3;
+        playerA.ActionsPerTurn = 5;
         playerA.MaxHP = 100;
         playerA.CurHP = 68;
         playerA.MaxPoise = 100;

@@ -356,7 +356,7 @@ public static class CombatManager {
                 break;
             case DieType.BLOCK:
                 if (!rolledDuringClash){
-                    eventManager.BroadcastEvent(new CombatEventDieEvaded(roller, target, die, naturalRoll, actualRoll, rolledDuringClash: false));
+                    eventManager.BroadcastEvent(new CombatEventDieBlocked(roller, target, die, naturalRoll, actualRoll, rolledDuringClash: false));
                     break;
                 };
                 CombatManager.ExecuteAction(new DamageAction(roller, target, DamageType.PURE, actualRoll, isPoiseDamage: true));
