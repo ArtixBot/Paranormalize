@@ -10,7 +10,7 @@ public class TestAttack : AbstractAbility, IEventHandler<CombatEventDieHit> {
     private static bool targetsLane = false;
     private static bool needsUnit = true;
 
-    private Die atkDieA = new Die(DieType.BLUNT, 3, 3, "FIRST_DIE");
+    private Die atkDieA = new Die(DieType.BLUNT, 13, 13, "FIRST_DIE");
     private Die atkDieB = new Die(DieType.SLASH, 1, 5);
 
     public TestAttack(): base(
@@ -35,8 +35,8 @@ public class TestAttack : AbstractAbility, IEventHandler<CombatEventDieHit> {
     public virtual void HandleEvent(CombatEventDieHit data){
         if (data.die == atkDieA){
             CombatManager.ExecuteAction(new ApplyStatusAction(data.hitUnit, new DebuffVulnerable(), 1));
-            CombatManager.ExecuteAction(new ApplyStatusAction(data.hitUnit, new DebuffSlow(), 2));
-            CombatManager.ExecuteAction(new ApplyStatusAction(this.OWNER, new BuffHaste(), 2));
+            CombatManager.ExecuteAction(new ApplyStatusAction(data.hitUnit, new ConditionNextRoundStatusGain(new DebuffSlow()), 2));
+            CombatManager.ExecuteAction(new ApplyStatusAction(this.OWNER, new ConditionNextRoundStatusGain(new BuffHaste()), 2));
         }
     }
 }

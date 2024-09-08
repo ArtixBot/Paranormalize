@@ -143,7 +143,7 @@
 		"NAME": "Test Attack",
 		"STRINGS": {
 			"GENERIC": "On activate: Test description!",
-			"FIRST_DIE": "[wave]This is a description[/wave]. On hit: Inflict [hint=This displays a hint.]Vulnerable[/hint], 2 Slow, and gain 2 Haste."
+			"FIRST_DIE": "[wave]This is a description[/wave]. On hit: Inflict [hint=This displays a hint.]Vulnerable[/hint]\n{Cond|On hit}: Inflict 2 Slow next round.\n{Cond|On hit}: Gain 2 Haste next round."
 		}
 	},
 	"THWACK": {
