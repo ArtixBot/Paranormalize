@@ -1,4 +1,10 @@
 {
+	"AGAIN": {
+		"NAME": "Again!",
+		"STRINGS": {
+			"GENERIC": "[b]Fixed Cooldown.[/b]\nTarget other ally in range.\nRevitalize their most recently activated ability."
+		}
+	},
 	"ALL_IN": {
 		"NAME": "All In",
 		"STRINGS": {

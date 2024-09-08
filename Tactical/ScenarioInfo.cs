@@ -28,7 +28,7 @@ public class TestScenario : ScenarioInfo {
         (characterC, 5),
         // (characterD, 1),
         // (characterE, 2),
-        // (playerB, 2),
+        (playerB, 2),
         (playerA, 3),
     };
 
@@ -41,7 +41,7 @@ public class TestScenario : ScenarioInfo {
         playerA.EquipAbility(new Discharge());
         playerA.EquipAbility(new HaveAtThee());
         playerA.EquipAbility(new Parry());
-        // playerA.EquipAbility(new Brutalize());
+        playerA.EquipAbility(new Again());
         playerA.EquipAbility(new Hew());
         // playerA.EquipAbility(new Purge());
         // playerA.EquipAbility(new SecondWind());
@@ -52,7 +52,7 @@ public class TestScenario : ScenarioInfo {
         playerA.EquipAbility(new VirtuousStruggle());
 
         playerA.MinSpd = 10;
-        playerA.MaxSpd = 10;
+        playerA.MaxSpd = 20;
         playerA.ActionsPerTurn = 5;
         playerA.MaxHP = 100;
         playerA.CurHP = 68;
@@ -63,7 +63,11 @@ public class TestScenario : ScenarioInfo {
         playerB.EquipAbility(new Repartee());
         playerB.EquipAbility(new HaveAtThee());
         playerB.MinSpd = 10;
-        playerB.MaxSpd = 30;
+        playerB.MaxSpd = 20;
+        playerB.MaxHP = 50;
+        playerB.CurHP = 50;
+        playerB.MaxPoise = 50;
+        playerB.CurPoise = 50;
 
         characterB.MaxHP = 100;
         characterB.CurHP = 100;

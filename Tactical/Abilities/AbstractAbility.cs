@@ -56,6 +56,7 @@ public abstract class AbstractAbility : IEventSubscriber, IEventHandler<CombatEv
     public AbilityType TYPE;
     public int BASE_CD;
     public int curCooldown = 0;
+    public bool FIXED_COOLDOWN = false;     // If true, this ability's cooldown cannot be reduced or reset by any means other than the natural end-of-round tick.
     public bool IS_GENERIC;         // Characters can't equip more than 4 IS_GENERIC abilities.
     public int MIN_RANGE;           
     public int MAX_RANGE;
@@ -87,7 +88,16 @@ public abstract class AbstractAbility : IEventSubscriber, IEventHandler<CombatEv
         get { return IsAvailable; }
     }
     
-    public AbstractAbility(string ID, Localization.AbilityStrings ABILITY_STRINGS, AbilityType TYPE, int BASE_CD, int MIN_RANGE, int MAX_RANGE, bool useLaneTargeting, bool requiresUnit, HashSet<TargetingModifiers> targetingModifiers = null){
+    public AbstractAbility(string ID,
+                           Localization.AbilityStrings ABILITY_STRINGS,
+                           AbilityType TYPE,
+                           int BASE_CD,
+                           int MIN_RANGE,
+                           int MAX_RANGE,
+                           bool useLaneTargeting,
+                           bool requiresUnit,
+                           HashSet<TargetingModifiers> targetingModifiers = null,
+                           bool FIXED_COOLDOWN = false){
         this.ID = ID;
         this.NAME = ABILITY_STRINGS.NAME;
         this.STRINGS = (ABILITY_STRINGS.STRINGS != null) ? ABILITY_STRINGS.STRINGS : new();
@@ -98,6 +108,7 @@ public abstract class AbstractAbility : IEventSubscriber, IEventHandler<CombatEv
         this.useLaneTargeting = useLaneTargeting;
         this.requiresUnit = requiresUnit;
         this.targetingModifiers = targetingModifiers ?? new HashSet<TargetingModifiers>();
+        this.FIXED_COOLDOWN = FIXED_COOLDOWN;
     }
 
     public bool HasTag(AbilityTag tag){
