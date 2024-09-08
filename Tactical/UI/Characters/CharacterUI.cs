@@ -231,7 +231,7 @@ public partial class CharacterUI : Area2D, IEventSubscriber, IEventHandler<Comba
 			Sprite.Texture = ResourceLoader.Load<Texture2D>("res://Sprites/Characters/Test Dummy/idle.png");
 		}
 		// TODO: Preload this during game (?) instead of doing this here.
-		using var dir = DirAccess.Open($"res://Sprites/Characters/{Character.CHAR_NAME}");
+		using var dir = DirAccess.Open($"res://Sprites/Characters/{Character.ID}");
 		if (dir != null){
 			dir.ListDirBegin();
 			string fileName = dir.GetNext();
@@ -240,10 +240,13 @@ public partial class CharacterUI : Area2D, IEventSubscriber, IEventHandler<Comba
 					fileName = dir.GetNext();
 					continue;
 				}
-				Poses[fileName.TrimSuffix(".png")] = GD.Load<Texture2D>($"res://Sprites/Characters/{Character.CHAR_NAME}/{fileName}");
+				Poses[fileName.TrimSuffix(".png")] = GD.Load<Texture2D>($"res://Sprites/Characters/{Character.ID}/{fileName}");
 				fileName = dir.GetNext();
 				GD.Print($"Importing pose {fileName} for {Character.CHAR_NAME}");
 			}
+		}
+		else if (dir == null){
+			GD.PushWarning($"Unable to load character sprites for character ID {Character.ID}!");
 		}
 	}
 

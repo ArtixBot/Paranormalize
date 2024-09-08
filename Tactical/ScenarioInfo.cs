@@ -25,7 +25,7 @@ public class TestScenario : ScenarioInfo {
     private static readonly AbstractCharacter characterE = new AbstractCharacter("Test Dummy D", CharacterFaction.ENEMY);
     private static List<(AbstractCharacter character, int position)> scenarioFighters = new(){
         (characterB, 4),
-        // (characterC, 4),
+        (characterC, 5),
         // (characterD, 1),
         // (characterE, 2),
         // (playerB, 2),

@@ -29,7 +29,6 @@ public class CombatInstance {
     public AbstractAbility reactAbility;
     public List<Die> reactAbilityDice;
 
-    // TODO: Consider making this an combat event property instead of directly accessing this value.
     public int abilityItrCount = 0;     // Used only for UI purposes to determine when to play events like push/pull/forward/back, which could occur on later dice, or passives that trigger on "On third or fourth clash"
 
 	public CombatInstance(ScenarioInfo info){

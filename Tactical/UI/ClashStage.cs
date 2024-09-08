@@ -24,10 +24,9 @@ public partial class ClashStage : Control {
 
 	public TacticalScene tacticalSceneNode;
 
-	public Sprite2D initiatorSprite;
-	public List<Sprite2D> targetSprites = new();
-	public Dictionary<string, Sprite2D> dataToSpriteMap = new();
-	public Dictionary<Sprite2D, List<Texture2D>> spriteQueuedPoses = new();
+	public Dictionary<UI.CharacterUI, Sprite2D> uiToSpriteMap = new();			// This is filled in _Ready() of this class.
+	public Dictionary<UI.CharacterUI, Queue<Texture2D>> uiQueuedPoses = new();	// This is filled in TacticalScene.cs' event listeners (which occurs earlier than _Ready() of this class)
+	public Dictionary<Sprite2D, Queue<Texture2D>> spriteToQueuedPoses = new();
 
 	public RichTextLabel lhsAbilityTitle;
 	public RichTextLabel rhsAbilityTitle;
@@ -42,8 +41,9 @@ public partial class ClashStage : Control {
 	
 	// Called when the node enters the scene tree for the first time.
 	public override void _Ready(){
-		Node2D leftSpawn = GetNode<Node2D>("Left Spawn Point");
-		Node2D rightSpawn = GetNode<Node2D>("Right Spawn Point");
+		// Player characters are always on the left side, and NPCs on the right side.
+		Node2D playerSpawn = GetNode<Node2D>("Left Spawn Point");
+		Node2D npcSpawn = GetNode<Node2D>("Right Spawn Point");
 
 		lhsAbilityTitle = GetNode<RichTextLabel>("Clash BG/LHS Ability Title");
 		rhsAbilityTitle = GetNode<RichTextLabel>("Clash BG/RHS Ability Title");
@@ -55,12 +55,7 @@ public partial class ClashStage : Control {
 		// Utility abilities last slightly longer in rendering.
 		delayBetweenPoses = (stepCount == 0) ? UTILITY_ABILITY_STEP_DURATION : ABILITY_STEP_DURATION;
 		
-		// If the majority of targetSprites are to the right of the initiator, place the initiator on the left side; and vice-versa.
-		// If initiator + all targetSprites are in the same lane, place the initiator on the left if the initiator is a player, else on the right for an enemy.
-		int initiatorPos = initiator.Position;
-		double targetAvgPos = targetData.Select(_ => _.Position).Average();
-		initiatorOnLeftHalf = initiatorPos < targetAvgPos || (initiatorPos == targetAvgPos && initiator.CHAR_FACTION == CharacterFaction.PLAYER);
-
+		initiatorOnLeftHalf = initiator.CHAR_FACTION == CharacterFaction.PLAYER;
 		RichTextLabel initiatorAbilityTitle = initiatorOnLeftHalf ? lhsAbilityTitle : rhsAbilityTitle;
 		RichTextLabel reactorAbilityTitle = initiatorOnLeftHalf ? rhsAbilityTitle : lhsAbilityTitle;
 
@@ -73,25 +68,29 @@ public partial class ClashStage : Control {
 
 		// Initialize sprites + positions.
 		tacticalSceneNode = (TacticalScene) GetParent().GetParent();
-		initiatorSprite = new(){
+		Sprite2D initiatorSprite = new(){
 			Texture = tacticalSceneNode.characterToPoseMap[initiator].GetValueOrDefault("clash_windup", GD.Load<Texture2D>("res://Sprites/Characters/no pose found.png"))
 		};
+		uiToSpriteMap[tacticalSceneNode.characterToNodeMap[initiator]] = initiatorSprite;
 		AddChild(initiatorSprite);
-		initiatorSprite.Position = initiatorOnLeftHalf ? leftSpawn.Position : rightSpawn.Position;
+		initiatorSprite.Position = initiatorOnLeftHalf ? playerSpawn.Position : npcSpawn.Position;
 		initiatorSprite.FlipH = !initiatorOnLeftHalf;
 
-		foreach(AbstractCharacter target in targetData){
+		for(int i = 0; i < targetData.Count; i++){
+			AbstractCharacter target = targetData[i];
 			if (target == initiator) continue;
             Sprite2D targetSprite = new(){
                 Texture = tacticalSceneNode.characterToPoseMap[target].GetValueOrDefault("clash_windup", GD.Load<Texture2D>("res://Sprites/Characters/no pose found.png"))
             };
+			uiToSpriteMap[tacticalSceneNode.characterToNodeMap[target]] = targetSprite;
             AddChild(targetSprite);
-			targetSprites.Add(targetSprite);
+			targetSprite.Position = initiatorOnLeftHalf ? npcSpawn.Position - new Vector2(100 * i, 0) : playerSpawn.Position + new Vector2(100 * i, 0);
+			targetSprite.FlipH = initiatorOnLeftHalf;
 		}
 
-		for (int i = 0; i < targetSprites.Count; i++){
-			targetSprites[i].Position = initiatorOnLeftHalf ? rightSpawn.Position - new Vector2(100 * i, 0) : leftSpawn.Position + new Vector2(100 * i, 0);
-			targetSprites[i].FlipH = initiatorOnLeftHalf;
+		foreach (UI.CharacterUI ui in uiToSpriteMap.Keys){
+			Sprite2D sprite = uiToSpriteMap[ui];
+			spriteToQueuedPoses[sprite] = uiQueuedPoses[ui];
 		}
 	}
 
@@ -125,7 +124,7 @@ public partial class ClashStage : Control {
 			}
 			while (dieRollResultQueue.Count > 0 && dieRollResultQueue.First().step == curStep){
 				(int _, CombatEventDieRolled dieRollResultEvent) = dieRollResultQueue.Dequeue();
-				Logging.Log($"\tDie roll: {dieRollResultEvent.roller.CHAR_NAME} rolled a {dieRollResultEvent.rolledValue} on a(n) {dieRollResultEvent.die.DieType.ToString()} die.", Logging.LogLevel.INFO);
+				Logging.Log($"\tDie roll: {dieRollResultEvent.roller.CHAR_NAME} rolled a {dieRollResultEvent.rolledValue} on a(n) {dieRollResultEvent.die.DieType} die.", Logging.LogLevel.INFO);
 			}
 			while (damageRenderQueue.Count > 0 && damageRenderQueue.First().step == curStep){
 				(int _, CombatEventDamageTaken dmgEvent) = damageRenderQueue.Dequeue();
@@ -134,47 +133,6 @@ public partial class ClashStage : Control {
 			curStep += 1;
 		}
 	}
-
-	// public void SetupStage(){
-		// if (initiator == null) return;
-		// tacticalSceneNode = (TacticalScene) GetParent().GetParent();
-		// if (!IsInstanceValid(tacticalSceneNode)) return;
-// 
-		// dataToSpriteMap[initiator.CHAR_NAME] = initatorSprite;
-// 
-		// foreach(AbstractCharacter target in targetData){
-		// 	if (target == initiator) continue;
-        //     Sprite2D targetSprite = new(){
-        //         Texture = tacticalSceneNode.characterToPoseMap[target].GetValueOrDefault("preclash", GD.Load<Texture2D>("res://Sprites/Characters/no pose found.png"))
-        //     };
-        //     AddChild(targetSprite);
-		// 	targetSprites.Add(targetSprite);
-		// 	dataToSpriteMap[target.CHAR_NAME] = targetSprite;
-		// }
-// 
-		// initatorSprite.Texture = tacticalSceneNode.characterToPoseMap[initiator].GetValueOrDefault("preclash", GD.Load<Texture2D>("res://Sprites/Characters/no pose found.png"));
-		// If the majority of targetSprites are to the right of the initiator, place the initiator on the left side; and vice-versa.
-		// If initiator + all targetSprites are in the same lane, place the initiator on the left if the initiator is a player, else on the right for an enemy.
-		// int initiatorPos = initiator.Position;
-		// double targetAvgPos = targetData.Select(_ => _.Position).Average();
-		// initiatorOnLeftHalf = initiatorPos < targetAvgPos || (initiatorPos == targetAvgPos && initiator.CHAR_FACTION == CharacterFaction.PLAYER);
-// 
-		// initatorSprite.Position = initiatorOnLeftHalf ? new Vector2(510, 400) : new Vector2(1510, 400);
-		// initatorSprite.FlipH = !initiatorOnLeftHalf;
-		// if (initiatorOnLeftHalf){
-		// 	lhsAbilityTitle.Text = "[right][font n=Assets/AlegreyaSans-Regular.ttf s=42]" + CombatManager.combatInstance?.activeAbility.NAME + "[/font][/right]";
-		// 	rhsAbilityTitle.Text = (CombatManager.combatInstance?.reactAbility != null) ? "[font n=Assets/AlegreyaSans-Regular.ttf s=42]" + CombatManager.combatInstance.reactAbility.NAME + "[/font]" : "";
-		// } else {
-		// 	rhsAbilityTitle.Text = "[font n=Assets/AlegreyaSans-Regular.ttf s=42]" + CombatManager.combatInstance?.activeAbility.NAME + "[/font]";
-		// 	lhsAbilityTitle.Text = (CombatManager.combatInstance?.reactAbility != null) ? "[right][font n=Assets/AlegreyaSans-Regular.ttf s=42]" + CombatManager.combatInstance.reactAbility.NAME + "[/font][/right]" : "";
-		// }
-		// for (int i = 0; i < targetSprites.Count; i++){
-		// 	targetSprites[i].Position = initiatorOnLeftHalf ? new Vector2(1510 + (100 * i), 400) : new Vector2(510 + (100 * i), 400);
-		// 	targetSprites[i].FlipH = initiatorOnLeftHalf;
-		// }
-// 
-	// 	RenderDice();
-	// }
 
 	private void RenderDice(){
 		foreach (Node n in lhsDice.GetChildren() + rhsDice.GetChildren()){
@@ -213,23 +171,19 @@ public partial class ClashStage : Control {
 	}
 
 	private void RenderPoses(){
+		foreach ((Sprite2D sprite, Queue<Texture2D> textures) in spriteToQueuedPoses){
+			textures.TryDequeue(out Texture2D newTexture);
 
+			_ = SpawnAfterimg(sprite, 0.15f);
+			sprite.Texture = newTexture;
+		}
 	}
 
-	public void QueueAnimation(AbstractCharacter character, string poseToSwapTo){
-		Sprite2D charSprite = dataToSpriteMap.GetValueOrDefault(character.CHAR_NAME);
-		if (charSprite == default) return;
-		Texture2D newPose;
-		try {
-			newPose = tacticalSceneNode.characterToPoseMap[character][poseToSwapTo];
-		} catch (Exception){
-			newPose = GD.Load<Texture2D>("res://Sprites/Characters/no pose found.png");
+	public void QueueAnimation(UI.CharacterUI ui, Texture2D poseToSwapTo){
+		if (!uiQueuedPoses.ContainsKey(ui)){
+			uiQueuedPoses[ui] = new Queue<Texture2D>();
 		}
-
-		if (!spriteQueuedPoses.ContainsKey(charSprite)){
-			spriteQueuedPoses[charSprite] = new List<Texture2D>();
-		}
-		spriteQueuedPoses[charSprite].Add(newPose);
+		uiQueuedPoses[ui].Enqueue(poseToSwapTo);
 	}
 
 	private async Task<bool> SpawnAfterimg(Sprite2D parent, float duration){
