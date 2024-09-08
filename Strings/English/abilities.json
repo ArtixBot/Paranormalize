@@ -2,7 +2,7 @@
 	"AGAIN": {
 		"NAME": "Again!",
 		"STRINGS": {
-			"GENERIC": "[b]Fixed Cooldown.[/b]\nTarget other ally in range.\nRevitalize their most recently activated ability."
+			"GENERIC": "{Keyword|FIXED_COOLDOWN}.\nTarget other ally in range.\nRevitalize their most recently activated ability."
 		}
 	},
 	"ALL_IN": {
@@ -15,7 +15,7 @@
 	"ASSAULT": {
 		"NAME": "Assault",
 		"STRINGS": {
-			"GENERIC": "{Cond|On activate}: Forward 1.",
+			"GENERIC": "{Cond|On activate}: {Keyword|FORWARD} 1.",
 			"MOVE_UP_ACTIONS": "{Cond|On hit}: Set the speed of {owner}'s remaining actions equal to the speed of the leftmost unit on the turn queue."
 		}
 	},
@@ -29,7 +29,7 @@
 	"BEATDOWN": {
 		"NAME": "Beatdown",
 		"STRINGS": {
-			"NEXT_ROUND_STR_ON_HIT": "{Cond|On hit}: Gain 1 Strength next round."
+			"NEXT_ROUND_STR_ON_HIT": "{Cond|On hit}: Gain 1 {Keyword|STRENGTH} next round."
 		}
 	},
 	"BREAK": {
@@ -59,7 +59,7 @@
 	"CHARGE": {
 		"NAME": "Charge",
 		"STRINGS": {
-			"GENERIC": "{Cond|On activate}: Forward 2.\nAfter activation, if the target is defeated, this ability has Cantrip and reset this ability's cooldown."
+			"GENERIC": "{Cond|On activate}: {Keyword|FORWARD} 2.\nAfter activation, if the target is defeated, this ability has {Keyword|CANTRIP} and reset this ability's cooldown."
 		}
 	},
 	"DISCHARGE": {
@@ -74,7 +74,7 @@
 	"GALLANT_SLASHES": {
 		"NAME": "Gallant Slashes",
 		"STRINGS": {
-			"NEXT_ROUND_STR_ON_HIT": "{Cond|On hit}: Gain 1 Strength next round."
+			"NEXT_ROUND_STR_ON_HIT": "{Cond|On hit}: Gain 1 {Keyword|STRENGTH} next round."
 		}
 	},
 	"GALLOPING_TILT": {
@@ -86,7 +86,7 @@
 	"HAVE_AT_THEE": {
 		"NAME": "Have at Thee!",
 		"STRINGS": {
-			"GENERIC": "Can only be activated if:\n- Nobody is Dishonorable.\n- This unit does not have Duel to the Death.\nTarget an enemy without Duel to the Death.\n\nInflict Duel to the Death."
+			"GENERIC": "Can only be activated if:\n- Nobody is Dishonorable.\n- This unit does not have {Keyword|DUEL_TO_THE_DEATH}.\nTarget an enemy without {Keyword|DUEL_TO_THE_DEATH}.\n\nInflict {Keyword|DUEL_TO_THE_DEATH}."
 		}
 	},
 	"HEW": {
@@ -116,7 +116,7 @@
 	"OBLITERATE": {
 		"NAME": "Obliterate",
 		"STRINGS": {
-			"PIERCE_PULL": "{Cond|On hit}: Pull 3.\n{Cond|On hit or clash lose}: If the target is not within range 1, discard all remaining dice."
+			"PIERCE_PULL": "{Cond|On hit}: {Keyword|PULL} 3.\n{Cond|On hit or clash lose}: If the target is not within range 1, discard all remaining dice."
 		}
 	},
 	"PARRY": {
@@ -149,7 +149,7 @@
 		"NAME": "Test Attack",
 		"STRINGS": {
 			"GENERIC": "On activate: Test description!",
-			"FIRST_DIE": "[wave]This is a description[/wave]. On hit: Inflict [hint=This displays a hint.]Vulnerable[/hint]\n{Cond|On hit}: Inflict 2 Slow next round.\n{Cond|On hit}: Gain 2 Haste next round."
+			"FIRST_DIE": "[wave]This is a description[/wave]. On hit: Inflict {Keyword|VULNERABLE}\n{Cond|On hit}: Inflict 2 {Keyword|SLOW} next round.\n{Cond|On hit}: Gain 2 {Keyword|HASTE} next round."
 		}
 	},
 	"THWACK": {
@@ -170,8 +170,8 @@
 	"RETREAT": {
 		"NAME": "Retreat",
 		"STRINGS": {
-			"GENERIC": "{Cond|On activate}: Back 1.",
-			"EVADE_HASTE": "{Cond|On [wave]evade[/wave]}: Gain 1 Haste."
+			"GENERIC": "{Cond|On activate}: {Keyword|BACK} 1.",
+			"EVADE_HASTE": "{Cond|On [wave]evade[/wave]}: Gain 1 {Keyword|HASTE}."
 		}
 	},
 	"SECOND_WIND": {
@@ -183,7 +183,7 @@
 	"VIRTUOUS_STRUGGLE": {
 		"NAME": "Virtuous Struggle",
 		"STRINGS": {
-			"GENERIC": "{Cond|On activate}: If no other allies are present, gain 1 Strength next round.\n{Cond|On activate}: If no other allies are present, add two {Blunt|4-5} dice to this ability."
+			"GENERIC": "{Cond|On activate}: If no other allies are present, gain 1 {Keyword|STRENGTH} next round.\n{Cond|On activate}: If no other allies are present, add two {Blunt|4-5} dice to this ability."
 		}
 	},
 	"PASS": {

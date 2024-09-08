@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Godot;
+using Localization;
 
 namespace UI;
 
@@ -53,12 +54,12 @@ public partial class AbilityDetailPanel : Control
 		}
 	}
 
-	// TODO: This will not work well for internationalized strings.
 	private string ParseCustomTags(string s){
         MatchCollection matches = new Regex(@"(?<=\{)(.*?)(?=\})").Matches(s);
 		for (int i = 0; i < matches.Count; i++){
             Match match = matches[i];
 			// e.g.: Convert {Slash|9-13} to [color][b]Slash 9-13[/b][/color].
+			// TODO: This presumably will not work well for internationalized strings.
             if (match.Value.Contains("Slash") || match.Value.Contains("Pierce") || match.Value.Contains("Blunt") || match.Value.Contains("Eldritch")){
 				string[] attackTypeAndRange = match.Value.Split("|");
 				string attackType = attackTypeAndRange.First();
@@ -68,18 +69,17 @@ public partial class AbilityDetailPanel : Control
                 s = s.Replace("{" + match.Value + "}", replacementString);
             }
 			// e.g.: Convert {Cond|On activate} to [color]On activate[/color].
+			// TODO: This presumably will not work well for internationalized strings.
 			else if (match.Value.Contains("Cond")){
 				string textToHighlight = match.Value.Split("|").Last();
 				string replacementString = "[color=#4cf]" + textToHighlight + "[/color]";
                 s = s.Replace("{" + match.Value + "}", replacementString);
 			}
-			// Spawn a Status panel explaining what the status (e.g. Bleed) does.
-			else if (match.Value.Contains("Status")){
-
-			}
-			// Spawn a Keyword panel explaining what the keyword (e.g. Final, Fixed Cooldown) does.
 			else if (match.Value.Contains("Keyword")){
-
+                string textToHighlight = match.Value.Split("|").Last();
+				string keywordString = LocalizationLibrary.Instance.GetKeywordStrings(textToHighlight).NAME;
+				string replacementString = "[b]" + keywordString + "[/b]";
+				s = s.Replace("{" + match.Value + "}", replacementString);
 			}
         }
 		return s;

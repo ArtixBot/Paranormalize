@@ -1,15 +1,23 @@
 {
 	"BACK": {
 		"NAME": "Back",
-		"DESC": "Move X lanes away from the target. If the target is in the same lane, move towards the closest arena edge."
+		"DESC": "Move away from the target. If the target is in the same lane, move towards the closest arena edge."
 	},
 	"CANNOT_REACT": {
 		"NAME": "Cannot React",
 		"DESC": "This ability cannot be used to react to an incoming clashable enemy attack."
 	},
+	"CANTRIP": {
+		"NAME": "Cantrip",
+		"DESC": "This ability does not consume an action when activated."
+	},
 	"DEVIOUS": {
 		"NAME": "Devious",
 		"DESC": "If this ability is activated when it is your turn, the target cannot clash against it."
+	},
+	"DUEL_TO_THE_DEATH": {
+		"NAME": "Duel to the Death",
+		"DESC": "If the target or applier attacks or is attacked by anyone else, remove Duel to the Death from EVERYONE and inflict Dishonorable to the initiator of the attack."
 	},
 	"FINAL": {
 		"NAME": "Final",
@@ -21,7 +29,11 @@
 	},
 	"FORWARD": {
 		"NAME": "Forward",
-		"DESC": "Move X lanes towards the target (but not past the target)."
+		"DESC": "Move towards the target (but not past the target)."
+	},
+	"HASTE": {
+		"NAME": "Haste",
+		"DESC": "Increases the Speed of user's actions on round start."
 	},
 	"INVIGORATE": {
 		"NAME": "Invigorate",
@@ -29,14 +41,26 @@
 	},
 	"PULL": {
 		"NAME": "Pull",
-		"DESC": "Pulled units move X lanes towards the puller (but not past the puller)."
+		"DESC": "Move the target X lanes towards the puller (but not past the puller)."
 	},
 	"PUSH": {
 		"NAME": "Push",
-		"DESC": "Pushed units move X lanes away from the pusher. If the target is in the same lane, move towards the center of the arena."
+		"DESC": "Move the target X lanes away. If the target is in the same lane, move the target towards the center of the arena."
+	},
+	"SLOW": {
+		"NAME": "Slow",
+		"DESC": "Reduces the Speed of user's actions on round start."
 	},
 	"REVITALIZE": {
 		"NAME": "Revitalize",
 		"DESC": "Revitalized abilities have their cooldown reset."
+	},
+	"STRENGTH": {
+		"NAME": "Strength",
+		"DESC": "Increases the rolls of Attack dice."
+	},
+	"VULNERABLE": {
+		"NAME": "Vulnerable",
+		"DESC": "Take 50% increased damage this round."
 	}
 }

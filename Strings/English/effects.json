@@ -13,7 +13,7 @@
 	},
 	"HASTE": {
 		"NAME": "Haste",
-		"DESC": "On round start, increase the Speed of {owner}'s actions by +{stacks}."
+		"DESC": "The Speed of {owner}'s actions is increase by {stacks}."
 	},
 	"NEXT_ROUND_ACTION_GAIN": {
 		"NAME": "Next Round Action Gain",
@@ -33,7 +33,7 @@
 	},
 	"SLOW": {
 		"NAME": "Slow",
-		"DESC": "On round start, reduce the Speed of {owner}'s actions by -{stacks}."
+		"DESC": "The Speed of {owner}'s actions is reduced by {stacks}."
 	},
 	"STAGGERED": {
 		"NAME": "Staggered",
