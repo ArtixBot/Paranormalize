@@ -52,6 +52,7 @@ public static class Lerpables {
 	}
 
     public static async void FadeIn(Control node, double duration){
+        if (!GodotObject.IsInstanceValid(node)) return;
 		float currentTime = 0f;
         Vector2 startPos = node.Position;
         Vector2 endPos = node.Position + new Vector2(20, 0);
@@ -60,8 +61,7 @@ public static class Lerpables {
         Vector2 startBlurRadius = new Vector2(0.0f, 0.0f);
         Vector2 endBlurRadius = new Vector2(1.0f, 0.0f);
 
-		while (currentTime <= duration){
-			if (!GodotObject.IsInstanceValid(node)) { return; }
+		while (currentTime <= duration && GodotObject.IsInstanceValid(node)){
             float normalized = Math.Min((float)(currentTime / duration), 1.0f);
 			node.Position = startPos.Lerp(endPos, EaseOut(normalized, 5));
 			node.Modulate = new Color(1, 1, 1, startBlurRadius.Lerp(endBlurRadius, EaseOut(normalized, 5)).X);

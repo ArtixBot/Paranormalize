@@ -82,14 +82,14 @@ public partial class CharacterUI : Area2D, IEventSubscriber, IEventHandler<Comba
 		ActiveCharInterfaceLayer activeCharNode = GetNode<ActiveCharInterfaceLayer>("../HUD/GUI/Active Character");
 		// TODO: Handle case when the unit is staggered (see second condition) more artfully.
 		if (IsClickable && CombatManager.combatInstance.turnlist.ContainsItem(_character) && IsInstanceValid(activeCharNode) && _character.Behavior?.reactions.Count > 0){
-			activeCharNode.CreateAbilityDetailPanel(_character.Behavior.reactions.First(), true);
+			activeCharNode.CreateAbilityInfoPanel(_character.Behavior.reactions.First(), true);
 		}
 	}
 
 	public void _on_mouse_exited(){
 		ActiveCharInterfaceLayer activeCharNode = GetNode<ActiveCharInterfaceLayer>("../HUD/GUI/Active Character");
 		if (IsInstanceValid(activeCharNode)){
-			activeCharNode.DeleteAbilityDetailPanel(true);
+			activeCharNode.DeleteAbilityInfoPanel(true);
 		}
 	}
 

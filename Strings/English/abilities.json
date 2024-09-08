@@ -8,7 +8,7 @@
 	"ALL_IN": {
 		"NAME": "All In",
 		"STRINGS": {
-			"GENERIC": "{Cond|On activate}: All other Available abilities suffer Exert 2.",
+			"GENERIC": "{Cond|On activate}: All other Available abilities suffer {Keyword|EXERT} 2.",
 			"ALL_IN": "Increase this die's roll by twice the abilities exerted on ability activation.\n{Cond|On hit}: If this rolled a 32 or higher, Stagger the target."
 		}
 	},
@@ -22,7 +22,7 @@
 	"BALESTRA_FENTE": {
 		"NAME": "Balestra Fente",
 		"STRINGS": {
-			"GENERIC": "{Cond|On activate}: Forward 3.",
+			"GENERIC": "{Cond|On activate}: {Keyword|FORWARD} 3.",
 			"CRIT_DIE": "{Cond|On [shake]critical hit[/shake]}: Consume all Critical to deal +50% damage per Critical consumed."
 		}
 	},
@@ -41,13 +41,13 @@
 	"BREATHER": {
 		"NAME": "Breather",
 		"STRINGS": {
-			"GENERIC": "Target self.\nA random Unavailable ability gains Invigorate 1. Repeat this effect once."
+			"GENERIC": "Target self.\nA random Unavailable ability gains {Keyword|INVIGORATE} 1. Repeat this effect once."
 		}
 	},
 	"BRUTALIZE": {
 		"NAME": "Brutalize",
 		"STRINGS": {
-			"PIERCE_PULL": "{Cond|On hit}: Pull 1.\n{Cond|On hit or clash lose}: If the target is not within range 1, discard all remaining dice."
+			"PIERCE_PULL": "{Cond|On hit}: {Keyword|PULL} 1.\n{Cond|On hit or clash lose}: If the target is not within range 1, discard all remaining dice."
 		}
 	},
 	"CHALLENGE": {
@@ -80,7 +80,7 @@
 	"GALLOPING_TILT": {
 		"NAME": "Galloping Tilt",
 		"STRINGS": {
-			"GENERIC": "{Cond|On activate}: Forward 3. Gain 2 Haste."
+			"GENERIC": "{Cond|On activate}: {Keyword|FORWARD} 3. Gain 2 Haste."
 		}
 	},
 	"HAVE_AT_THEE": {
@@ -92,7 +92,7 @@
 	"HEW": {
 		"NAME": "Hew",
 		"STRINGS": {
-			"GENERIC": "AoE: Targets all enemies in a lane."
+			"GENERIC": "{Keyword|AOE}: Targets all enemies in a lane."
 		}
 	},
 	"INDOMITABLE": {
@@ -104,7 +104,7 @@
 	"IRON_SWAN": {
 		"NAME": "Iron Swan",
 		"STRINGS": {
-			"PULL_DIE": "{Cond|On hit}: Pull 2."
+			"PULL_DIE": "{Cond|On hit}: {Keyword|PULL} 2."
 		}
 	},
 	"KNOCKOUT": {
@@ -158,7 +158,7 @@
 	"RELENTLESS_STABBING": {
 		"NAME": "Relentless Stabbing",
 		"STRINGS": {
-			"LETHAL_HIT_CYCLING": "{Cond|On [shake]critical hit[/shake]}: Cycle this die (up to 2 times)."
+			"LETHAL_HIT_CYCLING": "{Cond|On [shake]critical hit[/shake]}: {Keyword|CYCLE} this die (up to 2 times)."
 		}
 	},
 	"REPARTEE": {

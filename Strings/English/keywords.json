@@ -1,4 +1,8 @@
 {
+	"AOE": {
+		"NAME": "Area of Effect (AoE)",
+		"DESC": "This ability may target multiple units. It cannot be clashed against and cannot be used to react against a clashable attack."
+	},
 	"BACK": {
 		"NAME": "Back",
 		"DESC": "Move away from the target. If the target is in the same lane, move towards the closest arena edge."
@@ -11,6 +15,10 @@
 		"NAME": "Cantrip",
 		"DESC": "This ability does not consume an action when activated."
 	},
+	"CYCLE": {
+		"NAME": "Cycle",
+		"DESC": "A Cycled die is reused after being rolled."
+	},
 	"DEVIOUS": {
 		"NAME": "Devious",
 		"DESC": "If this ability is activated when it is your turn, the target cannot clash against it."
@@ -18,6 +26,10 @@
 	"DUEL_TO_THE_DEATH": {
 		"NAME": "Duel to the Death",
 		"DESC": "If the target or applier attacks or is attacked by anyone else, remove Duel to the Death from EVERYONE and inflict Dishonorable to the initiator of the attack."
+	},
+	"EXERT": {
+		"NAME": "Exert",
+		"DESC": "Exerted abilities are placed on cooldown (or have their cooldown extended)."
 	},
 	"FINAL": {
 		"NAME": "Final",

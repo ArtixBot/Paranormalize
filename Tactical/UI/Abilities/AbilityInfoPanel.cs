@@ -24,7 +24,6 @@ public partial class AbilityInfoPanel : HBoxContainer
 	{
 		abilityDetailPanel = GetNode<AbilityDetailPanel>("AbilityDetailPanel");
 		tooltipContainer = GetNode<Control>("TooltipContainer");
-		this.Ability = new HaveAtThee();
 	}
 	
 	private async void UpdateDisplay(){
@@ -42,11 +41,13 @@ public partial class AbilityInfoPanel : HBoxContainer
 			Tooltip tooltipNode = (Tooltip) tooltipScene.Instantiate();
 			tooltipNode.Modulate = new Color(0, 0, 0, 0);
 			string tooltipString = $"[b]{name}[/b]\n{desc}";
+
+			if (!IsInstanceValid(tooltipContainer)) return;			// It's possible for the user to hover so quickly that errors get generated because the container doesn't exist by the time this is reached...
 			tooltipContainer.AddChild(tooltipNode);
 			tooltipNode.Strings = new List<string>{tooltipString};
 
 			await Task.Delay(1);
-			Lerpables.FadeIn(tooltipNode, 0.25f);
+			Lerpables.FadeIn(tooltipNode, 0.15f);
 		}
 	}
 
