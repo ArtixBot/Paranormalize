@@ -7,6 +7,10 @@ using Godot;
 
 namespace UI;
 
+/// <summary>
+/// Contains information about an ability.
+/// Also spawns keyword panels based on description markers, e.g. {Status|STATUS_ID} or {Keyword|KEYWORD_ID} will spawn a description panel indicating what STATUS_ID does.
+/// </summary>
 public partial class AbilityDetailPanel : Control
 {
 	private AbstractAbility _ability;
@@ -68,6 +72,14 @@ public partial class AbilityDetailPanel : Control
 				string textToHighlight = match.Value.Split("|").Last();
 				string replacementString = "[color=#4cf]" + textToHighlight + "[/color]";
                 s = s.Replace("{" + match.Value + "}", replacementString);
+			}
+			// Spawn a Status panel explaining what the status (e.g. Bleed) does.
+			else if (match.Value.Contains("Status")){
+
+			}
+			// Spawn a Keyword panel explaining what the keyword (e.g. Final, Fixed Cooldown) does.
+			else if (match.Value.Contains("Keyword")){
+
 			}
         }
 		return s;

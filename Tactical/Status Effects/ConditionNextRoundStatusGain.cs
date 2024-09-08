@@ -8,7 +8,7 @@ public class ConditionNextRoundStatusGain : AbstractStatusEffect, IEventHandler<
     private static Localization.EffectStrings strings = Localization.LocalizationLibrary.Instance.GetEffectStrings(id);
 
     private AbstractStatusEffect effectToGain;
-    public string STATUS_NAME = "";        // Parsed in effects.json and StatusTooltip.cs.
+    public string STATUS_NAME = "";        // Parsed in effects.json and Tooltip.cs.
 
     public ConditionNextRoundStatusGain(AbstractStatusEffect effectToGainNextRound) : base(
         id,

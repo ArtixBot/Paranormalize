@@ -8,7 +8,7 @@ public class ConditionDuelToTheDeath : AbstractStatusEffect, IEventHandler<Comba
     public static string id = "DUEL_TO_THE_DEATH";
     private static Localization.EffectStrings strings = Localization.LocalizationLibrary.Instance.GetEffectStrings(id);
 
-    public string APPLIER_NAME = "";        // Parsed in effects.json and StatusTooltip.cs.
+    public string APPLIER_NAME = "";        // Parsed in effects.json and Tooltip.cs.
 
     private readonly AbstractCharacter applier;
     private readonly AbstractCharacter target;

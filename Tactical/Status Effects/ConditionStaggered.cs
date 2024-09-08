@@ -7,7 +7,7 @@ public class ConditionStaggered : AbstractStatusEffect, IEventHandler<CombatEven
     public static string id = "STAGGERED";
     private static Localization.EffectStrings strings = Localization.LocalizationLibrary.Instance.GetEffectStrings(id);
 
-    public int UNSTAGGER_ROUND;        // Parsed in effects.json and StatusTooltip.cs.
+    public int UNSTAGGER_ROUND;        // Parsed in effects.json and Tooltip.cs.
 
     public ConditionStaggered() : base(
         id,

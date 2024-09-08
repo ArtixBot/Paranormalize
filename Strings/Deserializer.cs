@@ -17,6 +17,11 @@ public class EffectStrings {
     public string DESC {get; set;}
 }
 
+public class KeywordStrings {
+    public string NAME {get; set;}
+    public string DESC {get; set;}
+}
+
 public class PassiveStrings {
     public string NAME {get; set;}
     public string DESC {get; set;}
@@ -30,6 +35,7 @@ public class LocalizationLibrary {
 
     private readonly Dictionary<string, AbilityStrings> abilityStrings;
     private readonly Dictionary<string, EffectStrings> effectStrings;
+    private readonly Dictionary<string, KeywordStrings> keywordStrings;
     private readonly Dictionary<string, PassiveStrings> passiveStrings;
 
     private LocalizationLibrary(){
@@ -38,6 +44,9 @@ public class LocalizationLibrary {
 
         jsonString = File.ReadAllText("Strings/English/effects.json");
         effectStrings = JsonSerializer.Deserialize<Dictionary<string, EffectStrings>>(jsonString);
+
+        jsonString = File.ReadAllText("Strings/English/keywords.json");
+        keywordStrings = JsonSerializer.Deserialize<Dictionary<string, KeywordStrings>>(jsonString);
 
         jsonString = File.ReadAllText("Strings/English/passives.json");
         passiveStrings = JsonSerializer.Deserialize<Dictionary<string, PassiveStrings>>(jsonString);
@@ -55,6 +64,15 @@ public class LocalizationLibrary {
     public EffectStrings GetEffectStrings(string effectId){
         try {
             return effectStrings[effectId];
+        } catch (Exception){
+            GD.Print($"No key found for {effectId}.");
+            return null;
+        }
+    }
+
+    public KeywordStrings GetKeywordStrings(string effectId){
+        try {
+            return keywordStrings[effectId];
         } catch (Exception){
             GD.Print($"No key found for {effectId}.");
             return null;

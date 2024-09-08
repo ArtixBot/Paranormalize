@@ -1,0 +1,42 @@
+{
+	"BACK": {
+		"NAME": "Back",
+		"DESC": "Move X lanes away from the target. If the target is in the same lane, move towards the closest arena edge."
+	},
+	"CANNOT_REACT": {
+		"NAME": "Cannot React",
+		"DESC": "This ability cannot be used to react to an incoming clashable enemy attack."
+	},
+	"DEVIOUS": {
+		"NAME": "Devious",
+		"DESC": "If this ability is activated when it is your turn, the target cannot clash against it."
+	},
+	"FINAL": {
+		"NAME": "Final",
+		"DESC": "Activating this ability removes all of the user's remaining actions this round."
+	},
+	"FIXED_COOLDOWN": {
+		"NAME": "Fixed Cooldown",
+		"DESC": "This ability's cooldown cannot be reduced or reset by other abilities or passives."
+	},
+	"FORWARD": {
+		"NAME": "Forward",
+		"DESC": "Move X lanes towards the target (but not past the target)."
+	},
+	"INVIGORATE": {
+		"NAME": "Invigorate",
+		"DESC": "Invigorated abilities have their cooldown reduced by X rounds."
+	},
+	"PULL": {
+		"NAME": "Pull",
+		"DESC": "Pulled units move X lanes towards the puller (but not past the puller)."
+	},
+	"PUSH": {
+		"NAME": "Push",
+		"DESC": "Pushed units move X lanes away from the pusher. If the target is in the same lane, move towards the center of the arena."
+	},
+	"REVITALIZE": {
+		"NAME": "Revitalize",
+		"DESC": "Revitalized abilities have their cooldown reset."
+	}
+}
