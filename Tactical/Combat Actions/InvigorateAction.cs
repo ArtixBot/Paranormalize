@@ -11,7 +11,7 @@ public class InvigorateAction : AbstractAction {
     }
 
     public override void Execute(){
-        if (this.abilityToInvigorate == null) return;
+        if (this.abilityToInvigorate == null || this.abilityToInvigorate.FIXED_COOLDOWN) return;
         // TODO: CombatManager.eventManager.BroadcastEvent(new CombatEventAbilityInvigorateed(this.abilityToInvigorate, this.invigorateDuration));
         this.abilityToInvigorate.curCooldown -= this.invigorateDuration;
         this.abilityToInvigorate.curCooldown = Math.Max(this.abilityToInvigorate.curCooldown, 0);
