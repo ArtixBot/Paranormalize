@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://odqtapgnu7hw"
-path="res://.godot/imported/pierce.png-cd5ba75c2164b81747c56a644ff55af5.ctex"
+uid="uid://buo3g2eppj3vc"
+path="res://.godot/imported/clash_windup.png-72791f533c46e03ce165efc29c71c65a.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Sprites/Characters/Duelist/pierce.png"
-dest_files=["res://.godot/imported/pierce.png-cd5ba75c2164b81747c56a644ff55af5.ctex"]
+source_file="res://Sprites/Characters/Duelist/clash_windup.png"
+dest_files=["res://.godot/imported/clash_windup.png-72791f533c46e03ce165efc29c71c65a.ctex"]
 
 [params]
 

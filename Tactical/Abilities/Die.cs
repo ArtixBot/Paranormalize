@@ -12,6 +12,8 @@ public enum DieType {SLASH, PIERCE, BLUNT, ELDRITCH, BLOCK, EVADE, UNIQUE};
         - ints for the minimum and maximum roll value
 */
 public class Die {
+    // Used for die-specific *descriptions*, e.g. "This die has +2 to rolls against X".
+    // This should *not* be used for logic (since multiple instaces of an ability would share the same dice ID.)
     private readonly string _dieId;
     private readonly DieType _dieType;
     private readonly int _minValue;

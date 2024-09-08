@@ -7,6 +7,7 @@ using System.Linq;
 public enum CharacterFaction {PLAYER, NEUTRAL, ENEMY};
 
 public partial class AbstractCharacter : IEventSubscriber, IEventHandler<CombatEventCharacterDeath> {
+    public readonly string ID;      // Used by CharacterUI to read appropriate directory and grab combat poses.
     public CharacterFaction CHAR_FACTION;
     public string CHAR_NAME;
 
@@ -62,11 +63,13 @@ public partial class AbstractCharacter : IEventSubscriber, IEventHandler<CombatE
     public AbstractAbility reactionIntent;
     public AiBehavior Behavior;
 
-    public AbstractCharacter() : this(10, 10, 1, 5, CharacterFaction.NEUTRAL, "Unnamed Fighter") {}
-    public AbstractCharacter(string name) : this(10, 10, 1, 5, CharacterFaction.NEUTRAL, name) {}
-    public AbstractCharacter(string name, CharacterFaction faction) : this(10, 10, 1, 5, faction, name) {}
+    public AbstractCharacter() : this("NO_ID_SET", 10, 10, 1, 5, CharacterFaction.NEUTRAL, "Unnamed Fighter") {}
+    // TODO: Actually require an ID parameter to be set instead of making name the default ID.
+    public AbstractCharacter(string name) : this(name, 10, 10, 1, 5, CharacterFaction.NEUTRAL, name) {}
+    public AbstractCharacter(string name, CharacterFaction faction) : this(name, 10, 10, 1, 5, faction, name) {}
 
-    public AbstractCharacter(int maxHP, int maxPoise, int minSpd, int maxSpd, CharacterFaction faction, string name){
+    public AbstractCharacter(string ID, int maxHP, int maxPoise, int minSpd, int maxSpd, CharacterFaction faction, string name){
+        this.ID = ID;
         this.MaxHP = maxHP;
         this.CurHP = maxHP;
         this.MaxPoise = maxPoise;

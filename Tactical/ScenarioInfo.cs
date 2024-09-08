@@ -19,7 +19,7 @@ public class TestScenario : ScenarioInfo {
 
     private static readonly AbstractCharacter playerA = new AbstractCharacter("Duelist", CharacterFaction.PLAYER);
     private static readonly AbstractCharacter playerB = new AbstractCharacter("Cinq", CharacterFaction.PLAYER);
-    private static readonly AbstractCharacter characterB = new AbstractCharacter("Test Dummy A", CharacterFaction.ENEMY);
+    private static readonly AbstractCharacter characterB = new AbstractCharacter("Test Dummy", CharacterFaction.ENEMY);
     private static readonly AbstractCharacter characterC = new GallantKnight();
     private static readonly AbstractCharacter characterD = new AbstractCharacter("Test Dummy C", CharacterFaction.ENEMY);
     private static readonly AbstractCharacter characterE = new AbstractCharacter("Test Dummy D", CharacterFaction.ENEMY);
@@ -42,7 +42,7 @@ public class TestScenario : ScenarioInfo {
         playerA.EquipAbility(new HaveAtThee());
         playerA.EquipAbility(new Parry());
         // playerA.EquipAbility(new Brutalize());
-        // playerA.EquipAbility(new Charge());
+        playerA.EquipAbility(new Hew());
         // playerA.EquipAbility(new Purge());
         // playerA.EquipAbility(new SecondWind());
         // playerA.EquipAbility(new Indomitable());
@@ -53,7 +53,7 @@ public class TestScenario : ScenarioInfo {
 
         playerA.MinSpd = 10;
         playerA.MaxSpd = 20;
-        playerA.ActionsPerTurn = 3;
+        playerA.ActionsPerTurn = 5;
         playerA.MaxHP = 100;
         playerA.CurHP = 68;
         playerA.MaxPoise = 100;

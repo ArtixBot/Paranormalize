@@ -177,7 +177,7 @@
 	"VIRTUOUS_STRUGGLE": {
 		"NAME": "Virtuous Struggle",
 		"STRINGS": {
-			"GENERIC": "{Cond|On activate}: Gain 1 Strength next round.\n{Cond|On activate}: If no other allies are present, add two {Blunt|4-5} dice to this ability."
+			"GENERIC": "{Cond|On activate}: If no other allies are present, gain 1 Strength next round.\n{Cond|On activate}: If no other allies are present, add two {Blunt|4-5} dice to this ability."
 		}
 	},
 	"PASS": {

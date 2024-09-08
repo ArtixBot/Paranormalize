@@ -16,7 +16,7 @@ public partial class GallantKnight : AbstractCharacter {
     private static readonly int minSpd = 4;
     private static readonly int maxSpd = 7;
 
-    public GallantKnight() : base(maxHP, maxPoise, minSpd, maxSpd, faction, name){
+    public GallantKnight() : base("GALLANT_KNIGHT", maxHP, maxPoise, minSpd, maxSpd, faction, name){
         EquipAbility(new GallantSlashes());
         EquipAbility(new GallopingTilt());
         EquipAbility(new Parry());

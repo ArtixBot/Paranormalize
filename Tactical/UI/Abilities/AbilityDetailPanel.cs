@@ -45,7 +45,7 @@ public partial class AbilityDetailPanel : Control
 			nodeToAddDiceTo.AddChild(node);
 
 			node.Die = _ability.BASE_DICE[i];
-			node.DieDesc =  ParseCustomTags(_ability.STRINGS.GetValueOrDefault(node.Die.DieId, ""));
+			node.DieDesc = ParseCustomTags(_ability.STRINGS.GetValueOrDefault(node.Die.DieId, ""));
 		}
 	}
 

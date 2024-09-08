@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://bid0arhjx66ds"
-path="res://.godot/imported/slash.png-0a232e5ad9364e716880d7baee4f0764.ctex"
+path="res://.godot/imported/melee_slash.png-beb0d707977add433f51c8f82b3767b9.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Sprites/Characters/Duelist/slash.png"
-dest_files=["res://.godot/imported/slash.png-0a232e5ad9364e716880d7baee4f0764.ctex"]
+source_file="res://Sprites/Characters/Duelist/melee_slash.png"
+dest_files=["res://.godot/imported/melee_slash.png-beb0d707977add433f51c8f82b3767b9.ctex"]
 
 [params]
 

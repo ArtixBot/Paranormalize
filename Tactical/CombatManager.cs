@@ -29,8 +29,7 @@ public class CombatInstance {
     public AbstractAbility reactAbility;
     public List<Die> reactAbilityDice;
 
-    // TODO: Consider making this an combat event property instead of directly accessing this value.
-    public int abilityItrCount;     // Used only for UI purposes to determine when to play events like push/pull/forward/back, which could occur on later dice.
+    public int abilityItrCount = 0;     // Used only for UI purposes to determine when to play events like push/pull/forward/back, which could occur on later dice, or passives that trigger on "On third or fourth clash"
 
 	public CombatInstance(ScenarioInfo info){
         CombatManager.eventManager = new CombatEventManager();
@@ -48,7 +47,12 @@ public class CombatInstance {
 }
 
 public static class CombatManager {
-	
+    private static Dictionary<DieType, DamageType> dieTypeToDmgType = new(){
+        [DieType.SLASH] = DamageType.SLASH,
+        [DieType.PIERCE] = DamageType.PIERCE,
+        [DieType.BLUNT] = DamageType.BLUNT,
+        [DieType.ELDRITCH] = DamageType.ELDRITCH
+    };
     public static ScenarioInfo scenarioInfo;
 	public static CombatInstance combatInstance;
 	// The event system is more complicated than what signals can provide (especially as signals are intended not to care who is listening to them.)
@@ -295,6 +299,7 @@ public static class CombatManager {
     private static void ResolveUnopposedAbility(){
         // Use a while loop since additional dice can be tossed into the queue during combat processing (e.g. die has "Cycle" effect).
         int i = 0;      // There should never be more than 100 iterations but if somehow there were an infinite Cycle loop, this should break that.
+
         while (combatInstance.activeAbilityDice?.Count > 0 && i < 100){
             combatInstance.abilityItrCount += 1;
             Die die = eventManager.BroadcastEvent(new CombatEventBeforeDieRolled(combatInstance.activeAbility, combatInstance.activeAbilityTargets.ToList().First(), combatInstance.activeAbilityDice[0])).die;
@@ -313,6 +318,7 @@ public static class CombatManager {
                 GD.Print("Attempted to remove dice at position zero but no dice existed, as all targets were staggered/died and thus dice were preemptively removed.");
             }
             i += 1;
+            eventManager.BroadcastEvent(new CombatUiEventPostDieRolled());
         }
 
         i = 0;
@@ -333,34 +339,23 @@ public static class CombatManager {
                 GD.Print("Attempted to remove dice at position zero but no dice existed, as the attacker was staggered/died and thus dice were preemptively removed.");
             }
             i += 1;
+            eventManager.BroadcastEvent(new CombatUiEventPostDieRolled());
         }
     }
 
     private static void ResolveDieRoll(AbstractCharacter roller, AbstractCharacter target, Die die, int naturalRoll, int actualRoll, bool rolledDuringClash, bool losingDieWasAttack){
         switch (die.DieType){
             case DieType.SLASH:
-                CombatManager.ExecuteAction(new DamageAction(roller, target, DamageType.SLASH, actualRoll, isPoiseDamage: false));
-                CombatManager.ExecuteAction(new DamageAction(roller, target, DamageType.SLASH, actualRoll, isPoiseDamage: true));
-                eventManager.BroadcastEvent(new CombatEventDieHit(roller, target, die, naturalRoll, actualRoll));
-                break;
             case DieType.PIERCE:
-                CombatManager.ExecuteAction(new DamageAction(roller, target, DamageType.PIERCE, actualRoll, isPoiseDamage: false));
-                CombatManager.ExecuteAction(new DamageAction(roller, target, DamageType.PIERCE, actualRoll, isPoiseDamage: true));
-                eventManager.BroadcastEvent(new CombatEventDieHit(roller, target, die, naturalRoll, actualRoll));
-                break;
             case DieType.BLUNT:
-                CombatManager.ExecuteAction(new DamageAction(roller, target, DamageType.BLUNT, actualRoll, isPoiseDamage: false));
-                CombatManager.ExecuteAction(new DamageAction(roller, target, DamageType.BLUNT, actualRoll, isPoiseDamage: true));
-                eventManager.BroadcastEvent(new CombatEventDieHit(roller, target, die, naturalRoll, actualRoll));
-                break;
             case DieType.ELDRITCH:
-                CombatManager.ExecuteAction(new DamageAction(roller, target, DamageType.ELDRITCH, actualRoll, isPoiseDamage: false));
-                CombatManager.ExecuteAction(new DamageAction(roller, target, DamageType.ELDRITCH, actualRoll, isPoiseDamage: true));
+                CombatManager.ExecuteAction(new DamageAction(roller, target, dieTypeToDmgType[die.DieType], actualRoll, isPoiseDamage: false));
+                CombatManager.ExecuteAction(new DamageAction(roller, target, dieTypeToDmgType[die.DieType], actualRoll, isPoiseDamage: true));
                 eventManager.BroadcastEvent(new CombatEventDieHit(roller, target, die, naturalRoll, actualRoll));
                 break;
             case DieType.BLOCK:
                 if (!rolledDuringClash){
-                    eventManager.BroadcastEvent(new CombatEventDieEvaded(roller, target, die, naturalRoll, actualRoll, rolledDuringClash: false));
+                    eventManager.BroadcastEvent(new CombatEventDieBlocked(roller, target, die, naturalRoll, actualRoll, rolledDuringClash: false));
                     break;
                 };
                 CombatManager.ExecuteAction(new DamageAction(roller, target, DamageType.PURE, actualRoll, isPoiseDamage: true));
@@ -405,7 +400,6 @@ public static class CombatManager {
 
             // On tie, remove both dice.
             if (modAtkRoll == modReactRoll){
-                combatInstance.abilityItrCount += 1;
                 eventManager.BroadcastEvent(new CombatEventClashTie(combatInstance.activeAbility.OWNER, combatInstance.reactAbility.OWNER, atkDie, reactDie, modAtkRoll));
                 try {
                     combatInstance.activeAbilityDice.RemoveAt(0);
@@ -418,6 +412,7 @@ public static class CombatManager {
                     GD.Print("Attempted to remove defender dice at position zero, but dice were preemptively removed since either the defender was staggered or the attacker was killed.");
                 }
                 i += 1;
+                eventManager.BroadcastEvent(new CombatUiEventPostDieRolled());
                 continue;
             }
 
@@ -453,6 +448,7 @@ public static class CombatManager {
             }
 
             i += 1;
+            eventManager.BroadcastEvent(new CombatUiEventPostDieRolled());
         }
         ResolveUnopposedAbility();      // After one of the two clashing die queues is empty, just invoke ResolveUnopposedAbility.
     }
