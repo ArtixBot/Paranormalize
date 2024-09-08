@@ -70,7 +70,7 @@ public partial class ClashStage : Control {
 		tacticalSceneNode = (TacticalScene) GetParent().GetParent();
 		Sprite2D initiatorSprite = new(){
 			Texture = tacticalSceneNode.characterToPoseMap[initiator].GetValueOrDefault("clash_windup", GD.Load<Texture2D>("res://Sprites/Characters/no pose found.png"))
-		};
+		};	
 		uiToSpriteMap[tacticalSceneNode.characterToNodeMap[initiator]] = initiatorSprite;
 		AddChild(initiatorSprite);
 		initiatorSprite.Position = initiatorOnLeftHalf ? playerSpawn.Position : npcSpawn.Position;
@@ -90,7 +90,12 @@ public partial class ClashStage : Control {
 
 		foreach (UI.CharacterUI ui in uiToSpriteMap.Keys){
 			Sprite2D sprite = uiToSpriteMap[ui];
-			spriteToQueuedPoses[sprite] = uiQueuedPoses[ui];
+			// TODO: Utility abilities don't enqueue poses for anyone in TacticalStage, hence why we need the Contains check,
+			// and also why we need the GetValueOrDefault clash_windup texture initalization for the sprites.
+			// Fix this.
+			if (uiQueuedPoses.Keys.Contains(ui)){
+				spriteToQueuedPoses[sprite] = uiQueuedPoses[ui];
+			}
 		}
 	}
 
