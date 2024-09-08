@@ -78,7 +78,7 @@ public partial class AbilityDetailPanel : Control
 			else if (match.Value.Contains("Keyword")){
                 string textToHighlight = match.Value.Split("|").Last();
 				string keywordString = LocalizationLibrary.Instance.GetKeywordStrings(textToHighlight).NAME;
-				string replacementString = "[b]" + keywordString + "[/b]";
+				string replacementString = "[color=#ffcb70]" + keywordString + "[/color]";
 				s = s.Replace("{" + match.Value + "}", replacementString);
 			}
         }

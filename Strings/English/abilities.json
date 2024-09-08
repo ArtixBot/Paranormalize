@@ -2,7 +2,7 @@
 	"AGAIN": {
 		"NAME": "Again!",
 		"STRINGS": {
-			"GENERIC": "{Keyword|FIXED_COOLDOWN}.\nTarget other ally in range.\nRevitalize their most recently activated ability."
+			"GENERIC": "{Keyword|FIXED_COOLDOWN}.\nTarget other ally in range.\n{Keyword|REVITALIZE} their most recently activated ability."
 		}
 	},
 	"ALL_IN": {
@@ -68,7 +68,7 @@
 	"ENDURE": {
 		"NAME": "Endure",
 		"STRINGS": {
-			"GENERIC": "Target self.\nGain 4 Protection and 4 Poise Protection this round and next round."
+			"GENERIC": "Target self.\nGain 4 {Keyword|PROTECTION} and 4 {Keyword|POISE_PROTECTION} this round and next round."
 		}
 	},
 	"GALLANT_SLASHES": {
@@ -86,7 +86,7 @@
 	"HAVE_AT_THEE": {
 		"NAME": "Have at Thee!",
 		"STRINGS": {
-			"GENERIC": "Can only be activated if:\n- Nobody is Dishonorable.\n- This unit does not have {Keyword|DUEL_TO_THE_DEATH}.\nTarget an enemy without {Keyword|DUEL_TO_THE_DEATH}.\n\nInflict {Keyword|DUEL_TO_THE_DEATH}."
+			"GENERIC": "Can only be activated if:\n- This unit does not have {Keyword|DUEL_TO_THE_DEATH}.\n- Nobody is {Keyword|DISHONORABLE}.\nTarget an enemy without {Keyword|DUEL_TO_THE_DEATH}.\n\nInflict {Keyword|DUEL_TO_THE_DEATH}."
 		}
 	},
 	"HEW": {
@@ -158,7 +158,7 @@
 	"RELENTLESS_STABBING": {
 		"NAME": "Relentless Stabbing",
 		"STRINGS": {
-			"LETHAL_HIT_CYCLING": "{Cond|On [shake]critical hit[/shake]}: {Keyword|CYCLE} this die (up to 2 times)."
+			"LETHAL_HIT_CYCLING": "{Cond|On [shake]critical hit[/shake]}: {Keyword|CYCLE} this die (max 2 cycles)."
 		}
 	},
 	"REPARTEE": {

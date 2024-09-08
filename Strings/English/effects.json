@@ -13,7 +13,7 @@
 	},
 	"HASTE": {
 		"NAME": "Haste",
-		"DESC": "The Speed of {owner}'s actions is increase by {stacks}."
+		"DESC": "The Speed of {owner}'s actions is increased by {stacks}."
 	},
 	"NEXT_ROUND_ACTION_GAIN": {
 		"NAME": "Next Round Action Gain",

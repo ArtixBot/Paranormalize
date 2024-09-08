@@ -1,11 +1,11 @@
 {
 	"AOE": {
-		"NAME": "Area of Effect (AoE)",
-		"DESC": "This ability may target multiple units. It cannot be clashed against and cannot be used to react against a clashable attack."
+		"NAME": "AoE",
+		"DESC": "This ability can target multiple units in an area of effect. This ability cannot be clashed against and cannot be used to react against an incoming clashable attack."
 	},
 	"BACK": {
 		"NAME": "Back",
-		"DESC": "Move away from the target. If the target is in the same lane, move towards the closest arena edge."
+		"DESC": "Move away from the target. If the target is in the same lane, move towards the furthest arena edge."
 	},
 	"CANNOT_REACT": {
 		"NAME": "Cannot React",
@@ -17,11 +17,15 @@
 	},
 	"CYCLE": {
 		"NAME": "Cycle",
-		"DESC": "A Cycled die is reused after being rolled."
+		"DESC": "Reuse this die after it is rolled."
 	},
 	"DEVIOUS": {
 		"NAME": "Devious",
 		"DESC": "If this ability is activated when it is your turn, the target cannot clash against it."
+	},
+	"DISHONORABLE": {
+		"NAME": "Dishonorable",
+		"DESC": "Dishonorable units are prioritized by enemies."
 	},
 	"DUEL_TO_THE_DEATH": {
 		"NAME": "Duel to the Death",
@@ -29,7 +33,7 @@
 	},
 	"EXERT": {
 		"NAME": "Exert",
-		"DESC": "Exerted abilities are placed on cooldown (or have their cooldown extended)."
+		"DESC": "Place the specified ability on cooldown (if is already on cooldown, extend it)."
 	},
 	"FINAL": {
 		"NAME": "Final",
@@ -49,15 +53,23 @@
 	},
 	"INVIGORATE": {
 		"NAME": "Invigorate",
-		"DESC": "Invigorated abilities have their cooldown reduced by X rounds."
+		"DESC": "Reduce the cooldown of a specified ability."
+	},
+	"POISE_PROTECTION": {
+		"NAME": "Poise Protection",
+		"DESC": "Reduces incoming Poise damage until round end."
+	},
+	"PROTECTION": {
+		"NAME": "Protection",
+		"DESC": "Reduces incoming damage until round end."
 	},
 	"PULL": {
 		"NAME": "Pull",
-		"DESC": "Move the target X lanes towards the puller (but not past the puller)."
+		"DESC": "Move the target towards the puller (but not past the puller)."
 	},
 	"PUSH": {
 		"NAME": "Push",
-		"DESC": "Move the target X lanes away. If the target is in the same lane, move the target towards the center of the arena."
+		"DESC": "Move the target away from the pusher. If the target is in the same lane, move the target towards the center of the arena."
 	},
 	"SLOW": {
 		"NAME": "Slow",
@@ -65,7 +77,7 @@
 	},
 	"REVITALIZE": {
 		"NAME": "Revitalize",
-		"DESC": "Revitalized abilities have their cooldown reset."
+		"DESC": "Reset the cooldown of a specified ability."
 	},
 	"STRENGTH": {
 		"NAME": "Strength",
