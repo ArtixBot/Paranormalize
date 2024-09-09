@@ -109,8 +109,6 @@ public partial class ClashStage : Control {
 		timeSinceDelay += (float) delta;
 		if ((curStep == 0 && delayBetweenPoses != UTILITY_ABILITY_STEP_DURATION) || timeSinceDelay >= delayBetweenPoses) {
 			timeSinceDelay = 0.0f;
-			RenderDice();
-			RenderPoses();
 			// Logging info.
 			Logging.Log($"Rendering step {curStep+1}:", Logging.LogLevel.INFO);
 			if (initiatorQueuedDice.TryDequeue(out Die[] initatorDice)){
@@ -127,14 +125,9 @@ public partial class ClashStage : Control {
 				}
 				Logging.Log("\tTarget dice: " + content, Logging.LogLevel.INFO);
 			}
-			while (dieRollResultQueue.Count > 0 && dieRollResultQueue.First().step == curStep){
-				(int _, CombatEventDieRolled dieRollResultEvent) = dieRollResultQueue.Dequeue();
-				Logging.Log($"\tDie roll: {dieRollResultEvent.roller.CHAR_NAME} rolled a {dieRollResultEvent.rolledValue} on a(n) {dieRollResultEvent.die.DieType} die.", Logging.LogLevel.INFO);
-			}
-			while (damageRenderQueue.Count > 0 && damageRenderQueue.First().step == curStep){
-				(int _, CombatEventDamageTaken dmgEvent) = damageRenderQueue.Dequeue();
-				Logging.Log($"\tCombat event: {dmgEvent.target.CHAR_NAME} took {(int)dmgEvent.damageTaken} damage (was Poise damage: {dmgEvent.isPoiseDamage}).", Logging.LogLevel.INFO);
-			}
+
+			RenderDice();
+			RenderPoses();
 			curStep += 1;
 		}
 	}
@@ -150,15 +143,35 @@ public partial class ClashStage : Control {
 		Control initiatorSide = initiatorOnLeftHalf ? lhsDice : rhsDice;
 		Control defenderSide = initiatorOnLeftHalf ? rhsDice : lhsDice;
 		int initiatorDiceAddOnLeftSide = initiatorOnLeftHalf ? -1 : 1;
+
+		int initiatorValue = 0, defenderValue = 0;
+		while (dieRollResultQueue.Count > 0 && dieRollResultQueue.First().step == curStep){
+			(int _, CombatEventDieRolled dieRollResultEvent) = dieRollResultQueue.Dequeue();
+			Logging.Log($"\tDie roll: {dieRollResultEvent.roller.CHAR_NAME} rolled a {dieRollResultEvent.rolledValue} on a(n) {dieRollResultEvent.die.DieType} die.", Logging.LogLevel.INFO);
+			if (dieRollResultEvent.roller == initiator){
+				initiatorValue = dieRollResultEvent.rolledValue;
+			} else {
+				defenderValue = dieRollResultEvent.rolledValue;
+			}
+		}
+		while (damageRenderQueue.Count > 0 && damageRenderQueue.First().step == curStep){
+			(int _, CombatEventDamageTaken dmgEvent) = damageRenderQueue.Dequeue();
+			Logging.Log($"\tCombat event: {dmgEvent.target.CHAR_NAME} took {(int)dmgEvent.damageTaken} damage (was Poise damage: {dmgEvent.isPoiseDamage}).", Logging.LogLevel.INFO);
+		}
+
 		if (initiatorDiceData != null){
 			for (int i = 0; i < initiatorDiceData.Length; i++){
 				UI.AbilityDie dieNode = (UI.AbilityDie) clashStageDie.Instantiate();
 				initiatorSide.AddChild(dieNode);
-				if (i == 0){
-					dieNode.Scale = new Vector2(1.3f, 1.3f);
-				}
 				dieNode.Position = new Vector2(i * 60 * initiatorDiceAddOnLeftSide, dieNode.Position.Y);
 				dieNode.Die = initiatorDiceData[i];
+
+				if (i == 0){
+					dieNode.Scale = new Vector2(1.5f, 1.5f);
+					dieNode.DieRollValue = initiatorValue;
+					dieNode.DieRange.Visible = false;
+					dieNode.DieImage.Modulate = new Color(0.5f, 0.5f, 0.5f);
+				}
 			}
 		}
 
@@ -166,11 +179,15 @@ public partial class ClashStage : Control {
 			for (int i = 0; i < defenderDiceData.Length; i++){
 				UI.AbilityDie dieNode = (UI.AbilityDie) clashStageDie.Instantiate();
 				defenderSide.AddChild(dieNode);
-				if (i == 0){
-					dieNode.Scale = new Vector2(1.3f, 1.3f);
-				}
 				dieNode.Position = new Vector2(i * 60 * -initiatorDiceAddOnLeftSide, dieNode.Position.Y);
 				dieNode.Die = defenderDiceData[i];
+
+				if (i == 0){
+					dieNode.Scale = new Vector2(1.5f, 1.5f);
+					dieNode.DieRollValue = defenderValue;
+					dieNode.DieRange.Visible = false;
+					dieNode.DieImage.Modulate = new Color(0.5f, 0.5f, 0.5f);
+				}
 			}
 		}
 	}

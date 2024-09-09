@@ -28,7 +28,7 @@ public class TestScenario : ScenarioInfo {
         (characterC, 5),
         // (characterD, 1),
         // (characterE, 2),
-        (playerB, 2),
+        // (playerB, 2),
         (playerA, 3),
     };
 
