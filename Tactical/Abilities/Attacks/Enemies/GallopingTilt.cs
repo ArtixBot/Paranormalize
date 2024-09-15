@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-public class GallopingTilt : AbstractAbility, IEventHandler<CombatEventAbilityActivated>{
+public class GallopingTilt : AbstractAbility, IEventHandler<CombatEventAbilityActivated>, IEventHandler<CombatEventDieHit>{
     public static string id = "GALLOPING_TILT";
     private static Localization.AbilityStrings strings = Localization.LocalizationLibrary.Instance.GetAbilityStrings(id);
 
@@ -11,7 +11,7 @@ public class GallopingTilt : AbstractAbility, IEventHandler<CombatEventAbilityAc
     private static bool targetsLane = false;
     private static bool needsUnit = true;
 
-    private Die atkDie = new Die(DieType.PIERCE, 4, 24);
+    private Die atkDie = new Die(DieType.PIERCE, 4, 24, "ON_HIT_GAIN_HASTE");
 
     public GallopingTilt(): base(
         id,
@@ -30,13 +30,19 @@ public class GallopingTilt : AbstractAbility, IEventHandler<CombatEventAbilityAc
     public override void InitSubscriptions(){
         base.InitSubscriptions();
         CombatEventManager.instance?.Subscribe(CombatEventType.ON_ABILITY_ACTIVATED, this, CombatEventPriority.STANDARD);
+        CombatEventManager.instance?.Subscribe(CombatEventType.ON_DIE_HIT, this, CombatEventPriority.STANDARD);
     }
 
     public override void HandleEvent(CombatEventAbilityActivated data){
         base.HandleEvent(data);
         if (data.abilityActivated == this){
             CombatManager.ExecuteAction(new ForwardAction(this.OWNER, data.target, MOVE_DISTANCE));
-            CombatManager.ExecuteAction(new ApplyStatusAction(this.OWNER, new BuffHaste(), 2));
+        }
+    }
+
+    public void HandleEvent(CombatEventDieHit data){
+        if (data.die == atkDie){
+            CombatManager.ExecuteAction(new ApplyStatusAction(this.OWNER, new ConditionNextRoundStatusGain(new BuffHaste()), 2));
         }
     }
 }

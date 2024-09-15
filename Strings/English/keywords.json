@@ -45,7 +45,7 @@
 	},
 	"FORWARD": {
 		"NAME": "Forward",
-		"DESC": "Move towards the target (but not past the target)."
+		"DESC": "Move towards (but not past) the target's lane."
 	},
 	"HASTE": {
 		"NAME": "Haste",
@@ -65,7 +65,7 @@
 	},
 	"PULL": {
 		"NAME": "Pull",
-		"DESC": "Move the target towards the puller (but not past the puller)."
+		"DESC": "Move the target towards (but not past) the puller's lane."
 	},
 	"PUSH": {
 		"NAME": "Push",

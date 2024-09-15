@@ -80,7 +80,8 @@
 	"GALLOPING_TILT": {
 		"NAME": "Galloping Tilt",
 		"STRINGS": {
-			"GENERIC": "{Cond|On activate}: {Keyword|FORWARD} 3. Gain 2 Haste."
+			"GENERIC": "{Cond|On activate}: {Keyword|FORWARD} 3.",
+			"ON_HIT_GAIN_HASTE": "{Cond|On hit}: Gain 2 {Keyword|HASTE} next round."
 		}
 	},
 	"HAVE_AT_THEE": {
