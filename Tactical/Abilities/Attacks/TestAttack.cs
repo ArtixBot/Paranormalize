@@ -10,8 +10,8 @@ public class TestAttack : AbstractAbility, IEventHandler<CombatEventDieHit> {
     private static bool targetsLane = false;
     private static bool needsUnit = true;
 
-    private Die atkDieA = new Die(DieType.BLUNT, 13, 13, "FIRST_DIE");
-    private Die atkDieB = new Die(DieType.SLASH, 1, 5);
+    private Die atkDieA = new Die(DieType.BLUNT, 13, 13, "FIRST_DIE", new List<DieTags>{DieTags.MELEE});
+    private Die atkDieB = new Die(DieType.SLASH, 1, 5, "", new List<DieTags>{DieTags.MELEE});
 
     public TestAttack(): base(
         id,

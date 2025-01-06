@@ -12,7 +12,7 @@ public class Beatdown : AbstractAbility, IEventHandler<CombatEventDieHit>{
     private static bool targetsLane = false;
     private static bool needsUnit = true;
 
-    private Die bluntDie = new Die(DieType.BLUNT, 6, 7, "NEXT_ROUND_STR_ON_HIT");
+    private Die bluntDie = new Die(DieType.BLUNT, 6, 7, "NEXT_ROUND_STR_ON_HIT", new List<DieTags>{DieTags.MELEE});
 
     public Beatdown(): base(
         id,

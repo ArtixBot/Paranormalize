@@ -11,7 +11,7 @@ public class BalestraFente : AbstractAbility, IEventSubscriber, IEventHandler<Co
     private static bool targetsLane = false;
     private static bool needsUnit = true;
 
-    private Die atkDie = new Die(DieType.PIERCE, 22, 22, "CRIT_DIE");
+    private Die atkDie = new Die(DieType.PIERCE, 22, 22, "CRIT_DIE", new List<DieTags>{DieTags.MELEE});
 
     public BalestraFente(): base(
         id,

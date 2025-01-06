@@ -11,11 +11,11 @@ public class Obliterate : AbstractAbility, IEventHandler<CombatEventDieHit>, IEv
     private static bool targetsLane = false;
     private static bool needsUnit = true;
 
-    private Die atkDieA = new Die(DieType.PIERCE, 6, 11, "PIERCE_PULL");
-    private Die atkDieB = new Die(DieType.SLASH, 7, 9);
-    private Die blkDieC = new Die(DieType.BLOCK, 7, 10);
-    private Die atkDieD = new Die(DieType.BLUNT, 4, 8);
-    private Die atkDieE = new Die(DieType.BLUNT, 9, 11);
+    private Die atkDieA = new Die(DieType.PIERCE, 6, 11, "PIERCE_PULL", new List<DieTags>{DieTags.MELEE});
+    private Die atkDieB = new Die(DieType.SLASH, 7, 9, "", new List<DieTags>{DieTags.MELEE});
+    private Die blkDieC = new Die(DieType.BLOCK, 7, 10, "", new List<DieTags>{DieTags.MELEE});
+    private Die atkDieD = new Die(DieType.BLUNT, 4, 8, "", new List<DieTags>{DieTags.MELEE});
+    private Die atkDieE = new Die(DieType.BLUNT, 9, 11, "", new List<DieTags>{DieTags.MELEE});
 
     public Obliterate(): base(
         id,

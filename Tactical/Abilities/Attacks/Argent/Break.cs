@@ -12,7 +12,7 @@ public class Break : AbstractAbility, IEventHandler<CombatEventDieHit>, IEventHa
     private static bool targetsLane = false;
     private static bool needsUnit = true;
 
-    private Die bluntDie = new Die(DieType.BLUNT, 9, 15, "ANTI_BLOCK");
+    private Die bluntDie = new Die(DieType.BLUNT, 9, 15, "ANTI_BLOCK", new List<DieTags>{DieTags.MELEE});
 
     public Break(): base(
         id,

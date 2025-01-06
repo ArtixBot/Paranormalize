@@ -11,7 +11,7 @@ public class GallopingTilt : AbstractAbility, IEventHandler<CombatEventAbilityAc
     private static bool targetsLane = false;
     private static bool needsUnit = true;
 
-    private Die atkDie = new Die(DieType.PIERCE, 4, 24, "ON_HIT_GAIN_HASTE");
+    private Die atkDie = new Die(DieType.PIERCE, 4, 24, "ON_HIT_GAIN_HASTE", new List<DieTags>{DieTags.MELEE});
 
     public GallopingTilt(): base(
         id,

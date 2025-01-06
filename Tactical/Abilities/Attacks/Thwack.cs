@@ -10,8 +10,8 @@ public class Thwack : AbstractAbility {
     private static bool targetsLane = false;
     private static bool needsUnit = true;
 
-    private Die atkDieA = new Die(DieType.BLUNT, 6, 6);
-    private Die atkDieB = new Die(DieType.SLASH, 2, 6);
+    private Die atkDieA = new Die(DieType.BLUNT, 6, 6, "", new List<DieTags>{DieTags.MELEE});
+    private Die atkDieB = new Die(DieType.SLASH, 2, 6, "", new List<DieTags>{DieTags.MELEE});
 
     public Thwack(): base(
         id,

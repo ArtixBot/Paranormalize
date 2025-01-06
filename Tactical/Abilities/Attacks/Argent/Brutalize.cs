@@ -11,9 +11,9 @@ public class Brutalize : AbstractAbility, IEventHandler<CombatEventDieHit>, IEve
     private static bool targetsLane = false;
     private static bool needsUnit = true;
 
-    private Die atkDieA = new Die(DieType.PIERCE, 6, 11, "PIERCE_PULL");
-    private Die atkDieB = new Die(DieType.SLASH, 4, 7);
-    private Die atkDieC = new Die(DieType.BLUNT, 4, 6);
+    private Die atkDieA = new Die(DieType.PIERCE, 6, 11, "PIERCE_PULL", new List<DieTags>{DieTags.MELEE});
+    private Die atkDieB = new Die(DieType.SLASH, 4, 7, "", new List<DieTags>{DieTags.MELEE});
+    private Die atkDieC = new Die(DieType.BLUNT, 4, 6, "", new List<DieTags>{DieTags.MELEE});
 
     public Brutalize(): base(
         id,

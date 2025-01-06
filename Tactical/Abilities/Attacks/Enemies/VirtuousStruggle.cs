@@ -12,8 +12,8 @@ public class VirtuousStruggle : AbstractAbility, IEventHandler<CombatEventAbilit
     private static bool targetsLane = false;
     private static bool needsUnit = true;
 
-    private Die bluntDie = new Die(DieType.BLUNT, 5, 7);
-    private Die bluntDieBonus = new Die(DieType.BLUNT, 4, 5);
+    private Die bluntDie = new Die(DieType.BLUNT, 5, 7, "", new List<DieTags>{DieTags.MELEE});
+    private Die bluntDieBonus = new Die(DieType.BLUNT, 4, 5, "", new List<DieTags>{DieTags.MELEE});
 
     public VirtuousStruggle(): base(
         id,

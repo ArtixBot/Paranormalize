@@ -85,6 +85,6 @@
 	},
 	"VULNERABLE": {
 		"NAME": "Vulnerable",
-		"DESC": "Take 50% increased damage this round."
+		"DESC": "Incoming damage is multiplied by [b]1.5x[/b]."
 	}
 }

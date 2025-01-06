@@ -15,8 +15,8 @@ public class Parry : AbstractAbility, IEventSubscriber, IEventHandler<CombatEven
     private static bool needsUnit = true;
 
     private Die blockDie = new Die(DieType.BLOCK, 5, 10, "ON_CLASH_DEAL_DAMAGE");
-    private Die blockDieB = new Die(DieType.BLOCK, 4, 6, "MAY_BE_CONVERTED");
-    private Die slashDie = new Die(DieType.SLASH, 9, 13);
+    private Die blockDieB = new Die(DieType.BLOCK, 4, 6, "MAY_BE_CONVERTED", new List<DieTags>{DieTags.MELEE});
+    private Die slashDie = new Die(DieType.SLASH, 9, 13, "", new List<DieTags>{DieTags.MELEE});
     public Parry(): base(
         id,
         strings,

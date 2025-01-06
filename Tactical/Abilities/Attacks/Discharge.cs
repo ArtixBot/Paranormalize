@@ -10,7 +10,7 @@ public class Discharge : AbstractAbility {
     private static bool targetsLane = false;
     private static bool needsUnit = true;
 
-    private Die atkDie = new Die(DieType.PIERCE, 5, 5);
+    private Die atkDie = new Die(DieType.PIERCE, 5, 5, "", new List<DieTags>{DieTags.RANGED});
 
     public Discharge(): base(
         id,
