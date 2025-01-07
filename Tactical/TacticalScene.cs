@@ -14,11 +14,7 @@ public partial class TacticalScene : Node2D,
 									 IEventHandler<CombatEventCombatStateChanged>,
 									 IEventHandler<CombatEventCharacterDeath>,
 									 IEventHandler<CombatEventDieRolled>,
-									 IEventHandler<CombatUiEventPostDieRolled>,
-									 IEventHandler<CombatEventDieHit>,
-									 IEventHandler<CombatEventDieBlocked>,
-									 IEventHandler<CombatEventDieEvaded>,
-									 IEventHandler<CombatEventClashTie>
+									 IEventHandler<CombatUiEventPostDieRolled>
 {
 	public readonly CombatInstance combatData;
 	private readonly PackedScene charScene = GD.Load<PackedScene>("res://Tactical/UI/Characters/Character.tscn");
@@ -26,7 +22,7 @@ public partial class TacticalScene : Node2D,
 	private readonly PackedScene clashScene = GD.Load<PackedScene>("res://Tactical/UI/ClashStage.tscn");
 
 	public Dictionary<AbstractCharacter, CharacterUI> characterToNodeMap = new();
-	public Dictionary<AbstractCharacter, Dictionary<string, Texture2D>> characterToPoseMap = new();
+	public Dictionary<AbstractCharacter, Dictionary<PoseEnum, Texture2D>> characterToPoseMap = new();
 	public Dictionary<int, Lane> laneToNodeMap = new();
 
 	private GUIOrchestrator GUIOrchestratorNode;
@@ -83,11 +79,7 @@ public partial class TacticalScene : Node2D,
 		CombatManager.eventManager.Subscribe(CombatEventType.ON_ABILITY_ACTIVATED, this, CombatEventPriority.UI);
 		CombatManager.eventManager.Subscribe(CombatEventType.ON_CHARACTER_DEATH, this, CombatEventPriority.UI);
 		CombatManager.eventManager.Subscribe(CombatEventType.ON_TAKE_DAMAGE, this, CombatEventPriority.UI);
-		CombatManager.eventManager.Subscribe(CombatEventType.ON_DIE_HIT, this, CombatEventPriority.UI);
-		CombatManager.eventManager.Subscribe(CombatEventType.ON_DIE_BLOCKED, this, CombatEventPriority.UI);
 		CombatManager.eventManager.Subscribe(CombatEventType.ON_DIE_ROLLED, this, CombatEventPriority.UI);
-		CombatManager.eventManager.Subscribe(CombatEventType.ON_DIE_EVADED, this, CombatEventPriority.UI);
-		CombatManager.eventManager.Subscribe(CombatEventType.ON_CLASH_TIE, this, CombatEventPriority.UI);
 		CombatManager.eventManager.Subscribe(CombatEventType.ON_COMBAT_STATE_CHANGE, this, CombatEventPriority.UI);
 
 		CombatManager.eventManager.Subscribe(CombatEventType.UI_EVENT_POST_DIE_ROLLED, this, CombatEventPriority.UI);
@@ -165,14 +157,6 @@ public partial class TacticalScene : Node2D,
 			this.clashToAnimate.targetData = data.targets;
 			if (data.abilityDice.Count != 0){
 				this.clashToAnimate.initiatorQueuedDice.Enqueue(CombatManager.combatInstance.activeAbilityDice.ToArray());
-				// this.clashToAnimate.QueueAnimation(characterToNodeMap[data.caster],
-				// 					characterToPoseMap.GetValueOrDefault(data.caster).GetValueOrDefault("clash_windup")
-				// 					?? GD.Load<Texture2D>(NO_POSE_FOUND_PATH));
-				// foreach (AbstractCharacter target in this.clashToAnimate.targetData){
-				// 	this.clashToAnimate.QueueAnimation(characterToNodeMap[target],
-				// 					characterToPoseMap.GetValueOrDefault(target).GetValueOrDefault("clash_windup")
-				// 					?? GD.Load<Texture2D>(NO_POSE_FOUND_PATH));
-				// }
 			}
 		} else if (data.caster != this.clashToAnimate.initiator){
 			this.clashToAnimate.targetAbility = data.abilityActivated;
@@ -203,82 +187,6 @@ public partial class TacticalScene : Node2D,
 		}
 		// Since clash iterations are 1-indexed, adjust for this.
 		this.clashToAnimate.damageRenderQueue.Enqueue((data.clashIteration - 1, data));
-	}
-
-	public void HandleEvent(CombatEventDieHit data){
-		if (!IsInstanceValid(this.clashToAnimate)) {return;}
-
-		AbstractCharacter hitter = data.hitter;
-		AbstractCharacter hitUnit = data.hitUnit;
-
-		// TODO: Randomize type of pierce/blunt/slash animation each time?
-		// Texture2D newPose;
-		// switch (data.die.DieType){
-		// 	case DieType.PIERCE:
-		// 		newPose = characterToPoseMap.GetValueOrDefault(hitter).GetValueOrDefault("melee_pierce") ?? GD.Load<Texture2D>(NO_POSE_FOUND_PATH);
-		// 		this.clashToAnimate.QueueAnimation(characterToNodeMap[hitter], newPose);
-		// 		break;
-		// 	case DieType.BLUNT:
-		// 		newPose = characterToPoseMap.GetValueOrDefault(hitter).GetValueOrDefault("melee_blunt") ?? GD.Load<Texture2D>(NO_POSE_FOUND_PATH);
-		// 		this.clashToAnimate.QueueAnimation(characterToNodeMap[hitter], newPose);
-		// 		break;
-		// 	case DieType.SLASH:
-		// 		newPose = characterToPoseMap.GetValueOrDefault(hitter).GetValueOrDefault("melee_slash") ?? GD.Load<Texture2D>(NO_POSE_FOUND_PATH);
-		// 		this.clashToAnimate.QueueAnimation(characterToNodeMap[hitter], newPose);
-		// 		break;
-		// 	default:
-		// 		newPose = characterToPoseMap.GetValueOrDefault(hitter).GetValueOrDefault("melee_slash") ?? GD.Load<Texture2D>(NO_POSE_FOUND_PATH);
-		// 		this.clashToAnimate.QueueAnimation(characterToNodeMap[hitter], newPose);
-		// 		break;
-		// }
-		// this.clashToAnimate.QueueAnimation(characterToNodeMap[hitUnit],
-		// 						  characterToPoseMap.GetValueOrDefault(hitUnit).GetValueOrDefault("damaged")
-		// 						  ?? GD.Load<Texture2D>(NO_POSE_FOUND_PATH));
-	}
-
-	public void HandleEvent(CombatEventDieBlocked data){
-		if (!IsInstanceValid(this.clashToAnimate)) {return;}
-
-		AbstractCharacter hitter = data.hitter;
-		AbstractCharacter hitUnit = data.hitUnit;
-
-		// this.clashToAnimate.QueueAnimation(characterToNodeMap[hitUnit],
-		// 								   characterToPoseMap.GetValueOrDefault(hitUnit).GetValueOrDefault("stagger")
-		// 								   ?? GD.Load<Texture2D>(NO_POSE_FOUND_PATH));
-		// this.clashToAnimate.QueueAnimation(characterToNodeMap[hitter],
-		// 								   characterToPoseMap.GetValueOrDefault(hitter).GetValueOrDefault("block_anim")
-		// 								   ?? GD.Load<Texture2D>(NO_POSE_FOUND_PATH));
-	}
-
-	public void HandleEvent(CombatEventDieEvaded data){
-		if (!IsInstanceValid(this.clashToAnimate)) {return;}
-
-		AbstractCharacter hitter = data.hitter;
-		AbstractCharacter hitUnit = data.hitUnit;
-
-		// this.clashToAnimate.QueueAnimation(characterToNodeMap[hitUnit],
-		// 								   characterToPoseMap.GetValueOrDefault(hitUnit).GetValueOrDefault("whiff")
-		// 								   ?? GD.Load<Texture2D>(NO_POSE_FOUND_PATH));
-		// this.clashToAnimate.QueueAnimation(characterToNodeMap[hitter],
-		// 								   characterToPoseMap.GetValueOrDefault(hitter).GetValueOrDefault("evade_anim")
-		// 								   ?? GD.Load<Texture2D>(NO_POSE_FOUND_PATH));
-	}
-
-	public void HandleEvent(CombatEventClashTie data){
-		if (!IsInstanceValid(this.clashToAnimate)) {return;}
-
-		AbstractCharacter hitter = CombatManager.combatInstance?.activeChar;
-		AbstractCharacter defender = CombatManager.combatInstance?.activeAbilityTargets.FirstOrDefault();
-		if (hitter == null || defender == null) return;
-
-		// TODO: Queue animation based on die type *other* than only preclash?
-		// this.clashToAnimate.QueueAnimation(characterToNodeMap[hitter],
-		// 								   characterToPoseMap.GetValueOrDefault(hitter).GetValueOrDefault("clash_windup")
-		// 								   ?? GD.Load<Texture2D>(NO_POSE_FOUND_PATH));
-		// this.clashToAnimate.QueueAnimation(characterToNodeMap[defender],
-		// 								   characterToPoseMap.GetValueOrDefault(defender).GetValueOrDefault("clash_windup")
-		// 								   ?? GD.Load<Texture2D>(NO_POSE_FOUND_PATH));
-
 	}
 
 	public void HandleEvent(CombatEventDieRolled data){

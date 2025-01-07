@@ -24,7 +24,7 @@ public partial class CharacterUI : Area2D, IEventSubscriber, IEventHandler<Comba
 		set {_character = value; UpdateSprite();}
 	}
 
-	public Dictionary<string, Texture2D> Poses = new();
+	public Dictionary<PoseEnum, Texture2D> Poses = new();
 	public Sprite2D Sprite;
 
 	private RichTextLabel HPStat;
@@ -233,16 +233,37 @@ public partial class CharacterUI : Area2D, IEventSubscriber, IEventHandler<Comba
 		// TODO: Preload this during game (?) instead of doing this here.
 		using var dir = DirAccess.Open($"res://Sprites/Characters/{Character.ID}");
 		if (dir != null){
-			dir.ListDirBegin();
-			string fileName = dir.GetNext();
-			while (fileName != ""){
-				if (fileName.EndsWith("import")){
-					fileName = dir.GetNext();
-					continue;
-				}
-				Poses[fileName.TrimSuffix(".png")] = GD.Load<Texture2D>($"res://Sprites/Characters/{Character.ID}/{fileName}");
-				fileName = dir.GetNext();
-				GD.Print($"Importing pose {fileName} for {Character.CHAR_NAME}");
+			// TODO: Enable support for multiple textures per pose beyond just a single PNG.
+			if (ResourceLoader.Exists($"res://Sprites/Characters/{Character.ID}/idle.png")){
+				Poses[PoseEnum.IDLE] = GD.Load<Texture2D>($"res://Sprites/Characters/{Character.ID}/idle.png");
+				Poses[PoseEnum.UNKNOWN] = GD.Load<Texture2D>($"res://Sprites/Characters/{Character.ID}/idle.png");
+			}
+			if (ResourceLoader.Exists($"res://Sprites/Characters/{Character.ID}/icon.png")){
+				Poses[PoseEnum.ICON] = GD.Load<Texture2D>($"res://Sprites/Characters/{Character.ID}/icon.png");
+			}
+			if (ResourceLoader.Exists($"res://Sprites/Characters/{Character.ID}/clash_windup.png")){
+				Poses[PoseEnum.CLASH_WINDUP] = GD.Load<Texture2D>($"res://Sprites/Characters/{Character.ID}/clash_windup.png");
+			}
+			if (ResourceLoader.Exists($"res://Sprites/Characters/{Character.ID}/damaged.png")){
+				Poses[PoseEnum.DAMAGED] = GD.Load<Texture2D>($"res://Sprites/Characters/{Character.ID}/damaged.png");
+			}
+			if (ResourceLoader.Exists($"res://Sprites/Characters/{Character.ID}/melee_blunt.png")){
+				Poses[PoseEnum.BLUNT_MELEE] = GD.Load<Texture2D>($"res://Sprites/Characters/{Character.ID}/melee_blunt.png");
+			}
+			if (ResourceLoader.Exists($"res://Sprites/Characters/{Character.ID}/melee_pierce.png")){
+				Poses[PoseEnum.PIERCE_MELEE] = GD.Load<Texture2D>($"res://Sprites/Characters/{Character.ID}/melee_pierce.png");
+			}
+			if (ResourceLoader.Exists($"res://Sprites/Characters/{Character.ID}/melee_slash.png")){
+				Poses[PoseEnum.SLASH_MELEE] = GD.Load<Texture2D>($"res://Sprites/Characters/{Character.ID}/melee_slash.png");
+			}
+			if (ResourceLoader.Exists($"res://Sprites/Characters/{Character.ID}/ranged_blunt.png")){
+				Poses[PoseEnum.BLUNT_RANGED] = GD.Load<Texture2D>($"res://Sprites/Characters/{Character.ID}/ranged_blunt.png");
+			}
+			if (ResourceLoader.Exists($"res://Sprites/Characters/{Character.ID}/ranged_pierce.png")){
+				Poses[PoseEnum.PIERCE_RANGED] = GD.Load<Texture2D>($"res://Sprites/Characters/{Character.ID}/ranged_pierce.png");
+			}
+			if (ResourceLoader.Exists($"res://Sprites/Characters/{Character.ID}/ranged_slash.png")){
+				Poses[PoseEnum.SLASH_RANGED] = GD.Load<Texture2D>($"res://Sprites/Characters/{Character.ID}/ranged_slash.png");
 			}
 		}
 		else if (dir == null){

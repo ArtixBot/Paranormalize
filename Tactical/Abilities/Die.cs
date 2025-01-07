@@ -56,4 +56,8 @@ public class Die {
     public int MaxValue{
         get {return _maxValue;}
     }
+
+    public bool HasTag(DieTags tag){
+        return this.DieTags.Contains(tag);
+    }
 }

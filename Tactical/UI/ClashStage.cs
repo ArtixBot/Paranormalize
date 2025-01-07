@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 public enum PoseEnum {
 	UNKNOWN,
 	IDLE,		// Used for allies that are receiving a buff from another ally.
+	ICON,		// Used for turn icons.
 	CLASH_WINDUP,
 	SLASH_MELEE,
 	PIERCE_MELEE,
@@ -43,8 +44,7 @@ public partial class ClashStage : Control {
 
 	public TacticalScene tacticalSceneNode;
 
-	public Dictionary<UI.CharacterUI, Sprite2D> uiToSpriteMap = new();			// This is filled in _Ready() of this class.
-	public Dictionary<Sprite2D, Queue<Texture2D>> spriteQueuedPoses = new();
+	public Dictionary<Sprite2D, UI.CharacterUI> spriteToUiDataMap = new();
 
 	public RichTextLabel lhsAbilityTitle;
 	public RichTextLabel rhsAbilityTitle;
@@ -91,10 +91,11 @@ public partial class ClashStage : Control {
 		// Initialize sprites + positions.
 		tacticalSceneNode = (TacticalScene) GetParent().GetParent();
 		Sprite2D initiatorSprite = new(){
-			Texture = tacticalSceneNode.characterToPoseMap[initiator].GetValueOrDefault("clash_windup", GD.Load<Texture2D>("res://Sprites/Characters/no pose found.png"))
+			Texture = tacticalSceneNode.characterToPoseMap[initiator].GetValueOrDefault(PoseEnum.CLASH_WINDUP, GD.Load<Texture2D>("res://Sprites/Characters/no pose found.png"))
 		};
 		this.initiatorSprite = initiatorSprite;
-		this.spriteQueuedPoses[this.initiatorSprite] = new();
+		this.spriteToUiDataMap[this.initiatorSprite] = tacticalSceneNode.characterToNodeMap[initiator]; 
+
 		AddChild(initiatorSprite);
 		initiatorSprite.Position = initiatorOnLeftHalf ? playerSpawn.Position : npcSpawn.Position;
 		initiatorSprite.FlipH = !initiatorOnLeftHalf;
@@ -103,12 +104,12 @@ public partial class ClashStage : Control {
 			AbstractCharacter target = targetData[i];
 			if (target == initiator) continue;
             Sprite2D targetSprite = new(){
-                Texture = tacticalSceneNode.characterToPoseMap[target].GetValueOrDefault("clash_windup", GD.Load<Texture2D>("res://Sprites/Characters/no pose found.png"))
+                Texture = tacticalSceneNode.characterToPoseMap[target].GetValueOrDefault(PoseEnum.CLASH_WINDUP, GD.Load<Texture2D>("res://Sprites/Characters/no pose found.png"))
             };
-			uiToSpriteMap[tacticalSceneNode.characterToNodeMap[target]] = targetSprite;
 			this.targetSprites.Add(targetSprite);
-			this.spriteQueuedPoses[targetSprite] = new();
-            AddChild(targetSprite);
+			this.spriteToUiDataMap[targetSprite] = tacticalSceneNode.characterToNodeMap[target];
+            
+			AddChild(targetSprite);
 			targetSprite.Position = initiatorOnLeftHalf ? npcSpawn.Position - new Vector2(100 * i, 0) : playerSpawn.Position + new Vector2(100 * i, 0);
 			targetSprite.FlipH = initiatorOnLeftHalf;
 		}
@@ -154,10 +155,24 @@ public partial class ClashStage : Control {
 			}
 
 			RenderDice();
-			RenderPoses();
+			// RenderPoses();
 			curStep += 1;
 		}
 	}
+
+	private static PoseEnum GetPoseFromDie(in Die die){
+        return die?.DieType switch
+        {
+            DieType.SLASH => die.HasTag(DieTags.RANGED) ? PoseEnum.SLASH_RANGED : PoseEnum.SLASH_MELEE,
+            DieType.PIERCE => die.HasTag(DieTags.RANGED) ? PoseEnum.PIERCE_RANGED : PoseEnum.PIERCE_MELEE,
+            DieType.BLUNT => die.HasTag(DieTags.RANGED) ? PoseEnum.BLUNT_RANGED : PoseEnum.BLUNT_MELEE,
+            DieType.ELDRITCH => die.HasTag(DieTags.RANGED) ? PoseEnum.ELDRITCH_RANGED : PoseEnum.ELDRITCH_MELEE,
+            DieType.BLOCK => PoseEnum.BLOCK,
+            DieType.EVADE => PoseEnum.EVADE,
+            DieType.UNIQUE => PoseEnum.UNKNOWN,		// TODO: Figure out what to use here instead.
+            _ => PoseEnum.UNKNOWN,
+        };
+    }
 
 	private void RenderDice(){
 		foreach (Node n in lhsDice.GetChildren() + rhsDice.GetChildren()){
@@ -172,33 +187,37 @@ public partial class ClashStage : Control {
 		int initiatorDiceAddOnLeftSide = initiatorOnLeftHalf ? -1 : 1;
 
 		int initiatorValue = 0, defenderValue = 0;
+		Die initiatorDie = null, defenderDie = null;
 		while (dieRollResultQueue.Count > 0 && dieRollResultQueue.First().step == curStep){
 			(int _, CombatEventDieRolled dieRollResultEvent) = dieRollResultQueue.Dequeue();
 			Logging.Log($"\tDie roll: {dieRollResultEvent.roller.CHAR_NAME} rolled a {dieRollResultEvent.rolledValue} on a(n) {dieRollResultEvent.die.DieType} die.", Logging.LogLevel.INFO);
 			if (dieRollResultEvent.roller == initiator){
 				initiatorValue = dieRollResultEvent.rolledValue;
+				initiatorDie = dieRollResultEvent.die;
 			} else {
 				defenderValue = dieRollResultEvent.rolledValue;
+				defenderDie = dieRollResultEvent.die;
 			}
 		}
 		
 		if (initiatorValue == defenderValue) {
-			// QueueAnimation(this.initiatorSprite,
-			// 	this.tacticalSceneNode.characterToPoseMap.GetValueOrDefault(this.initiator).GetValueOrDefault("clash_windup")
-			// 	?? GD.Load<Texture2D>(NO_POSE_FOUND_PATH));
-			// for(int i = 0; i < targetData.Count; i++){
-			// 	QueueAnimation(this.targetSprites.ElementAt(i),
-			// 	this.tacticalSceneNode.characterToPoseMap.GetValueOrDefault(this.targetData.ElementAt(i)).GetValueOrDefault("clash_windup")
-			// 	?? GD.Load<Texture2D>(NO_POSE_FOUND_PATH));
-			// }
+			ChangePose(this.initiatorSprite, GetPoseFromDie(initiatorDie));
+			ChangePose(this.targetSprites.First(), GetPoseFromDie(defenderDie));
 		} else {
 			bool initiatorWins = initiatorValue > defenderValue;
-			Sprite2D attackerSprite = initiatorWins ? this.initiatorSprite : this.targetSprites[0];
-			// Defender sprite is a list in order to handle cases where initiator performed an AoE ability (a defender can never react with an AoE ability)
-			List<Sprite2D> defenderSprite = initiatorWins ? this.targetSprites : new List<Sprite2D>{this.initiatorSprite};
-			// QueueAnimation(attackerSprite,)
-			foreach (Sprite2D sprite in defenderSprite){
-				QueueAnimation(sprite, PoseEnum.DAMAGED);
+			Die winnerDie = initiatorWins ? initiatorDie : defenderDie;
+			Sprite2D winnerSprite = initiatorWins ? this.initiatorSprite : this.targetSprites[0];
+			
+			Die loserDie = initiatorWins ? defenderDie : initiatorDie;
+			List<Sprite2D> loserSprites = initiatorWins ? this.targetSprites : new List<Sprite2D>{this.initiatorSprite};
+			
+			ChangePose(winnerSprite, GetPoseFromDie(winnerDie));
+			foreach (Sprite2D sprite in loserSprites){
+				if (winnerDie.IsAttackDie) {
+					ChangePose(sprite, PoseEnum.DAMAGED);
+				} else {
+					ChangePose(sprite, GetPoseFromDie(loserDie));
+				}
 			}
 		}
 
@@ -241,22 +260,14 @@ public partial class ClashStage : Control {
 		}
 	}
 
-	private void RenderPoses(){
-		foreach ((Sprite2D sprite, Queue<Texture2D> textures) in spriteQueuedPoses){
-			textures.TryDequeue(out Texture2D newTexture);
-
-			_ = SpawnAfterimg(sprite, 0.15f);
-			sprite.Texture = newTexture;
+	private void ChangePose(Sprite2D sprite, PoseEnum poseToSwapTo){
+		GD.Print($"Queued animation for {sprite.Name}, pose: {poseToSwapTo}");
+		_ = SpawnAfterimg(sprite, 0.15f);
+		if (!this.spriteToUiDataMap[sprite].Poses.ContainsKey(poseToSwapTo)){
+			GD.Print($"Cannot change pose ({poseToSwapTo} does not exist for sprite)");
+			return;
 		}
-	}
-
-	public void QueueAnimation(Sprite2D sprite, PoseEnum spriteType){
-		if (!this.spriteQueuedPoses.ContainsKey(sprite)){
-			// Should never happen, since all sprites should be in the dictionary as part of Ready().
-			GD.PushWarning("Queued animation for non-existent sprite!");
-		}
-		// this.spriteQueuedPoses[sprite].Enqueue(poseToSwapTo);
-		
+		sprite.Texture = this.spriteToUiDataMap[sprite].Poses[poseToSwapTo];		
 	}
 
 	private async Task<bool> SpawnAfterimg(Sprite2D parent, float duration){
