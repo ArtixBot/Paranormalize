@@ -42,7 +42,7 @@ public partial class AbilityDetailPanel : Control
 	private void UpdateDescriptions(){
 		abilityName.Text = _ability.NAME;
 		string rangeText = (_ability.TYPE == AbilityType.REACTION) ? "" : $"\t\t[img=24]res://Sprites/range.png[/img] {_ability.MIN_RANGE} - {_ability.MAX_RANGE}";
-		abilityInfo.Text = $"[font n='res://Assets/Jost-Medium.ttf' s=16]{_ability.TYPE}"  + $"\t\t[img=24]res://Sprites/cooldown.png[/img] {_ability.BASE_CD}" + rangeText;
+		abilityInfo.Text = $"{_ability.TYPE}"  + $"\t\t[img=24]res://Sprites/cooldown.png[/img] {_ability.BASE_CD}" + rangeText;
 		AbilityDesc = ParseCustomTags(_ability.STRINGS.GetValueOrDefault("GENERIC", ""));
 
 		for (int i = 0; i < _ability.BASE_DICE.Count; i++){

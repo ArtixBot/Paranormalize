@@ -140,7 +140,7 @@
 	"SHRUG_OFF": {
 		"NAME": "Shrug Off",
 		"STRINGS": {
-			"SHRUG_OFF": "{Cond|On clash lose vs. Attack die}: If the winning die had a roll of 4 or lower, reduce the winning roll to zero."
+			"SHRUG_OFF": "{Cond|On clash lose vs. Attack die}: If the winning die had a roll of 4 or lower, reduce the winning roll to zero.\n(This check is done [b]after[/b] reducing the incoming Attack roll.)"
 		}
 	},
 	"TEST_REACT": {

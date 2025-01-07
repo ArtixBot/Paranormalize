@@ -39,8 +39,7 @@ public partial class ClashStage : Control {
 	public Queue<(int step, CombatEventDamageTaken damageTaken)> damageRenderQueue = new();
 
 	private int curStep;
-	private int stepCount;		// The clash stage has X steps, and renders different stuff at each step.
-								// Note that stepCount can be zero (e.g. a utility ability is activated), in which case the animation is pretty short.
+	private bool showcasingUtility;		// True if the initiator ability is a utility ability (no clashing).
 
 	public TacticalScene tacticalSceneNode;
 
@@ -51,13 +50,12 @@ public partial class ClashStage : Control {
 	public Control lhsDice;
 	public Control rhsDice;
 
-	public float delayBetweenPoses;
 	public readonly PackedScene clashStageDie = GD.Load<PackedScene>("res://Tactical/UI/Abilities/ClashStageDie.tscn");
 
 	private Sprite2D initiatorSprite;
 	private List<Sprite2D> targetSprites = new();
 
-	private float UTILITY_ABILITY_STEP_DURATION = 2.0f;
+	private float UTILITY_DURATION = 1.5f;
 	private float ABILITY_STEP_DURATION = 0.5f; 
 	private string NO_POSE_FOUND_PATH = "res://Sprites/Characters/no pose found.png";
 
@@ -73,9 +71,7 @@ public partial class ClashStage : Control {
 		rhsDice = GetNode<Control>("Clash BG/RHS Ability Dice");
 
 		curStep = 0;
-		stepCount = Math.Max(initiatorQueuedDice.Count, targetQueuedDice.Count);
-		// Utility abilities last slightly longer in rendering.
-		delayBetweenPoses = (stepCount == 0) ? UTILITY_ABILITY_STEP_DURATION : ABILITY_STEP_DURATION;
+		showcasingUtility = initiatorAbility.TYPE == AbilityType.UTILITY;
 		
 		initiatorOnLeftHalf = initiator.CHAR_FACTION == CharacterFaction.PLAYER;
 		RichTextLabel initiatorAbilityTitle = initiatorOnLeftHalf ? lhsAbilityTitle : rhsAbilityTitle;
@@ -113,28 +109,26 @@ public partial class ClashStage : Control {
 			targetSprite.Position = initiatorOnLeftHalf ? npcSpawn.Position - new Vector2(100 * i, 0) : playerSpawn.Position + new Vector2(100 * i, 0);
 			targetSprite.FlipH = initiatorOnLeftHalf;
 		}
-
-		if (this.targetSprites.Count != this.targetData.Count){
-			GD.PrintErr("Sprite count != target data.");
-			QueueFree();
-		}
 	}
 
 	// Called every frame. 'delta' is the elapsed time since the previous frame.
-	private float timeSinceDelay;
+	private float timeSinceLastPose = 0.0f;
 	public override void _Process(double delta){
-		if (curStep > stepCount) {
+		timeSinceLastPose += (float) delta;
+		// Utility ability rendering case (the simple one).
+		if (showcasingUtility && timeSinceLastPose > UTILITY_DURATION){
 			this.QueueFree();
 			return;
 		}
-		timeSinceDelay += (float) delta;
-		if ((curStep == 0 && delayBetweenPoses != UTILITY_ABILITY_STEP_DURATION) || timeSinceDelay >= delayBetweenPoses) {
-			timeSinceDelay = 0.0f;
+
+		// Attack/clash ability rendering case (the not simple one).
+		if (timeSinceLastPose >= ABILITY_STEP_DURATION) {
+			timeSinceLastPose = 0.0f;
 			// Logging info.
 			Logging.Log($"Rendering step {curStep+1}:", Logging.LogLevel.INFO);
-			initiatorQueuedDice.TryDequeue(out Die[] initiatorDice);
-			targetQueuedDice.TryDequeue(out Die[] targetDice);
-			if ((initiatorDice == null && targetDice == null) || (initiatorDice.Length == 0 && targetDice.Length == 0)){
+			Die[] initiatorDice = initiatorQueuedDice.FirstOrDefault();
+			Die[] targetDice = targetQueuedDice.FirstOrDefault();
+			if ((initiatorDice == null && targetDice == null) || (initiatorDice?.Length == 0 && targetDice?.Length == 0)){
 				GD.Print("Attacker/defender dice queues empty, ending rendering.");
 				this.QueueFree();
 				return;
@@ -154,9 +148,11 @@ public partial class ClashStage : Control {
 				Logging.Log("\tTarget dice: " + content, Logging.LogLevel.INFO);
 			}
 
-			RenderDice();
-			// RenderPoses();
+			RenderNextStep();
 			curStep += 1;
+
+			initiatorQueuedDice.TryDequeue(out _);
+			targetQueuedDice.TryDequeue(out _);
 		}
 	}
 
@@ -174,7 +170,7 @@ public partial class ClashStage : Control {
         };
     }
 
-	private void RenderDice(){
+	private void RenderNextStep(){
 		foreach (Node n in lhsDice.GetChildren() + rhsDice.GetChildren()){
 			n.QueueFree();
 		}
@@ -261,7 +257,7 @@ public partial class ClashStage : Control {
 	}
 
 	private void ChangePose(Sprite2D sprite, PoseEnum poseToSwapTo){
-		GD.Print($"Queued animation for {sprite.Name}, pose: {poseToSwapTo}");
+		GD.Print($"Attempting to change pose for {sprite.Name} to {poseToSwapTo}.");
 		_ = SpawnAfterimg(sprite, 0.15f);
 		if (!this.spriteToUiDataMap[sprite].Poses.ContainsKey(poseToSwapTo)){
 			GD.Print($"Cannot change pose ({poseToSwapTo} does not exist for sprite)");
