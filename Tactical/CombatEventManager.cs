@@ -20,6 +20,7 @@ public enum CombatEventType {
     ON_COMBAT_START, ON_COMBAT_END,
     ON_ROUND_START, ON_ROUND_END,
     ON_TURN_START, ON_TURN_END,
+    STUFF,
     ON_ABILITY_ACTIVATED,
     // Attacks will always trigger ON_DEAL_DAMAGE, then ON_TAKE_DAMAGE. Status effects like burn/bleed will only trigger ON_TAKE_DAMAGE.
     ON_DEAL_DAMAGE, ON_TAKE_DAMAGE,
