@@ -11,7 +11,7 @@ public class Obliterate : AbstractAbility, IEventHandler<CombatEventDieHit>, IEv
     private static bool targetsLane = false;
     private static bool needsUnit = true;
 
-    private Die atkDieA = new Die(DieType.PIERCE, 6, 11, "PIERCE_PULL", new List<DieTags>{DieTags.MELEE});
+    private Die atkDieA = new Die(DieType.PIERCE, 6, 11, "PIERCE_PULL", new List<DieTags>{DieTags.RANGED});
     private Die atkDieB = new Die(DieType.SLASH, 7, 9, "", new List<DieTags>{DieTags.MELEE});
     private Die blkDieC = new Die(DieType.BLOCK, 7, 10, "", new List<DieTags>{DieTags.MELEE});
     private Die atkDieD = new Die(DieType.BLUNT, 4, 8, "", new List<DieTags>{DieTags.MELEE});

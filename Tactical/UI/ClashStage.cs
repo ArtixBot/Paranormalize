@@ -37,6 +37,7 @@ public partial class ClashStage : Control {
 
 	public Queue<(int step, CombatEventDieRolled dieRolled)> dieRollResultQueue = new();
 	public Queue<(int step, CombatEventDamageTaken damageTaken)> damageRenderQueue = new();
+	public Queue<(int step, CombatEventUnitMoved unitMoved)> moveRenderQueue = new();
 
 	private int curStep;
 	private bool showcasingUtility;		// True if the initiator ability is a utility ability (no clashing).
@@ -116,13 +117,19 @@ public partial class ClashStage : Control {
 	public override void _Process(double delta){
 		timeSinceLastPose += (float) delta;
 		// Utility ability rendering case (the simple one).
-		if (showcasingUtility && timeSinceLastPose > UTILITY_DURATION){
-			this.QueueFree();
-			return;
+		if (showcasingUtility) {
+			// Handle moves that occur from a utility ability.
+			while (moveRenderQueue.Count > 0){
+				(int _, CombatEventUnitMoved data) = moveRenderQueue.Dequeue();
+				_ = RenderChangeLane(data);
+			}
+			if (timeSinceLastPose > UTILITY_DURATION){
+				this.QueueFree();
+				return;
+			}
 		}
-
 		// Attack/clash ability rendering case (the not simple one).
-		if (timeSinceLastPose >= ABILITY_STEP_DURATION) {
+		if (!showcasingUtility && timeSinceLastPose >= ABILITY_STEP_DURATION) {
 			timeSinceLastPose = 0.0f;
 			// Logging info.
 			Logging.Log($"Rendering step {curStep+1}:", Logging.LogLevel.INFO);
@@ -254,6 +261,11 @@ public partial class ClashStage : Control {
 			(int _, CombatEventDamageTaken dmgEvent) = damageRenderQueue.Dequeue();
 			Logging.Log($"\tCombat event: {dmgEvent.target.CHAR_NAME} took {(int)dmgEvent.damageTaken} damage (was Poise damage: {dmgEvent.isPoiseDamage}).", Logging.LogLevel.INFO);
 		}
+
+		while (moveRenderQueue.Count > 0 && moveRenderQueue.First().step == curStep){
+			(int _, CombatEventUnitMoved data) = moveRenderQueue.Dequeue();
+			_ = RenderChangeLane(data);
+		}
 	}
 
 	private void ChangePose(Sprite2D sprite, PoseEnum poseToSwapTo){
@@ -264,6 +276,25 @@ public partial class ClashStage : Control {
 			return;
 		}
 		sprite.Texture = this.spriteToUiDataMap[sprite].Poses[poseToSwapTo];		
+	}
+
+	private async Task<bool> RenderChangeLane(CombatEventUnitMoved data){
+		UI.CharacterUI charNode = tacticalSceneNode.characterToNodeMap.GetValueOrDefault(data.movedUnit);
+		if (!IsInstanceValid(charNode)) return false;
+
+		int newLane = data.isMoveLeft ? data.originalLane - data.moveMagnitude : data.originalLane + data.moveMagnitude;
+
+		Vector2 oldPos = charNode.Position;
+		Vector2 newPos = new(150 + (newLane - 1) * 300, 500);
+		float currentTime = 0f;
+		while (currentTime <= 0.25f){
+			float normalized = Math.Min((float)(currentTime / 0.25f), 1.0f);
+			charNode.Position = oldPos.Lerp(newPos, Lerpables.EaseOut(normalized, 5));
+
+			await Task.Delay(1);
+			currentTime += (float)GetProcessDeltaTime();		// Not using PhysicsProcess since this is graphical effect only.
+		}
+		return true;
 	}
 
 	private async Task<bool> SpawnAfterimg(Sprite2D parent, float duration){

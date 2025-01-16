@@ -115,28 +115,6 @@ public partial class TacticalScene : Node2D,
 		}
 	}
 
-	public async void HandleEvent(CombatEventUnitMoved data){
-		CharacterUI charNode = characterToNodeMap.GetValueOrDefault(data.movedUnit);
-		if (!IsInstanceValid(charNode)) return;
-
-		int newLane = data.isMoveLeft ? data.originalLane - data.moveMagnitude : data.originalLane + data.moveMagnitude;
-
-		Vector2 oldPos = charNode.Position;
-		Vector2 newPos = new(150 + (newLane - 1) * 300, 500);
-
-		float currentTime = 0f;
-		// TODO: 0.5f is a static value used because Clash Stage currently has anims set to 0.5 seconds. Define this someplace better.
-		// float? delay = CombatManager.combatInstance?.abilityItrCount * 0.5f;
-		// await Task.Delay(TimeSpan.FromSeconds((double)delay));
-		while (currentTime <= 0.25f){
-            float normalized = Math.Min((float)(currentTime / 0.25f), 1.0f);
-			charNode.Position = oldPos.Lerp(newPos, Lerpables.EaseOut(normalized, 5));
-
-			await Task.Delay(1);
-            currentTime += (float)GetProcessDeltaTime();		// Not using PhysicsProcess since this is graphical effect only.
-        }
-	}
-
 	public void HandleEvent(CombatEventCombatStateChanged data){
 		if (data.newState == CombatState.RESOLVE_ABILITIES){
 			if (CombatManager.combatInstance == null) { return; }
@@ -193,6 +171,31 @@ public partial class TacticalScene : Node2D,
 		if (!IsInstanceValid(this.clashToAnimate)) {return;}
 		// Since clash iterations are 1-indexed, adjust for this.
 		this.clashToAnimate.dieRollResultQueue.Enqueue((data.clashIteration - 1, data));
+	}
+
+	public async void HandleEvent(CombatEventUnitMoved data){
+		if (!IsInstanceValid(this.clashToAnimate)) {
+			// Handle Move ability case (since this doesn't bring up a clash screen)
+			CharacterUI charNode = characterToNodeMap.GetValueOrDefault(data.movedUnit);
+			if (!IsInstanceValid(charNode)) return;
+
+			int newLane = data.isMoveLeft ? data.originalLane - data.moveMagnitude : data.originalLane + data.moveMagnitude;
+
+			Vector2 oldPos = charNode.Position;
+			Vector2 newPos = new(150 + (newLane - 1) * 300, 500);
+
+			float currentTime = 0f;
+			// TODO: 0.5f is a static value used because Clash Stage currently has anims set to 0.5 seconds. Define this someplace better.
+			while (currentTime <= 0.25f){
+				float normalized = Math.Min((float)(currentTime / 0.25f), 1.0f);
+				charNode.Position = oldPos.Lerp(newPos, Lerpables.EaseOut(normalized, 5));
+
+				await Task.Delay(1);
+				currentTime += (float)GetProcessDeltaTime();		// Not using PhysicsProcess since this is graphical effect only.
+        	}
+		} else {
+			this.clashToAnimate.moveRenderQueue.Enqueue((data.clashIteration - 1, data));
+		}
 	}
 
 	public void HandleEvent(CombatUiEventPostDieRolled data){

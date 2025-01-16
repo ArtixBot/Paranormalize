@@ -532,6 +532,7 @@ public class CombatEventUnitMoved : ICombatEvent {
     public int moveMagnitude;
     public bool isMoveLeft;       // If false, assume move right.
     public bool isForcedMovement;   // Voluntary lane shifts and shifts as part of an ability effect are not considered "forced movement", but Pushes/Pulls are.
+    public int clashIteration;      // Used for UI data (possibly other passives in the future?).
 
     public CombatEventUnitMoved(AbstractCharacter movedUnit, int originalLane, int moveMagnitude, bool isMoveLeft, bool isForcedMovement){
         this.movedUnit = movedUnit;
@@ -539,6 +540,7 @@ public class CombatEventUnitMoved : ICombatEvent {
         this.moveMagnitude = moveMagnitude;
         this.isMoveLeft = isMoveLeft;
         this.isForcedMovement = isForcedMovement;
+        this.clashIteration = CombatManager.combatInstance.abilityItrCount;
     }
 }
 
