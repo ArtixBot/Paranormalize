@@ -8,7 +8,7 @@
 	"ALL_IN": {
 		"NAME": "All In",
 		"STRINGS": {
-			"GENERIC": "{Cond|On activate}: All other Available abilities suffer {Keyword|EXERT} 2.",
+			"GENERIC": "{Cond|On activate}: All other {Keyword|AVAILABLE} abilities suffer {Keyword|EXERT} 2.",
 			"ALL_IN": "Increase this die's roll by twice the abilities exerted on ability activation.\n{Cond|On hit}: If this rolled a 32 or higher, Stagger the target."
 		}
 	},

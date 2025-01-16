@@ -3,6 +3,10 @@
 		"NAME": "AoE",
 		"DESC": "This ability can target multiple units in an area of effect. This ability cannot be clashed against and cannot be used to react against an incoming clashable attack."
 	},
+	"AVAILABLE": {
+		"NAME": "Available",
+		"DESC": "An ability is considered Available if it is not on cooldown."
+	},
 	"BACK": {
 		"NAME": "Back",
 		"DESC": "Move away from the target. If the target is in the same lane, move towards the furthest arena edge."
@@ -33,7 +37,7 @@
 	},
 	"EXERT": {
 		"NAME": "Exert",
-		"DESC": "Place the specified ability on cooldown (if is already on cooldown, extend it)."
+		"DESC": "Place the specified ability on cooldown. If it is already on cooldown, extend it."
 	},
 	"FINAL": {
 		"NAME": "Final",

@@ -262,7 +262,8 @@ public partial class ClashStage : Control {
 			Logging.Log($"\tCombat event: {dmgEvent.target.CHAR_NAME} took {(int)dmgEvent.damageTaken} damage (was Poise damage: {dmgEvent.isPoiseDamage}).", Logging.LogLevel.INFO);
 		}
 
-		while (moveRenderQueue.Count > 0 && moveRenderQueue.First().step == curStep){
+		// <= check for On Activate move commands, which aren't linked to a die.
+		while (moveRenderQueue.Count > 0 && moveRenderQueue.First().step <= curStep){
 			(int _, CombatEventUnitMoved data) = moveRenderQueue.Dequeue();
 			_ = RenderChangeLane(data);
 		}
