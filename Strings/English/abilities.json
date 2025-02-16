@@ -150,7 +150,7 @@
 		"NAME": "Test Attack",
 		"STRINGS": {
 			"GENERIC": "On activate: Test description!",
-			"FIRST_DIE": "[wave]This is a description[/wave]. On hit: Inflict {Keyword|VULNERABLE}\n{Cond|On hit}: Inflict 2 {Keyword|SLOW} next round.\n{Cond|On hit}: Gain 2 {Keyword|HASTE} next round."
+			"FIRST_DIE": "[wave]This is a description[/wave]. On hit: Inflict 2 {Keyword|VULNERABLE}\n{Cond|On hit}: Inflict 2 {Keyword|SLOW} next round.\n{Cond|On hit}: Gain 2 {Keyword|HASTE} next round."
 		}
 	},
 	"THWACK": {
@@ -166,6 +166,12 @@
 		"NAME": "Repartee",
 		"STRINGS": {
 			"CLASH_LOSS_DIE": "On clash lose: Discard all remaining dice on this ability."
+		}
+	},
+	"REPOSITION": {
+		"NAME": "Reposition",
+		"STRINGS": {
+			"GENERIC": "Change lanes.\nThe first activation of this ability each round has {Keyword|CANTRIP}.\n\n{Boolean|HAS_BEEN_ACTIVATED_THIS_ROUND|(This ability has been activated this round.)|(This ability has not been activated this round.)}"
 		}
 	},
 	"RETREAT": {

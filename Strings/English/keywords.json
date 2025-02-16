@@ -65,7 +65,7 @@
 	},
 	"PROTECTION": {
 		"NAME": "Protection",
-		"DESC": "Reduces incoming damage until round end."
+		"DESC": "Reduces incoming HP damage until round end."
 	},
 	"PULL": {
 		"NAME": "Pull",
@@ -89,6 +89,6 @@
 	},
 	"VULNERABLE": {
 		"NAME": "Vulnerable",
-		"DESC": "Incoming damage is multiplied by [b]1.5x[/b]."
+		"DESC": "Multiplies incoming HP damage from Attack dice by [b]1.5x[/b]."
 	}
 }

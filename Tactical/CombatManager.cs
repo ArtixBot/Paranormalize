@@ -349,8 +349,8 @@ public static class CombatManager {
             case DieType.PIERCE:
             case DieType.BLUNT:
             case DieType.ELDRITCH:
-                CombatManager.ExecuteAction(new DamageAction(roller, target, dieTypeToDmgType[die.DieType], actualRoll, isPoiseDamage: false));
-                CombatManager.ExecuteAction(new DamageAction(roller, target, dieTypeToDmgType[die.DieType], actualRoll, isPoiseDamage: true));
+                CombatManager.ExecuteAction(new DamageAction(roller, target, dieTypeToDmgType[die.DieType], actualRoll, isPoiseDamage: false, isDieDamage: true));
+                CombatManager.ExecuteAction(new DamageAction(roller, target, dieTypeToDmgType[die.DieType], actualRoll, isPoiseDamage: true, isDieDamage: true));
                 eventManager.BroadcastEvent(new CombatEventDieHit(roller, target, die, naturalRoll, actualRoll));
                 break;
             case DieType.BLOCK:
@@ -358,7 +358,7 @@ public static class CombatManager {
                     eventManager.BroadcastEvent(new CombatEventDieBlocked(roller, target, die, naturalRoll, actualRoll, rolledDuringClash: false));
                     break;
                 };
-                CombatManager.ExecuteAction(new DamageAction(roller, target, DamageType.PURE, actualRoll, isPoiseDamage: true));
+                CombatManager.ExecuteAction(new DamageAction(roller, target, DamageType.PURE, actualRoll, isPoiseDamage: true, isDieDamage: true));
                 eventManager.BroadcastEvent(new CombatEventDieBlocked(roller, target, die, naturalRoll, actualRoll, rolledDuringClash: true));
                 break;
             case DieType.EVADE:

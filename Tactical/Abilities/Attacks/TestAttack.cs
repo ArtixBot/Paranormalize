@@ -34,7 +34,7 @@ public class TestAttack : AbstractAbility, IEventHandler<CombatEventDieHit> {
 
     public virtual void HandleEvent(CombatEventDieHit data){
         if (data.die == atkDieA){
-            CombatManager.ExecuteAction(new ApplyStatusAction(data.hitUnit, new DebuffVulnerable(), 1));
+            CombatManager.ExecuteAction(new ApplyStatusAction(data.hitUnit, new DebuffVulnerable(), 2));
             CombatManager.ExecuteAction(new ApplyStatusAction(data.hitUnit, new ConditionNextRoundStatusGain(new DebuffSlow()), 2));
             CombatManager.ExecuteAction(new ApplyStatusAction(this.OWNER, new ConditionNextRoundStatusGain(new BuffHaste()), 2));
         }

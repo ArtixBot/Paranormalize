@@ -49,14 +49,14 @@ public class Parry : AbstractAbility, IEventSubscriber, IEventHandler<CombatEven
         if (data.atkDie != this.blockDie && data.reactDie != this.blockDie) return;
         AbstractCharacter targetToDamage = data.atkDie == this.blockDie ? data.reactingClasher : data.attackingClasher;
         Logging.Log($"Parry is super successful! {data.tiedRoll * 2} damage and Poise damage is dealt.", Logging.LogLevel.ESSENTIAL);
-        CombatManager.ExecuteAction(new DamageAction(this.OWNER, targetToDamage, DamageType.PURE, data.tiedRoll * 2, false));
-        CombatManager.ExecuteAction(new DamageAction(this.OWNER, targetToDamage, DamageType.PURE, data.tiedRoll * 2, true));
+        CombatManager.ExecuteAction(new DamageAction(this.OWNER, targetToDamage, DamageType.PURE, data.tiedRoll * 2, isPoiseDamage: false, isDieDamage: false));
+        CombatManager.ExecuteAction(new DamageAction(this.OWNER, targetToDamage, DamageType.PURE, data.tiedRoll * 2, isPoiseDamage: true, isDieDamage: false));
     }
 
     public virtual void HandleEvent(CombatEventClashComplete data){
         if (data.winningDie == this.blockDie){
             Logging.Log($"Parry is successful! {data.winningRoll} damage is dealt.", Logging.LogLevel.ESSENTIAL);
-            CombatManager.ExecuteAction(new DamageAction(this.OWNER, data.losingClasher, DamageType.PURE, data.winningRoll, false));
+            CombatManager.ExecuteAction(new DamageAction(this.OWNER, data.losingClasher, DamageType.PURE, data.winningRoll, isPoiseDamage: false, isDieDamage: false));
         }
     }
 }

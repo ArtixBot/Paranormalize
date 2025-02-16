@@ -470,13 +470,15 @@ public class CombatEventDamageTaken : ICombatEvent {
     public DamageType damageType;
     public float damageTaken;
     public bool isPoiseDamage;
+    public bool isDieDamage;
     public int clashIteration;      // Used for UI data (possibly other passives in the future?).
 
-    public CombatEventDamageTaken(AbstractCharacter target, DamageType damageType, float damageTaken, bool isPoiseDamage){
+    public CombatEventDamageTaken(AbstractCharacter target, DamageType damageType, float damageTaken, bool isPoiseDamage, bool isDieDamage){
         this.target = target;
         this.damageType = damageType;
         this.damageTaken = damageTaken;
         this.isPoiseDamage = isPoiseDamage;
+        this.isDieDamage = isDieDamage;
         this.clashIteration = CombatManager.combatInstance.abilityItrCount;
     }
 }

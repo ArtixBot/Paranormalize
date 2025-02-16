@@ -29,7 +29,7 @@
 	},
 	"PROTECTION": {
 		"NAME": "Protection",
-		"DESC": "Incoming damage is reduced by {stacks} this round."
+		"DESC": "Incoming HP damage is reduced by {stacks} this round."
 	},
 	"SLOW": {
 		"NAME": "Slow",
@@ -37,7 +37,7 @@
 	},
 	"STAGGERED": {
 		"NAME": "Staggered",
-		"DESC": "Cannot take actions. Incoming damage is multiplied by 2.0x.\nThis effect wears off at the end of round {UNSTAGGER_ROUND}."
+		"DESC": "Cannot take actions. Incoming HP damage is multiplied by 2.0x.\nThis effect wears off at the end of round {UNSTAGGER_ROUND}."
 	},
 	"STRENGTH": {
 		"NAME": "Strength",
@@ -45,6 +45,6 @@
 	},
 	"VULNERABLE": {
 		"NAME": "Vulnerable",
-		"DESC": "When {owner} takes damage, multiply that damage by [b]1.5x[/b]."
+		"DESC": "Take [b]1.5x[/b] HP damage from the next {stacks} Attack dice."
 	}
 }

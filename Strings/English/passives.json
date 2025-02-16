@@ -1,11 +1,11 @@
 {
 	"CULL_THE_DISHONORABLE": {
 		"NAME": "Cull the Dishonorable",
-		"DESC": "Deal double damage and gain +3 to rolls against enemies with Dishonorable."
+		"DESC": "When targeting Dishonorable enemies:\n- Deal [b]2.0x[/b] HP damage.\n- Gain +3 to rolls."
 	},
 	"DEATH_BEFORE_DISHONOR": {
 		"NAME": "Death before Dishonor",
-		"DESC": "If this unit would gain Dishonorable, remove Dishonorable and Stagger this unit."
+		"DESC": "If this unit would gain Dishonorable, instaed gain Staggered."
 	},
 	"IN_MEMORIAM": {
 		"NAME": "In Memoriam",

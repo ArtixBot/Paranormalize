@@ -111,6 +111,7 @@ public partial class TacticalScene : Node2D,
 
 			charNode.CharacterSelected += (charNode) => GUIOrchestratorNode._on_child_character_selection(charNode.Character);
 			charNode.Position = new Vector2(150 + (charNode.Character.Position - 1) * 300, 500);
+			laneToNodeMap[charNode.Character.Position].characters.Add(charNode);
 			this.AddChild(charNode);
 		}
 	}
@@ -180,6 +181,8 @@ public partial class TacticalScene : Node2D,
 			if (!IsInstanceValid(charNode)) return;
 
 			int newLane = data.isMoveLeft ? data.originalLane - data.moveMagnitude : data.originalLane + data.moveMagnitude;
+			laneToNodeMap[data.originalLane].characters.Remove(charNode);
+			laneToNodeMap[newLane].characters.Add(charNode);
 
 			Vector2 oldPos = charNode.Position;
 			Vector2 newPos = new(150 + (newLane - 1) * 300, 500);

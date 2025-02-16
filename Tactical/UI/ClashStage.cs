@@ -284,6 +284,8 @@ public partial class ClashStage : Control {
 		if (!IsInstanceValid(charNode)) return false;
 
 		int newLane = data.isMoveLeft ? data.originalLane - data.moveMagnitude : data.originalLane + data.moveMagnitude;
+		tacticalSceneNode.laneToNodeMap[data.originalLane].characters.Remove(charNode);
+		tacticalSceneNode.laneToNodeMap[newLane].characters.Add(charNode);
 
 		Vector2 oldPos = charNode.Position;
 		Vector2 newPos = new(150 + (newLane - 1) * 300, 500);
