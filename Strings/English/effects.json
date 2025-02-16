@@ -3,6 +3,10 @@
 		"NAME": "Broken",
 		"DESC": "Block dice have -{stacks} to rolls this round."
 	},
+	"DAZED": {
+		"NAME": "Dazed",
+		"DESC": "Incoming Poise damage is increased by {stacks} this round."
+	},
 	"DISHONORABLE": {
 		"NAME": "Dishonorable",
 		"DESC": "A sacred duel has been broken! Enemies will prioritize attacking this unit until it dies."

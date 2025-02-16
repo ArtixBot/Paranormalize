@@ -23,6 +23,10 @@
 		"NAME": "Cycle",
 		"DESC": "Reuse this die after it is rolled."
 	},
+	"DAZED": {
+		"NAME": "Dazed",
+		"DESC": "Increases incoming Poise damage until round end."
+	},
 	"DEVIOUS": {
 		"NAME": "Devious",
 		"DESC": "If this ability is activated when it is your turn, the target cannot clash against it."

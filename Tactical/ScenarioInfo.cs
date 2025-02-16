@@ -46,6 +46,7 @@ public class TestScenario : ScenarioInfo {
         playerA.EquipAbility(new Again());
         playerA.EquipAbility(new Hew());
         playerA.EquipAbility(new AllIn());
+        playerA.EquipAbility(new Retribution());
         playerA.UnequipAbility(playerA.abilities.Where(ability => ability.ID == "MOVE").FirstOrDefault());
         // playerA.EquipAbility(new Purge());
         // playerA.EquipAbility(new SecondWind());

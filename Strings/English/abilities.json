@@ -137,6 +137,13 @@
 		"NAME": "Purge",
 		"STRINGS": {}
 	},
+	"RETRIBUTION": {
+		"NAME": "Retribution",
+		"STRINGS": {
+			"BOOST_NEXT_DIE_ON_LOSS": "{Cond|On clash lose}: Increase the next die's roll by this die's roll.",
+			"NEXT_ROUND_DAZE":"{Cond|On hit}: Inflict 1 {Keyword|DAZED} next round."
+		}
+	},
 	"SHRUG_OFF": {
 		"NAME": "Shrug Off",
 		"STRINGS": {
