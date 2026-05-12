@@ -1,6 +1,12 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 
+public enum DieTags {
+    MELEE,      // Used for animation purposes.
+    RANGED,     // Used for animation purposes. Possibly ignores reflection/thorns effects?
+    RESTRAINED  // This die's value cannot be changed.
+};
 public enum DieType {SLASH, PIERCE, BLUNT, ELDRITCH, BLOCK, EVADE, UNIQUE};
 
 /*
@@ -18,14 +24,16 @@ public class Die {
     private readonly DieType _dieType;
     private readonly int _minValue;
     private readonly int _maxValue;
+    public readonly List<DieTags> DieTags;
     public readonly bool IsAttackDie;
     public readonly bool IsDefenseDie;
 
-    public Die(DieType dieType, int minValue, int maxValue, string dieId = ""){
+    public Die(DieType dieType, int minValue, int maxValue, string dieId = "", List<DieTags> dieTags = null){
         _dieId = dieId;
         _dieType = dieType;
         _minValue = minValue;
         _maxValue = maxValue;
+        DieTags = dieTags ?? new List<DieTags>{};
         IsAttackDie = this._dieType == DieType.SLASH || this._dieType == DieType.PIERCE || this._dieType == DieType.BLUNT || this._dieType == DieType.ELDRITCH;
         IsDefenseDie = this._dieType == DieType.BLOCK || this._dieType == DieType.EVADE;
     }    
@@ -47,5 +55,9 @@ public class Die {
 
     public int MaxValue{
         get {return _maxValue;}
+    }
+
+    public bool HasTag(DieTags tag){
+        return this.DieTags.Contains(tag);
     }
 }

@@ -17,14 +17,27 @@ public partial class AbilityDie : Control
 		set {_dieDesc.Text = value;}
 	}
 
-	private TextureRect DieImage;
-	private Label DieRange;
+	private RichTextLabel _dieRollValue;
+	public int DieRollValue {
+		set {
+			if (_dieRollValue == null) return;
+			string color = (Die.IsAttackDie) ? "#ffadad" : "#adc3ff";
+			_dieRollValue.Text = $"[center][color={color}]{value}[/color][/center]";
+			_dieRollValue.Visible = true;
+		}
+	}
+	
+	public TextureRect DieImage;
+	public Label DieRange;
 
+	// FIXME: Split this up into a ability die view script and a clash die view script, this is disgusting. Why did I even do that?
 	public override void _Ready() {
 		// Note: Children _Ready() callbacks are always triggered first, see https://docs.godotengine.org/en/3.2/classes/class_node.html#class-node-method-ready
 																				// Former for AbilityDie.tscn, latter for ClashStageDie.tscn.
-		DieImage = (TextureRect) ((GetNodeOrNull("HBoxContainer/Icon") != null) ? GetNode("HBoxContainer/Icon") : GetNode("TextureRect"));
-		DieRange = (Label) ((GetNodeOrNull("HBoxContainer/Die Range") != null) ? GetNode("HBoxContainer/Die Range") : GetNode("Roll Range"));
+		bool dieIsInAbilityView = GetNodeOrNull("HBoxContainer") != null;
+		DieImage = (TextureRect) (dieIsInAbilityView ? GetNode("HBoxContainer/Icon") : GetNode("TextureRect"));
+		DieRange = (Label) (dieIsInAbilityView ? GetNode("HBoxContainer/Die Range") : GetNode("Roll Range"));
+		_dieRollValue = (RichTextLabel) (dieIsInAbilityView ? null : GetNode("Roll Value"));
 		_dieDesc = (RichTextLabel) GetNodeOrNull("Die Desc");
 	}
 
@@ -37,9 +50,9 @@ public partial class AbilityDie : Control
 				DieImage.Texture = ResourceLoader.Load<Texture2D>("res://Sprites/die - pierce.png");
 				break;
 			case DieType.BLUNT:
+			case DieType.ELDRITCH:
 				DieImage.Texture = ResourceLoader.Load<Texture2D>("res://Sprites/die - blunt.png");
 				break;
-			case DieType.ELDRITCH:
 			case DieType.BLOCK:
 				DieImage.Texture = ResourceLoader.Load<Texture2D>("res://Sprites/die - block.png");
 				break;

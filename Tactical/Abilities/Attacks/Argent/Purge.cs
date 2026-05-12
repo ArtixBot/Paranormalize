@@ -12,9 +12,9 @@ public class Purge : AbstractAbility{
     private static bool targetsLane = false;
     private static bool needsUnit = true;
 
-    private Die atkDieA = new Die(DieType.SLASH, 6, 16);
-    private Die atkDieB = new Die(DieType.SLASH, 9, 12);
-    private Die atkDieC = new Die(DieType.SLASH, 5, 13);
+    private Die atkDieA = new Die(DieType.SLASH, 6, 16, "", new List<DieTags>{DieTags.MELEE});
+    private Die atkDieB = new Die(DieType.SLASH, 9, 12, "", new List<DieTags>{DieTags.MELEE});
+    private Die atkDieC = new Die(DieType.SLASH, 5, 13, "", new List<DieTags>{DieTags.MELEE});
 
     public Purge(): base(
         id,

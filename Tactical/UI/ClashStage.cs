@@ -4,6 +4,26 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
+public enum PoseEnum {
+	UNKNOWN,
+	IDLE,		// Used for allies that are receiving a buff from another ally.
+	ICON,		// Used for turn icons.
+	CLASH_WINDUP,
+	SLASH_MELEE,
+	PIERCE_MELEE,
+	BLUNT_MELEE,
+	ELDRITCH_MELEE,
+	SLASH_RANGED,
+	PIERCE_RANGED,
+	BLUNT_RANGED,
+	ELDRITCH_RANGED,
+	EVADE,
+	BLOCK,
+	UTILITY_BUFF,
+	UTILITY_DEBUFF,
+	DAMAGED
+}
+
 public partial class ClashStage : Control {
 
 	public AbstractCharacter initiator;
@@ -17,28 +37,29 @@ public partial class ClashStage : Control {
 
 	public Queue<(int step, CombatEventDieRolled dieRolled)> dieRollResultQueue = new();
 	public Queue<(int step, CombatEventDamageTaken damageTaken)> damageRenderQueue = new();
+	public Queue<(int step, CombatEventUnitMoved unitMoved)> moveRenderQueue = new();
 
 	private int curStep;
-	private int stepCount;		// The clash stage has X steps, and renders different stuff at each step.
-								// Note that stepCount can be zero (e.g. a utility ability is activated), in which case the animation is pretty short.
+	private bool showcasingUtility;		// True if the initiator ability is a utility ability (no clashing).
 
 	public TacticalScene tacticalSceneNode;
 
-	public Dictionary<UI.CharacterUI, Sprite2D> uiToSpriteMap = new();			// This is filled in _Ready() of this class.
-	public Dictionary<UI.CharacterUI, Queue<Texture2D>> uiQueuedPoses = new();	// This is filled in TacticalScene.cs' event listeners (which occurs earlier than _Ready() of this class)
-	public Dictionary<Sprite2D, Queue<Texture2D>> spriteToQueuedPoses = new();
+	public Dictionary<Sprite2D, UI.CharacterUI> spriteToUiDataMap = new();
 
 	public RichTextLabel lhsAbilityTitle;
 	public RichTextLabel rhsAbilityTitle;
 	public Control lhsDice;
 	public Control rhsDice;
 
-	public float delayBetweenPoses;
 	public readonly PackedScene clashStageDie = GD.Load<PackedScene>("res://Tactical/UI/Abilities/ClashStageDie.tscn");
 
-	private float UTILITY_ABILITY_STEP_DURATION = 2.0f;
+	private Sprite2D initiatorSprite;
+	private List<Sprite2D> targetSprites = new();
+
+	private float UTILITY_DURATION = 1.5f;
 	private float ABILITY_STEP_DURATION = 0.5f; 
-	
+	private string NO_POSE_FOUND_PATH = "res://Sprites/Characters/no pose found.png";
+
 	// Called when the node enters the scene tree for the first time.
 	public override void _Ready(){
 		// Player characters are always on the left side, and NPCs on the right side.
@@ -51,9 +72,7 @@ public partial class ClashStage : Control {
 		rhsDice = GetNode<Control>("Clash BG/RHS Ability Dice");
 
 		curStep = 0;
-		stepCount = Math.Max(initiatorQueuedDice.Count, targetQueuedDice.Count);
-		// Utility abilities last slightly longer in rendering.
-		delayBetweenPoses = (stepCount == 0) ? UTILITY_ABILITY_STEP_DURATION : ABILITY_STEP_DURATION;
+		showcasingUtility = initiatorAbility.TYPE == AbilityType.UTILITY;
 		
 		initiatorOnLeftHalf = initiator.CHAR_FACTION == CharacterFaction.PLAYER;
 		RichTextLabel initiatorAbilityTitle = initiatorOnLeftHalf ? lhsAbilityTitle : rhsAbilityTitle;
@@ -69,9 +88,11 @@ public partial class ClashStage : Control {
 		// Initialize sprites + positions.
 		tacticalSceneNode = (TacticalScene) GetParent().GetParent();
 		Sprite2D initiatorSprite = new(){
-			Texture = tacticalSceneNode.characterToPoseMap[initiator].GetValueOrDefault("clash_windup", GD.Load<Texture2D>("res://Sprites/Characters/no pose found.png"))
-		};	
-		uiToSpriteMap[tacticalSceneNode.characterToNodeMap[initiator]] = initiatorSprite;
+			Texture = tacticalSceneNode.characterToPoseMap[initiator].GetValueOrDefault(PoseEnum.CLASH_WINDUP, GD.Load<Texture2D>("res://Sprites/Characters/no pose found.png"))
+		};
+		this.initiatorSprite = initiatorSprite;
+		this.spriteToUiDataMap[this.initiatorSprite] = tacticalSceneNode.characterToNodeMap[initiator]; 
+
 		AddChild(initiatorSprite);
 		initiatorSprite.Position = initiatorOnLeftHalf ? playerSpawn.Position : npcSpawn.Position;
 		initiatorSprite.FlipH = !initiatorOnLeftHalf;
@@ -80,66 +101,83 @@ public partial class ClashStage : Control {
 			AbstractCharacter target = targetData[i];
 			if (target == initiator) continue;
             Sprite2D targetSprite = new(){
-                Texture = tacticalSceneNode.characterToPoseMap[target].GetValueOrDefault("clash_windup", GD.Load<Texture2D>("res://Sprites/Characters/no pose found.png"))
+                Texture = tacticalSceneNode.characterToPoseMap[target].GetValueOrDefault(PoseEnum.CLASH_WINDUP, GD.Load<Texture2D>("res://Sprites/Characters/no pose found.png"))
             };
-			uiToSpriteMap[tacticalSceneNode.characterToNodeMap[target]] = targetSprite;
-            AddChild(targetSprite);
+			this.targetSprites.Add(targetSprite);
+			this.spriteToUiDataMap[targetSprite] = tacticalSceneNode.characterToNodeMap[target];
+            
+			AddChild(targetSprite);
 			targetSprite.Position = initiatorOnLeftHalf ? npcSpawn.Position - new Vector2(100 * i, 0) : playerSpawn.Position + new Vector2(100 * i, 0);
 			targetSprite.FlipH = initiatorOnLeftHalf;
-		}
-
-		foreach (UI.CharacterUI ui in uiToSpriteMap.Keys){
-			Sprite2D sprite = uiToSpriteMap[ui];
-			// TODO: Utility abilities don't enqueue poses for anyone in TacticalStage, hence why we need the Contains check,
-			// and also why we need the GetValueOrDefault clash_windup texture initalization for the sprites.
-			// Fix this.
-			if (uiQueuedPoses.Keys.Contains(ui)){
-				spriteToQueuedPoses[sprite] = uiQueuedPoses[ui];
-			}
 		}
 	}
 
 	// Called every frame. 'delta' is the elapsed time since the previous frame.
-	private float timeSinceDelay;
+	private float timeSinceLastPose = 0.0f;
 	public override void _Process(double delta){
-		if (curStep > stepCount) {
-			this.QueueFree();
-			return;
+		timeSinceLastPose += (float) delta;
+		// Utility ability rendering case (the simple one).
+		if (showcasingUtility) {
+			// Handle moves that occur from a utility ability.
+			while (moveRenderQueue.Count > 0){
+				(int _, CombatEventUnitMoved data) = moveRenderQueue.Dequeue();
+				_ = RenderChangeLane(data);
+			}
+			if (timeSinceLastPose > UTILITY_DURATION){
+				this.QueueFree();
+				return;
+			}
 		}
-		timeSinceDelay += (float) delta;
-		if ((curStep == 0 && delayBetweenPoses != UTILITY_ABILITY_STEP_DURATION) || timeSinceDelay >= delayBetweenPoses) {
-			timeSinceDelay = 0.0f;
-			RenderDice();
-			RenderPoses();
+		// Attack/clash ability rendering case (the not simple one).
+		if (!showcasingUtility && timeSinceLastPose >= ABILITY_STEP_DURATION) {
+			timeSinceLastPose = 0.0f;
 			// Logging info.
 			Logging.Log($"Rendering step {curStep+1}:", Logging.LogLevel.INFO);
-			if (initiatorQueuedDice.TryDequeue(out Die[] initatorDice)){
+			Die[] initiatorDice = initiatorQueuedDice.FirstOrDefault();
+			Die[] targetDice = targetQueuedDice.FirstOrDefault();
+			if ((initiatorDice == null && targetDice == null) || (initiatorDice?.Length == 0 && targetDice?.Length == 0)){
+				GD.Print("Attacker/defender dice queues empty, ending rendering.");
+				this.QueueFree();
+				return;
+			}
+			if (initiatorDice != null){
 				string content = "";
-				foreach (Die die in initatorDice){
+				foreach (Die die in initiatorDice){
 					content += $"{die.DieType} ({die.MinValue} - {die.MaxValue}) | ";
 				}
 				Logging.Log("\tInitiator dice: " + content, Logging.LogLevel.INFO);
 			}
-			if (targetQueuedDice.TryDequeue(out Die[] targetDice)){
+			if (targetDice != null){
 				string content = "";
 				foreach (Die die in targetDice){
 					content += $"{die.DieType} ({die.MinValue} - {die.MaxValue}) | ";
 				}
 				Logging.Log("\tTarget dice: " + content, Logging.LogLevel.INFO);
 			}
-			while (dieRollResultQueue.Count > 0 && dieRollResultQueue.First().step == curStep){
-				(int _, CombatEventDieRolled dieRollResultEvent) = dieRollResultQueue.Dequeue();
-				Logging.Log($"\tDie roll: {dieRollResultEvent.roller.CHAR_NAME} rolled a {dieRollResultEvent.rolledValue} on a(n) {dieRollResultEvent.die.DieType} die.", Logging.LogLevel.INFO);
-			}
-			while (damageRenderQueue.Count > 0 && damageRenderQueue.First().step == curStep){
-				(int _, CombatEventDamageTaken dmgEvent) = damageRenderQueue.Dequeue();
-				Logging.Log($"\tCombat event: {dmgEvent.target.CHAR_NAME} took {(int)dmgEvent.damageTaken} damage (was Poise damage: {dmgEvent.isPoiseDamage}).", Logging.LogLevel.INFO);
-			}
+
+			RenderNextStep();
 			curStep += 1;
+
+			initiatorQueuedDice.TryDequeue(out _);
+			targetQueuedDice.TryDequeue(out _);
 		}
 	}
 
-	private void RenderDice(){
+	private static PoseEnum GetPoseFromDie(in Die die){
+        return die?.DieType switch
+        {
+            DieType.SLASH => die.HasTag(DieTags.RANGED) ? PoseEnum.SLASH_RANGED : PoseEnum.SLASH_MELEE,
+            DieType.PIERCE => die.HasTag(DieTags.RANGED) ? PoseEnum.PIERCE_RANGED : PoseEnum.PIERCE_MELEE,
+            DieType.BLUNT => die.HasTag(DieTags.RANGED) ? PoseEnum.BLUNT_RANGED : PoseEnum.BLUNT_MELEE,
+            DieType.ELDRITCH => die.HasTag(DieTags.RANGED) ? PoseEnum.ELDRITCH_RANGED : PoseEnum.ELDRITCH_MELEE,
+            DieType.BLOCK => PoseEnum.BLOCK,
+            DieType.EVADE => PoseEnum.EVADE,
+            DieType.UNIQUE => PoseEnum.UNKNOWN,		// TODO: Figure out what to use here instead.
+            _ => PoseEnum.UNKNOWN,
+        };
+    }
+
+	private void RenderNextStep(){
 		foreach (Node n in lhsDice.GetChildren() + rhsDice.GetChildren()){
 			n.QueueFree();
 		}
@@ -150,15 +188,56 @@ public partial class ClashStage : Control {
 		Control initiatorSide = initiatorOnLeftHalf ? lhsDice : rhsDice;
 		Control defenderSide = initiatorOnLeftHalf ? rhsDice : lhsDice;
 		int initiatorDiceAddOnLeftSide = initiatorOnLeftHalf ? -1 : 1;
+
+		int initiatorValue = 0, defenderValue = 0;
+		Die initiatorDie = null, defenderDie = null;
+		while (dieRollResultQueue.Count > 0 && dieRollResultQueue.First().step == curStep){
+			(int _, CombatEventDieRolled dieRollResultEvent) = dieRollResultQueue.Dequeue();
+			Logging.Log($"\tDie roll: {dieRollResultEvent.roller.CHAR_NAME} rolled a {dieRollResultEvent.rolledValue} on a(n) {dieRollResultEvent.die.DieType} die.", Logging.LogLevel.INFO);
+			if (dieRollResultEvent.roller == initiator){
+				initiatorValue = dieRollResultEvent.rolledValue;
+				initiatorDie = dieRollResultEvent.die;
+			} else {
+				defenderValue = dieRollResultEvent.rolledValue;
+				defenderDie = dieRollResultEvent.die;
+			}
+		}
+		
+		if (initiatorValue == defenderValue) {
+			ChangePose(this.initiatorSprite, GetPoseFromDie(initiatorDie));
+			ChangePose(this.targetSprites.First(), GetPoseFromDie(defenderDie));
+		} else {
+			bool initiatorWins = initiatorValue > defenderValue;
+			Die winnerDie = initiatorWins ? initiatorDie : defenderDie;
+			Sprite2D winnerSprite = initiatorWins ? this.initiatorSprite : this.targetSprites[0];
+			
+			Die loserDie = initiatorWins ? defenderDie : initiatorDie;
+			List<Sprite2D> loserSprites = initiatorWins ? this.targetSprites : new List<Sprite2D>{this.initiatorSprite};
+			
+			ChangePose(winnerSprite, GetPoseFromDie(winnerDie));
+			foreach (Sprite2D sprite in loserSprites){
+				if (winnerDie.IsAttackDie) {
+					ChangePose(sprite, PoseEnum.DAMAGED);
+				} else {
+					ChangePose(sprite, GetPoseFromDie(loserDie));
+				}
+			}
+		}
+
+
 		if (initiatorDiceData != null){
 			for (int i = 0; i < initiatorDiceData.Length; i++){
 				UI.AbilityDie dieNode = (UI.AbilityDie) clashStageDie.Instantiate();
 				initiatorSide.AddChild(dieNode);
-				if (i == 0){
-					dieNode.Scale = new Vector2(1.3f, 1.3f);
-				}
 				dieNode.Position = new Vector2(i * 60 * initiatorDiceAddOnLeftSide, dieNode.Position.Y);
 				dieNode.Die = initiatorDiceData[i];
+
+				if (i == 0){
+					dieNode.Scale = new Vector2(1.5f, 1.5f);
+					dieNode.DieRollValue = initiatorValue;
+					dieNode.DieRange.Visible = false;
+					dieNode.DieImage.Modulate = new Color(0.5f, 0.5f, 0.5f);
+				}
 			}
 		}
 
@@ -166,29 +245,59 @@ public partial class ClashStage : Control {
 			for (int i = 0; i < defenderDiceData.Length; i++){
 				UI.AbilityDie dieNode = (UI.AbilityDie) clashStageDie.Instantiate();
 				defenderSide.AddChild(dieNode);
-				if (i == 0){
-					dieNode.Scale = new Vector2(1.3f, 1.3f);
-				}
 				dieNode.Position = new Vector2(i * 60 * -initiatorDiceAddOnLeftSide, dieNode.Position.Y);
 				dieNode.Die = defenderDiceData[i];
+
+				if (i == 0){
+					dieNode.Scale = new Vector2(1.5f, 1.5f);
+					dieNode.DieRollValue = defenderValue;
+					dieNode.DieRange.Visible = false;
+					dieNode.DieImage.Modulate = new Color(0.5f, 0.5f, 0.5f);
+				}
 			}
 		}
-	}
 
-	private void RenderPoses(){
-		foreach ((Sprite2D sprite, Queue<Texture2D> textures) in spriteToQueuedPoses){
-			textures.TryDequeue(out Texture2D newTexture);
+		while (damageRenderQueue.Count > 0 && damageRenderQueue.First().step == curStep){
+			(int _, CombatEventDamageTaken dmgEvent) = damageRenderQueue.Dequeue();
+			Logging.Log($"\tCombat event: {dmgEvent.target.CHAR_NAME} took {(int)dmgEvent.damageTaken} damage (was Poise damage: {dmgEvent.isPoiseDamage}).", Logging.LogLevel.INFO);
+		}
 
-			_ = SpawnAfterimg(sprite, 0.15f);
-			sprite.Texture = newTexture;
+		// <= check for On Activate move commands, which aren't linked to a die.
+		while (moveRenderQueue.Count > 0 && moveRenderQueue.First().step <= curStep){
+			(int _, CombatEventUnitMoved data) = moveRenderQueue.Dequeue();
+			_ = RenderChangeLane(data);
 		}
 	}
 
-	public void QueueAnimation(UI.CharacterUI ui, Texture2D poseToSwapTo){
-		if (!uiQueuedPoses.ContainsKey(ui)){
-			uiQueuedPoses[ui] = new Queue<Texture2D>();
+	private void ChangePose(Sprite2D sprite, PoseEnum poseToSwapTo){
+		GD.Print($"Attempting to change pose for {sprite.Name} to {poseToSwapTo}.");
+		_ = SpawnAfterimg(sprite, 0.15f);
+		if (!this.spriteToUiDataMap[sprite].Poses.ContainsKey(poseToSwapTo)){
+			GD.Print($"Cannot change pose ({poseToSwapTo} does not exist for sprite)");
+			return;
 		}
-		uiQueuedPoses[ui].Enqueue(poseToSwapTo);
+		sprite.Texture = this.spriteToUiDataMap[sprite].Poses[poseToSwapTo];		
+	}
+
+	private async Task<bool> RenderChangeLane(CombatEventUnitMoved data){
+		UI.CharacterUI charNode = tacticalSceneNode.characterToNodeMap.GetValueOrDefault(data.movedUnit);
+		if (!IsInstanceValid(charNode)) return false;
+
+		int newLane = data.isMoveLeft ? data.originalLane - data.moveMagnitude : data.originalLane + data.moveMagnitude;
+		tacticalSceneNode.laneToNodeMap[data.originalLane].characters.Remove(charNode);
+		tacticalSceneNode.laneToNodeMap[newLane].characters.Add(charNode);
+
+		Vector2 oldPos = charNode.Position;
+		Vector2 newPos = new(150 + (newLane - 1) * 300, 500);
+		float currentTime = 0f;
+		while (currentTime <= 0.25f){
+			float normalized = Math.Min((float)(currentTime / 0.25f), 1.0f);
+			charNode.Position = oldPos.Lerp(newPos, Lerpables.EaseOut(normalized, 5));
+
+			await Task.Delay(1);
+			currentTime += (float)GetProcessDeltaTime();		// Not using PhysicsProcess since this is graphical effect only.
+		}
+		return true;
 	}
 
 	private async Task<bool> SpawnAfterimg(Sprite2D parent, float duration){

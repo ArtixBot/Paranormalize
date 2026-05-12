@@ -1,0 +1,19 @@
+[gd_scene load_steps=3 format=3 uid="uid://c6v1ls0i7i1vu"]
+
+[ext_resource type="Script" path="res://Tactical/UI/Abilities/AbilityInfoPanel.cs" id="1_b2bxs"]
+[ext_resource type="PackedScene" uid="uid://d2hqnmxninkp4" path="res://Tactical/UI/Abilities/AbilityDetailPanel.tscn" id="2_4jl5v"]
+
+[node name="AbilityInfoPanel" type="HBoxContainer"]
+offset_right = 800.0
+offset_bottom = 450.0
+theme_override_constants/separation = 8
+script = ExtResource("1_b2bxs")
+
+[node name="AbilityDetailPanel" parent="." instance=ExtResource("2_4jl5v")]
+custom_minimum_size = Vector2(650, 0)
+layout_mode = 2
+
+[node name="TooltipContainer" type="VBoxContainer" parent="."]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 8

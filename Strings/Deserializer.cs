@@ -34,9 +34,12 @@ public class LocalizationLibrary {
     public static readonly LocalizationLibrary Instance = new LocalizationLibrary();
 
     private readonly Dictionary<string, AbilityStrings> abilityStrings;
+    private readonly Dictionary<string, PassiveStrings> passiveStrings;
+    // Note that all statuses are keywords, but not the other way around (e.g. Final, Push, Pull, Fixed Cooldown are *not* status effects.)
+	// All statuses in effects.json should *also* be in keywords.json, but keywords differ in that they refer to a more generic definition
+	// while a status refers to direct effects on a character.
     private readonly Dictionary<string, EffectStrings> effectStrings;
     private readonly Dictionary<string, KeywordStrings> keywordStrings;
-    private readonly Dictionary<string, PassiveStrings> passiveStrings;
 
     private LocalizationLibrary(){
         string jsonString = File.ReadAllText("Strings/English/abilities.json");
@@ -65,17 +68,21 @@ public class LocalizationLibrary {
         try {
             return effectStrings[effectId];
         } catch (Exception){
-            GD.Print($"No key found for {effectId}.");
-            return null;
+            GD.PushWarning($"No key found for {effectId}.");
+            EffectStrings missing = new EffectStrings();
+            missing.NAME = "MISSING_ID_FOR_" + effectId;
+            return missing;
         }
     }
 
-    public KeywordStrings GetKeywordStrings(string effectId){
+    public KeywordStrings GetKeywordStrings(string keywordID){
         try {
-            return keywordStrings[effectId];
+            return keywordStrings[keywordID];
         } catch (Exception){
-            GD.Print($"No key found for {effectId}.");
-            return null;
+            GD.Print($"No key found for {keywordID}.");
+            KeywordStrings missing = new KeywordStrings();
+            missing.NAME = "MISSING_ID_FOR_" + keywordID;
+            return missing;
         }
     }
 

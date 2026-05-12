@@ -14,7 +14,7 @@ public class AllIn : AbstractAbility, IEventHandler<CombatEventAbilityActivated>
 
     private int addedRoll = 0;
 
-    private Die atkDie = new Die(DieType.BLUNT, 15, 20, "ALL_IN");
+    private Die atkDie = new Die(DieType.BLUNT, 15, 20, "ALL_IN", new List<DieTags>{DieTags.MELEE});
 
     public AllIn(): base(
         id,

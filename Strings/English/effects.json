@@ -3,6 +3,10 @@
 		"NAME": "Broken",
 		"DESC": "Block dice have -{stacks} to rolls this round."
 	},
+	"DAZED": {
+		"NAME": "Dazed",
+		"DESC": "Incoming Poise damage is increased by {stacks} this round."
+	},
 	"DISHONORABLE": {
 		"NAME": "Dishonorable",
 		"DESC": "A sacred duel has been broken! Enemies will prioritize attacking this unit until it dies."
@@ -13,7 +17,7 @@
 	},
 	"HASTE": {
 		"NAME": "Haste",
-		"DESC": "On round start, increase the Speed of {owner}'s actions by +{stacks}."
+		"DESC": "The Speed of {owner}'s actions is increased by {stacks}."
 	},
 	"NEXT_ROUND_ACTION_GAIN": {
 		"NAME": "Next Round Action Gain",
@@ -29,15 +33,15 @@
 	},
 	"PROTECTION": {
 		"NAME": "Protection",
-		"DESC": "Incoming damage is reduced by {stacks} this round."
+		"DESC": "Incoming HP damage is reduced by {stacks} this round."
 	},
 	"SLOW": {
 		"NAME": "Slow",
-		"DESC": "On round start, reduce the Speed of {owner}'s actions by -{stacks}."
+		"DESC": "The Speed of {owner}'s actions is reduced by {stacks}."
 	},
 	"STAGGERED": {
 		"NAME": "Staggered",
-		"DESC": "Cannot take actions. Incoming damage is doubled.\nThis effect wears off at the end of round {UNSTAGGER_ROUND}."
+		"DESC": "Cannot take actions. Incoming HP damage is multiplied by 2.0x.\nThis effect wears off at the end of round {UNSTAGGER_ROUND}."
 	},
 	"STRENGTH": {
 		"NAME": "Strength",
@@ -45,6 +49,6 @@
 	},
 	"VULNERABLE": {
 		"NAME": "Vulnerable",
-		"DESC": "{owner} takes 50% increased damage this round."
+		"DESC": "Take [b]1.5x[/b] HP damage from the next {stacks} Attack dice."
 	}
 }

@@ -16,7 +16,7 @@ public class Charge : AbstractAbility, IEventHandler<CombatEventAbilityActivated
     private AbstractCharacter target;
     private bool targetKilled;
 
-    private Die atkDieA = new Die(DieType.BLUNT, 14, 26);
+    private Die atkDieA = new Die(DieType.BLUNT, 14, 26, "", new List<DieTags>{DieTags.MELEE});
 
     public Charge(): base(
         id,

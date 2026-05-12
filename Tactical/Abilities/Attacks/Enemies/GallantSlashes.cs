@@ -12,7 +12,7 @@ public class GallantSlashes : AbstractAbility, IEventHandler<CombatEventDieHit>{
     private static bool targetsLane = false;
     private static bool needsUnit = true;
 
-    private Die slashDie = new Die(DieType.SLASH, 6, 12, "NEXT_ROUND_STR_ON_HIT");
+    private Die slashDie = new Die(DieType.SLASH, 6, 12, "NEXT_ROUND_STR_ON_HIT", new List<DieTags>{DieTags.MELEE});
 
     public GallantSlashes(): base(
         id,

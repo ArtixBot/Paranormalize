@@ -3,6 +3,7 @@ using CharacterPassives;
 using Godot;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 /// <summary>
 /// When initiating a combat encounter, the ScenarioInfo provides all of the information necessary to the CombatManager.
@@ -28,11 +29,12 @@ public class TestScenario : ScenarioInfo {
         (characterC, 5),
         // (characterD, 1),
         // (characterE, 2),
-        (playerB, 2),
+        // (playerB, 2),
         (playerA, 3),
     };
 
     public TestScenario() : base(scenarioFighters){
+        playerA.EquipAbility(new AbilityReposition());
         playerA.EquipAbility(new RelentlessStabbing());
         playerA.EquipAbility(new Obliterate());
         playerA.EquipAbility(new Beatdown());
@@ -43,6 +45,9 @@ public class TestScenario : ScenarioInfo {
         playerA.EquipAbility(new Parry());
         playerA.EquipAbility(new Again());
         playerA.EquipAbility(new Hew());
+        playerA.EquipAbility(new AllIn());
+        playerA.EquipAbility(new Retribution());
+        playerA.UnequipAbility(playerA.abilities.Where(ability => ability.ID == "MOVE").FirstOrDefault());
         // playerA.EquipAbility(new Purge());
         // playerA.EquipAbility(new SecondWind());
         // playerA.EquipAbility(new Indomitable());
