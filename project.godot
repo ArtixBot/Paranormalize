@@ -8,11 +8,15 @@
 
 config_version=5
 
+[animation]
+
+compatibility/default_parent_skeleton_in_mesh_instance_3d=true
+
 [application]
 
 config/name="Paranormalize"
-run/main_scene="res://node_2d.tscn"
-config/features=PackedStringArray("4.2", "C#", "Forward Plus")
+run/main_scene="uid://m41v8x2ryyk7"
+config/features=PackedStringArray("4.6", "C#", "Forward Plus")
 config/icon="res://Sprites/icon.svg"
 
 [display]
