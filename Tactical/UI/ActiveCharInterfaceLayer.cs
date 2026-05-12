@@ -17,7 +17,7 @@ public partial class ActiveCharInterfaceLayer : Control, IEventSubscriber, IEven
 
 	private Control abilityListNode;
 	private readonly PackedScene abilityButton = GD.Load<PackedScene>("res://Tactical/UI/Abilities/AbilityButton.tscn");
-	private readonly PackedScene abilityDetailPanel = GD.Load<PackedScene>("res://Tactical/UI/Abilities/AbilityDetailPanel.tscn");
+	private readonly PackedScene abilityInfoPanel = GD.Load<PackedScene>("res://Tactical/UI/Abilities/AbilityInfoPanel.tscn");
 
 	// Called when the node enters the scene tree for the first time.
 	public override void _Ready() {
@@ -29,9 +29,9 @@ public partial class ActiveCharInterfaceLayer : Control, IEventSubscriber, IEven
 		InitSubscriptions();
 	}
 	
-	public bool stickyAbilityDetailPanel = false;		// If true, the created ability detail panel is "sticky" and will not be deleted if the mouse exits the ability button.
-	private AbilityDetailPanel abilityDetailPanelInstance = new();
-	private AbilityDetailPanel opposingAbilityDetailPanelInstance = new();
+	public bool stickyAbilityInfoPanel = false;		// If true, the created ability detail panel is "sticky" and will not be deleted if the mouse exits the ability button.
+	private AbilityInfoPanel abilityInfoPanelInstance = new();
+	private AbilityInfoPanel opposingAbilityInfoPanelInstance = new();
 	private List<AbilityButton> abilityButtonInstances = new();
 	private List<AbstractAbility> reactionAbilities = new();
 	private void UpdateAvailableAbilities(){
@@ -64,20 +64,20 @@ public partial class ActiveCharInterfaceLayer : Control, IEventSubscriber, IEven
 				instance.AbilitySelected += (instance) => parent._on_child_ability_selection(instance.Ability);
 			}
 
-			instance.MouseEntered += () => CreateAbilityDetailPanel(ability, false, instance.Position);
-			instance.Pressed += () => stickyAbilityDetailPanel = true;
-			instance.MouseExited += () => DeleteAbilityDetailPanel(false);
+			instance.MouseEntered += () => CreateAbilityInfoPanel(ability, false, instance.Position);
+			instance.Pressed += () => stickyAbilityInfoPanel = true;
+			instance.MouseExited += () => DeleteAbilityInfoPanel(false);
 		}
 	}
 
-	public void CreateAbilityDetailPanel(AbstractAbility ability, bool isOpposingAbility, Vector2 instancePosition = default){
-		if (isOpposingAbility && IsInstanceValid(opposingAbilityDetailPanelInstance)){
-			opposingAbilityDetailPanelInstance.QueueFree();
-		} else if (!isOpposingAbility && IsInstanceValid(abilityDetailPanelInstance)) {
-			abilityDetailPanelInstance.QueueFree();
+	public void CreateAbilityInfoPanel(AbstractAbility ability, bool isOpposingAbility, Vector2 instancePosition = default){
+		if (isOpposingAbility && IsInstanceValid(opposingAbilityInfoPanelInstance)){
+			opposingAbilityInfoPanelInstance.QueueFree();
+		} else if (!isOpposingAbility && IsInstanceValid(abilityInfoPanelInstance)) {
+			abilityInfoPanelInstance.QueueFree();
 		}
 
-		AbilityDetailPanel node = (AbilityDetailPanel) abilityDetailPanel.Instantiate();
+		AbilityInfoPanel node = (AbilityInfoPanel) abilityInfoPanel.Instantiate();
 		AddChild(node);
 		node.Ability = ability;
 		node.SetSize(new Vector2(600, 400));		// This should be unnecessary but not including it makes the container stretch vertically?
@@ -86,18 +86,18 @@ public partial class ActiveCharInterfaceLayer : Control, IEventSubscriber, IEven
 		Lerpables.FadeIn(node, 0.15);
 
 		if (!isOpposingAbility){
-			abilityDetailPanelInstance = node;
+			abilityInfoPanelInstance = node;
 		} else {
-			opposingAbilityDetailPanelInstance = node;
+			opposingAbilityInfoPanelInstance = node;
 		}
 	}
 
-	public void DeleteAbilityDetailPanel(bool isOpposingAbility){
-		if (!stickyAbilityDetailPanel && !isOpposingAbility && IsInstanceValid(abilityDetailPanelInstance)){
-			abilityDetailPanelInstance.QueueFree();
-		} else if (isOpposingAbility && IsInstanceValid(opposingAbilityDetailPanelInstance)){
+	public void DeleteAbilityInfoPanel(bool isOpposingAbility){
+		if (!stickyAbilityInfoPanel && !isOpposingAbility && IsInstanceValid(abilityInfoPanelInstance)){
+			abilityInfoPanelInstance.QueueFree();
+		} else if (isOpposingAbility && IsInstanceValid(opposingAbilityInfoPanelInstance)){
 			// sticky panel never has to apply for enemy's panel since it doesn't get deleted by ability button exit.
-			opposingAbilityDetailPanelInstance.QueueFree();
+			opposingAbilityInfoPanelInstance.QueueFree();
 		}
 	}
 
@@ -115,9 +115,9 @@ public partial class ActiveCharInterfaceLayer : Control, IEventSubscriber, IEven
     }
 
     public void HandleEvent(CombatEventTurnStart data){
-		stickyAbilityDetailPanel = false;
-		DeleteAbilityDetailPanel(false);			// TODO: This deletes the ability panel if a clash occurs (since MouseExited doesn't apply). Find a better way to do this.
-		DeleteAbilityDetailPanel(true);			// TODO: This deletes the ability panel if a clash occurs (since MouseExited doesn't apply). Find a better way to do this.
+		stickyAbilityInfoPanel = false;
+		DeleteAbilityInfoPanel(false);			// TODO: This deletes the ability panel if a clash occurs (since MouseExited doesn't apply). Find a better way to do this.
+		DeleteAbilityInfoPanel(true);			// TODO: This deletes the ability panel if a clash occurs (since MouseExited doesn't apply). Find a better way to do this.
 		this.ActiveChar = data.character;
 	}
 
@@ -125,6 +125,6 @@ public partial class ActiveCharInterfaceLayer : Control, IEventSubscriber, IEven
 		this.reactionAbilities = data.reactableAbilities;		// This should be set first since setting ActiveChar will force an update of abilities.
 		this.ActiveChar = data.defender;
 
-		CreateAbilityDetailPanel(data.attackerAbility, true);
+		CreateAbilityInfoPanel(data.attackerAbility, true);
 	}
 }

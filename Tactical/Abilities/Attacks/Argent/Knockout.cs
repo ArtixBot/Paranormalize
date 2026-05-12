@@ -12,9 +12,9 @@ public class Knockout : AbstractAbility, IEventHandler<CombatEventAbilityActivat
     private static bool targetsLane = false;
     private static bool needsUnit = true;
 
-    private Die bluntDieA = new Die(DieType.BLUNT, 4, 8);
-    private Die bluntDieB = new Die(DieType.BLUNT, 4, 7);
-    private Die bluntKnockout = new Die(DieType.BLUNT, 8, 10);
+    private Die bluntDieA = new Die(DieType.BLUNT, 4, 8, "", new List<DieTags>{DieTags.MELEE});
+    private Die bluntDieB = new Die(DieType.BLUNT, 4, 7, "", new List<DieTags>{DieTags.MELEE});
+    private Die bluntKnockout = new Die(DieType.BLUNT, 8, 10, "", new List<DieTags>{DieTags.MELEE});
 
     private Dictionary<AbstractCharacter, int> characterToLanePos = new();
 

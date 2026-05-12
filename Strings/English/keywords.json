@@ -1,15 +1,47 @@
 {
+	"AOE": {
+		"NAME": "AoE",
+		"DESC": "This ability can target multiple units in an area of effect. This ability cannot be clashed against and cannot be used to react against an incoming clashable attack."
+	},
+	"AVAILABLE": {
+		"NAME": "Available",
+		"DESC": "An ability is considered Available if it is not on cooldown."
+	},
 	"BACK": {
 		"NAME": "Back",
-		"DESC": "Move X lanes away from the target. If the target is in the same lane, move towards the closest arena edge."
+		"DESC": "Move away from the target. If the target is in the same lane, move towards the furthest arena edge."
 	},
 	"CANNOT_REACT": {
 		"NAME": "Cannot React",
 		"DESC": "This ability cannot be used to react to an incoming clashable enemy attack."
 	},
+	"CANTRIP": {
+		"NAME": "Cantrip",
+		"DESC": "This ability does not consume an action when activated."
+	},
+	"CYCLE": {
+		"NAME": "Cycle",
+		"DESC": "Reuse this die after it is rolled."
+	},
+	"DAZED": {
+		"NAME": "Dazed",
+		"DESC": "Increases incoming Poise damage until round end."
+	},
 	"DEVIOUS": {
 		"NAME": "Devious",
 		"DESC": "If this ability is activated when it is your turn, the target cannot clash against it."
+	},
+	"DISHONORABLE": {
+		"NAME": "Dishonorable",
+		"DESC": "Dishonorable units are prioritized by enemies."
+	},
+	"DUEL_TO_THE_DEATH": {
+		"NAME": "Duel to the Death",
+		"DESC": "If the target or applier attacks or is attacked by anyone else, remove Duel to the Death from EVERYONE and inflict Dishonorable to the initiator of the attack."
+	},
+	"EXERT": {
+		"NAME": "Exert",
+		"DESC": "Place the specified ability on cooldown. If it is already on cooldown, extend it."
 	},
 	"FINAL": {
 		"NAME": "Final",
@@ -21,22 +53,46 @@
 	},
 	"FORWARD": {
 		"NAME": "Forward",
-		"DESC": "Move X lanes towards the target (but not past the target)."
+		"DESC": "Move towards (but not past) the target's lane."
+	},
+	"HASTE": {
+		"NAME": "Haste",
+		"DESC": "Increases the Speed of user's actions on round start."
 	},
 	"INVIGORATE": {
 		"NAME": "Invigorate",
-		"DESC": "Invigorated abilities have their cooldown reduced by X rounds."
+		"DESC": "Reduce the cooldown of a specified ability."
+	},
+	"POISE_PROTECTION": {
+		"NAME": "Poise Protection",
+		"DESC": "Reduces incoming Poise damage until round end."
+	},
+	"PROTECTION": {
+		"NAME": "Protection",
+		"DESC": "Reduces incoming HP damage until round end."
 	},
 	"PULL": {
 		"NAME": "Pull",
-		"DESC": "Pulled units move X lanes towards the puller (but not past the puller)."
+		"DESC": "Move the target towards (but not past) the puller's lane."
 	},
 	"PUSH": {
 		"NAME": "Push",
-		"DESC": "Pushed units move X lanes away from the pusher. If the target is in the same lane, move towards the center of the arena."
+		"DESC": "Move the target away from the pusher. If the target is in the same lane, move the target towards the center of the arena."
+	},
+	"SLOW": {
+		"NAME": "Slow",
+		"DESC": "Reduces the Speed of user's actions on round start."
 	},
 	"REVITALIZE": {
 		"NAME": "Revitalize",
-		"DESC": "Revitalized abilities have their cooldown reset."
+		"DESC": "Reset the cooldown of a specified ability."
+	},
+	"STRENGTH": {
+		"NAME": "Strength",
+		"DESC": "Increases the rolls of Attack dice."
+	},
+	"VULNERABLE": {
+		"NAME": "Vulnerable",
+		"DESC": "Multiplies incoming HP damage from Attack dice by [b]1.5x[/b]."
 	}
 }

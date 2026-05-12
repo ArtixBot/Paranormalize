@@ -17,13 +17,15 @@ public class DamageAction : AbstractAction {
     private DamageType damageType;
     private int damage;
     private bool isPoiseDamage;
+    private bool isDieDamage;       // Whether this damage was dealt by a die or not (status effect damage is false)
 
-    public DamageAction(AbstractCharacter attacker, AbstractCharacter defender, DamageType damageType, int damage, bool isPoiseDamage){
+    public DamageAction(AbstractCharacter attacker, AbstractCharacter defender, DamageType damageType, int damage, bool isPoiseDamage, bool isDieDamage){
         this.attacker = attacker;
         this.defender = defender;
         this.damageType = damageType;
         this.damage = damage;
         this.isPoiseDamage = isPoiseDamage;
+        this.isDieDamage = isDieDamage;
     }
 
     public override void Execute(){
@@ -36,7 +38,7 @@ public class DamageAction : AbstractAction {
 
         // Note that CombatEventDamageTaken does calculations of this.damage as a float.
         // This accounts for cases like a +50% and +100% damage multiplier, which is 3 * 1.5 => 4.5 * 2 => 9.
-        CombatEventDamageTaken damageData = new(this.defender, this.damageType, this.damage, this.isPoiseDamage);
+        CombatEventDamageTaken damageData = new(this.defender, this.damageType, this.damage, this.isPoiseDamage, this.isDieDamage);
         CombatManager.eventManager.BroadcastEvent(damageData);
 
         // Damage cannot be negative.

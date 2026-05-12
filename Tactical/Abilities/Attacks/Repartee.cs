@@ -10,9 +10,9 @@ public class Repartee : AbstractAbility, IEventHandler<CombatEventClashComplete>
     private static bool targetsLane = false;
     private static bool needsUnit = true;
 
-    private Die atkDieA = new Die(DieType.SLASH, 1, 4, "CLASH_LOSS_DIE");
-    private Die atkDieB = new Die(DieType.PIERCE, 3, 7);
-    private Die atkDieC = new Die(DieType.PIERCE, 4, 7);
+    private Die atkDieA = new Die(DieType.SLASH, 1, 4, "CLASH_LOSS_DIE", new List<DieTags>{DieTags.MELEE});
+    private Die atkDieB = new Die(DieType.PIERCE, 3, 7, "", new List<DieTags>{DieTags.MELEE});
+    private Die atkDieC = new Die(DieType.PIERCE, 4, 7, "", new List<DieTags>{DieTags.MELEE});
 
     public Repartee(): base(
         id,

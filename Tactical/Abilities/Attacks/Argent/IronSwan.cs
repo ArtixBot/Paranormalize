@@ -10,7 +10,7 @@ public class IronSwan : AbstractAbility, IEventHandler<CombatEventDieHit> {
     private static bool targetsLane = false;
     private static bool needsUnit = true;
 
-    private Die atkDie = new Die(DieType.PIERCE, 12, 18, "PULL_DIE");
+    private Die atkDie = new Die(DieType.PIERCE, 12, 18, "PULL_DIE", new List<DieTags>{DieTags.MELEE});
 
     public IronSwan(): base(
         id,

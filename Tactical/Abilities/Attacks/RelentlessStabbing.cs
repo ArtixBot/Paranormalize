@@ -11,7 +11,7 @@ public class RelentlessStabbing : AbstractAbility, IEventHandler<CombatEventDieH
     private static bool needsUnit = true;
 
     private Die evadeDie = new Die(DieType.EVADE, 7, 10);
-    private Die atkDie = new Die(DieType.PIERCE, 7, 8, "LETHAL_HIT_CYCLING");
+    private Die atkDie = new Die(DieType.PIERCE, 7, 8, "LETHAL_HIT_CYCLING", new List<DieTags>{DieTags.MELEE});
 
     private int cycles = 0;
 

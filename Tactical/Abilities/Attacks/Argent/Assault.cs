@@ -11,7 +11,7 @@ public class Assault : AbstractAbility, IEventHandler<CombatEventAbilityActivate
     private static bool targetsLane = false;
     private static bool needsUnit = true;
 
-    private Die atkDie = new Die(DieType.SLASH, 7, 13, "MOVE_UP_ACTIONS");
+    private Die atkDie = new Die(DieType.SLASH, 7, 13, "MOVE_UP_ACTIONS", new List<DieTags>{DieTags.MELEE});
     private Die defDie = new Die(DieType.BLOCK, 5, 6);
 
     public Assault(): base(

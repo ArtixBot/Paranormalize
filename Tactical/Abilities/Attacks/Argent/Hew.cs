@@ -12,7 +12,7 @@ public class Hew : AbstractAbility{
     private static bool targetsLane = true;
     private static bool needsUnit = true;
 
-    private Die atkDie = new Die(DieType.SLASH, 6, 16);
+    private Die atkDie = new Die(DieType.SLASH, 6, 16, "", new List<DieTags>{DieTags.MELEE});
 
     public Hew(): base(
         id,

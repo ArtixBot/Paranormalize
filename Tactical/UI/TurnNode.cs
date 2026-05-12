@@ -10,11 +10,11 @@ public partial class TurnNode : Control
 	public CharacterUI Character {
 		set {
 			AtlasTexture atlasTex = new();
-			if (value.Poses.ContainsKey("icon")){
-				atlasTex.Atlas = value.Poses["icon"];
+			if (value.Poses.ContainsKey(PoseEnum.ICON)){
+				atlasTex.Atlas = value.Poses[PoseEnum.ICON];
 				atlasTex.Region = new Rect2(0, 175, 600, 200);
-			} else if (value.Poses.ContainsKey("idle")){
-				atlasTex.Atlas = value.Poses["idle"];
+			} else if (value.Poses.ContainsKey(PoseEnum.IDLE)){
+				atlasTex.Atlas = value.Poses[PoseEnum.IDLE];
 				atlasTex.Region = new Rect2(0, 50, 133, 100);
 			} else {
 				atlasTex.Atlas = GD.Load<Texture2D>("res://Sprites/Characters/no pose found.png");

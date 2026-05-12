@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Godot;
+using Localization;
 
 namespace UI;
 
@@ -41,24 +42,24 @@ public partial class AbilityDetailPanel : Control
 	private void UpdateDescriptions(){
 		abilityName.Text = _ability.NAME;
 		string rangeText = (_ability.TYPE == AbilityType.REACTION) ? "" : $"\t\t[img=24]res://Sprites/range.png[/img] {_ability.MIN_RANGE} - {_ability.MAX_RANGE}";
-		abilityInfo.Text = $"[font n='res://Assets/Jost-Medium.ttf' s=16]{_ability.TYPE}"  + $"\t\t[img=24]res://Sprites/cooldown.png[/img] {_ability.BASE_CD}" + rangeText;
-		AbilityDesc = ParseCustomTags(_ability.STRINGS.GetValueOrDefault("GENERIC", ""));
+		abilityInfo.Text = $"{_ability.TYPE}"  + $"\t\t[img=24]res://Sprites/cooldown.png[/img] {_ability.BASE_CD}" + rangeText;
+		AbilityDesc = ParseCustomTags(_ability.STRINGS.GetValueOrDefault("GENERIC", ""), this.Ability);
 
 		for (int i = 0; i < _ability.BASE_DICE.Count; i++){
             AbilityDie node = (AbilityDie) abilityDie.Instantiate();
 			nodeToAddDiceTo.AddChild(node);
 
 			node.Die = _ability.BASE_DICE[i];
-			node.DieDesc = ParseCustomTags(_ability.STRINGS.GetValueOrDefault(node.Die.DieId, ""));
+			node.DieDesc = ParseCustomTags(_ability.STRINGS.GetValueOrDefault(node.Die.DieId, ""), node.Die);
 		}
 	}
 
-	// TODO: This will not work well for internationalized strings.
-	private string ParseCustomTags(string s){
+	private string ParseCustomTags(string s, object obj){
         MatchCollection matches = new Regex(@"(?<=\{)(.*?)(?=\})").Matches(s);
 		for (int i = 0; i < matches.Count; i++){
             Match match = matches[i];
 			// e.g.: Convert {Slash|9-13} to [color][b]Slash 9-13[/b][/color].
+			// TODO: This presumably will not work well for internationalized strings.
             if (match.Value.Contains("Slash") || match.Value.Contains("Pierce") || match.Value.Contains("Blunt") || match.Value.Contains("Eldritch")){
 				string[] attackTypeAndRange = match.Value.Split("|");
 				string attackType = attackTypeAndRange.First();
@@ -68,18 +69,22 @@ public partial class AbilityDetailPanel : Control
                 s = s.Replace("{" + match.Value + "}", replacementString);
             }
 			// e.g.: Convert {Cond|On activate} to [color]On activate[/color].
+			// TODO: This presumably will not work well for internationalized strings.
 			else if (match.Value.Contains("Cond")){
 				string textToHighlight = match.Value.Split("|").Last();
 				string replacementString = "[color=#4cf]" + textToHighlight + "[/color]";
                 s = s.Replace("{" + match.Value + "}", replacementString);
 			}
-			// Spawn a Status panel explaining what the status (e.g. Bleed) does.
-			else if (match.Value.Contains("Status")){
-
+			else if (match.Value.Contains("Boolean")){  // Check for boolean condition field w/ reflection. E.g. AbilityReposition in abilities.json strings.
+				bool booleanCondition = (bool) obj.GetType().GetField(match.Value.Split("|")[1]).GetValue(obj);
+				string replacementString = booleanCondition ? match.Value.Split("|")[2] : match.Value.Split("|")[3];
+				s = s.Replace("{" + match.Value + "}", replacementString);
 			}
-			// Spawn a Keyword panel explaining what the keyword (e.g. Final, Fixed Cooldown) does.
 			else if (match.Value.Contains("Keyword")){
-
+                string textToHighlight = match.Value.Split("|").Last();
+				string keywordString = LocalizationLibrary.Instance.GetKeywordStrings(textToHighlight).NAME;
+				string replacementString = "[color=#ffcb70]" + keywordString + "[/color]";
+				s = s.Replace("{" + match.Value + "}", replacementString);
 			}
         }
 		return s;
